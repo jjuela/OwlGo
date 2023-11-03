@@ -85,20 +85,11 @@ class Review(db.Model):
     user = db.relationship('User', back_populates='reviews')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='reviewed_ratings')
 
-class Post(db.Model):
-    post_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), nullable=False)
-    post_text = db.Column(db.Text)
-    post_date = db.Column(db.DateTime)
-
-    user = db.relationship('User', backref='posts')
-    ride = db.relationship('Ride', backref='posts')
-
 class Announcement(db.Model):
-    announcement_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    announcement_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     announcement_text = db.Column(db.Text)
     announcement_date = db.Column(db.DateTime)
 
     user = db.relationship('User', backref='announcements')
+    ride = db.relationship('Ride', backref='announcements')
