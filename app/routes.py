@@ -1,12 +1,12 @@
-from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Post, Announcement
+from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from app.forms import RegistrationForm, LoginForm, ChangePasswordForm, ProfileForm, AnnouncementForm, RideForm
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
 from app import app, db
 import sys
 
-@app.route('/') # landing
-def landing()
+@app.route('/', methods=['GET'])
+def landing():
     return "hi!"
     
 @app.route('/register', methods=['GET', 'POST'])
@@ -22,12 +22,12 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    form =LoginForm()
-    if form.validate_on_submit():
+    form = LoginForm()
+    if form.validate_on_submit() and request.method == 'POST':
         user = db.session.query(User).filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
-             print('Login failed', file=sys.stderr)
-             return redirect(url_for('login'))
+            print('Login failed', file=sys.stderr)
+            return redirect(url_for('login'))
         login_user(user)
         print('Login successful', file=sys.stderr)
         return redirect(url_for('home'))
@@ -37,7 +37,9 @@ def login():
 #   db.session.add(user)
 #   db.session.commit()
 
-# @app.route('/home')
+@app.route('/home')
+def home():
+    return "home"
 
 @app.route('/create_profile', methods=['POST'])
 def create_profile():
