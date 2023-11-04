@@ -6,7 +6,9 @@ from app import app, db
 import sys
 
 @app.route('/') # landing
-# user registration and log in
+def landing()
+    return "hi!"
+    
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form=RegistrationForm()
@@ -22,7 +24,7 @@ def register():
 def login():
     form =LoginForm()
     if form.validate_on_submit():
-        user=db.session.query(User).filter_by(username=form.username.data).first()
+        user = db.session.query(User).filter_by(email=form.email.data).first()
         if user is None or not user.check_password(form.password.data):
              print('Login failed', file=sys.stderr)
              return redirect(url_for('login'))
@@ -35,7 +37,7 @@ def login():
 #   db.session.add(user)
 #   db.session.commit()
 
-@app.route('/home')
+# @app.route('/home')
 
 @app.route('/create_profile', methods=['POST'])
 def create_profile():
@@ -47,7 +49,7 @@ def create_profile():
         return "Profile created!"
     return render_template('create_profile.html', form=form)
         
-@app.route('/home_admin')
+# @app.route('/home_admin')
 
 @app.route('/create_announcement' , methods=['POST'])
 def create_announcement():
@@ -62,7 +64,7 @@ def create_announcement():
             return "Announcement created!"
     return render_template('create_announcement.html', form=form)
 
-@app.route('/start_ride')
+# @app.route('/start_ride')
 
 @app.route('/start_ride/offer', methods=['GET', 'POST'])
 def start_ride_offer():
@@ -85,9 +87,9 @@ def start_ride_offer():
         return "Ride created!"
     return render_template('start_ride_offer.html', form=form)
 
-@app.route('/start_ride/request')
+# @app.route('/start_ride/request')
 
-@app.route('/find_ride')
+# @app.route('/find_ride')
 
 @app.route('/view_profile/<int:user_id>', methods=['GET', 'POST'])
 def view_profile(user_id):
