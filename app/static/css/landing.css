@@ -5,6 +5,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     font-family: 'Inter', sans-serif;
+    padding-bottom: 50px;
 }
 
 .scsu-logo {
@@ -13,6 +14,7 @@ body {
   left: 10px;
   width: 217.5px;
   height: 111px; 
+  background: grey;
 }
 
 .scsu-logo img {
@@ -44,6 +46,7 @@ body {
     display: inline-block;
     width: 223px;
     height: 228px;
+    background: white;
 }
 
 .owl-logo img {
@@ -68,22 +71,23 @@ body {
 }
 
 .landing-login-button, .landing-signup-button {
-    margin: 0px 30px;
-    margin-bottom: 25px;
     border-radius: 15px;
     width: 100px;
     padding: 5px 0px;
+    margin-bottom: 20px;
+    text-decoration: none;
+    color: #000;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
 }
 
-.landing-login-button a, .landing-signup-button a {
-  text-decoration: none;
-  color: #000;
-  font-size: 19px;
-  font-weight: 700;
+.landing-login-button {
+    margin-right: 50px;
 }
 
-.landing-login-button a:hover, .landing-signup-button a:hover {
-  cursor: pointer;
+.landing-login-button:hover, .landing-signup-button:hover {
+    cursor: pointer;
 }
 
 .footer {
@@ -96,4 +100,70 @@ body {
     display: inline-block;
     margin-right: 10px;
     font-weight: 600;
+}
+
+/* basic modals, update later */
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+form div {
+    margin-bottom: 15px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+form input[type="text"], form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+form input[type="submit"] {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
 }

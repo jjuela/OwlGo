@@ -18,19 +18,53 @@
                 <p>Continue with SCSU email</p>
             </div>
             <div class="landing-buttons">
-                <button class="landing-login-button">
-                    <a href="{{ url_for('login') }}">Log in</a>
-                </button>
-                <button class="landing-signup-button">
-                    <a href="{{ url_for('register') }}">Sign up</a>
-                </button>
+                <button class="landing-login-button" onclick="openLoginModal();">Log in</button>
+                <button class="landing-signup-button" onclick="openRegisterModal();">Sign up</button>
             </div>
         </div>
     </div>
+  <div id="loginModal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <form method="POST">
+              {{ login_form.hidden_tag() }}
+              <div>
+                  {{ login_form.email.label }} {{ login_form.email() }}
+              </div>
+              <div>
+                  {{ login_form.password.label }} {{ login_form.password() }}
+              </div>
+              <div>
+                  {{ login_form.submit() }}
+              </div>
+          </form>
+      </div>
+  </div>
+  <div id="registerModal" class="modal">
+      <div class="modal-content">
+          <span class="close">&times;</span>
+          <form method="POST">
+              {{ register_form.hidden_tag() }}
+              <div>
+                  {{ register_form.email.label }} {{ register_form.email() }}
+              </div>
+              <div>
+                  {{ register_form.password.label }} {{ register_form.password() }}
+              </div>
+              <div>
+                  {{ register_form.confirm_password.label }} {{ register_form.confirm_password() }}
+              </div>
+              <div>
+                  {{ register_form.submit() }}
+              </div>
+          </form>
+      </div>
+  </div>
     <div class="footer">
         <p>Terms</p>
         <p>Privacy</p>
         <p>Support</p>
     </div>
+    <script src="{{ url_for('static', filename='landing.js') }}"></script>
 </body>
 </html>
