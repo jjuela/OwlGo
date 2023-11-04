@@ -7,7 +7,7 @@ import sys
 
 @app.route('/', methods=['GET'])
 def landing():
-    return "hi!"
+    return render_template('landing.html')
     
 @app.route('/register', methods=['GET', 'POST'])
 def register():

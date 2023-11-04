@@ -1,0 +1,95 @@
+.scsu-logo {
+    width: 435px;
+    height: 222px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.landing-box {
+    display: flex;
+    position: relative;
+    width: 524px;
+    height: 497px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 339px;
+    bottom: 188px;
+    background: #808080;
+    border-radius: 10px;
+}
+
+.owl-logo {
+    width: 233px;
+    height: 228px;
+    position: absolute;
+    top: 20px;
+    bottom: 249px;
+}
+
+.owl-logo img {
+    width: 100%;
+    height: 100%;
+}
+
+.landing-text {
+    position: absolute;
+    top: 290px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.landing-text p {
+    color: #fff;
+    font-family: Inter;
+    font-style: normal;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: normal;
+}
+
+.landing-buttons {
+    position: absolute;
+    top: 358px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.landing-login-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 160px;
+    height: 55px;
+    background: #d9d9d9d9;
+    border-radius: 25px;
+}
+
+.landing-signup-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 160px;
+    height: 55px;
+    background: #d9d9d9d9;
+    border-radius: 25px;
+}
+
+.landing-login-button a, .landing-signup-button a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #000;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 700;
+    font-size: 30px;
+    line-height: normal;
+}
+
+.landing-login-button:hover, .landing-signup-button:hover {
+    background: #fff;
+    cursor: pointer;
+}
+
