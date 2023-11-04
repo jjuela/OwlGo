@@ -2,7 +2,6 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 import os
-from app import routes
 
 app = Flask(__name__)
 
@@ -12,3 +11,4 @@ db = SQLAlchemy(app)
 csrf = CSRFProtect(app)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
+from app import routes

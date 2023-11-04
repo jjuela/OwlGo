@@ -1,8 +1,8 @@
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
 from app import app, db
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
 import sys
 
 @app.route('/', methods=['GET'])
