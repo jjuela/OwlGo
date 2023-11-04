@@ -3,31 +3,34 @@
 <head>
     <title>OwlGo</title>
 </head>
-<link rel="stylesheet" href="{{ url_for('static', filename=css/landing.css)}}" type="text/css">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" type="text/css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/inter@3.15.4/css/inter.css">
 <body>
     <div class="scsu-logo">
         <img src="{{ url_for('static', filename='img/scsu.png') }}" alt="SCSU Logo">
     </div>
-
-    <div class="landing-box">
-        <div class="owl-logo">
-            <img src="{{ url_for('static', filename='img/owl.png') }}" alt="Owl Logo">
-        </div>
-        <div class="landing-text">
-            <p>Continue with SCSU email</p>
-        </div>
-        <div class="landing-buttons"></div>
-            <div class="landing-login-button">
-                <a href="{{ url_for('login') }}">Login</a>
-            <div class="landing-signup-button">
-                <a href="{{ url_for('signup') }}">Sign Up</a>
+    <div class="container">
+        <div class="landing-box">
+            <div class="owl-logo">
+                <img src="{{ url_for('static', filename='img/owl.png') }}" alt="Owl Logo">
+            </div>
+            <div class="landing-text">
+                <p>Continue with SCSU email</p>
+            </div>
+            <div class="landing-buttons">
+                <button class="landing-login-button">
+                    <a href="{{ url_for('login') }}">Log in</a>
+                </button>
+                <button class="landing-signup-button">
+                    <a href="{{ url_for('register') }}">Sign up</a>
+                </button>
             </div>
         </div>
     </div>
     <div class="footer">
-        <a href="{{ url_for('terms') }}">Terms</a>
-        <a href="{{ url_for('privacy') }}">Privacy</a>
-        <a href="{{ url_for('support') }}">Support</a>
+        <p>Terms</p>
+        <p>Privacy</p>
+        <p>Support</p>
     </div>
 </body>
 </html>

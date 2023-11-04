@@ -1,95 +1,82 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    position: relative;
+    font-family: 'Inter', sans-serif;
+}
+
 .scsu-logo {
-    width: 435px;
-    height: 222px;
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 10px;
+    left: 10px;
+}
+
+.container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .landing-box {
-    display: flex;
-    position: relative;
-    width: 524px;
-    height: 497px;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 339px;
-    bottom: 188px;
+    text-align: center;
     background: #808080;
+    width: 50%;
+    height: 70vh;
+    margin: 0 auto;
     border-radius: 10px;
 }
 
 .owl-logo {
-    width: 233px;
-    height: 228px;
-    position: absolute;
-    top: 20px;
-    bottom: 249px;
-}
-
-.owl-logo img {
-    width: 100%;
-    height: 100%;
+    margin-top: 30px;
+    display: inline-block;
 }
 
 .landing-text {
-    position: absolute;
-    top: 290px;
-    left: 50%;
-    transform: translateX(-50%);
+  margin-top: 200px;
 }
 
 .landing-text p {
-    color: #fff;
-    font-family: Inter;
-    font-style: normal;
-    font-size: 30px;
-    font-weight: 700;
-    line-height: normal;
+  font-size: 25px;
+  color: #fff;
+  font-weight: 700;
 }
 
 .landing-buttons {
-    position: absolute;
-    top: 358px;
-    left: 50%;
-    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
 }
 
-.landing-login-button {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 160px;
-    height: 55px;
-    background: #d9d9d9d9;
-    border-radius: 25px;
-}
-
-.landing-signup-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 160px;
-    height: 55px;
-    background: #d9d9d9d9;
-    border-radius: 25px;
+.landing-login-button, .landing-signup-button {
+    margin: 20px;
+    margin-top: 5px;
+    border-radius: 15px;
+    width: 100px;
+    padding: 5px 0px;
 }
 
 .landing-login-button a, .landing-signup-button a {
+  text-decoration: none;
+  color: #000;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.landing-login-button a:hover, .landing-signup-button a:hover {
+  cursor: pointer;
+}
+
+.footer {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #000;
-    font-family: Inter;
-    font-style: normal;
-    font-weight: 700;
-    font-size: 30px;
-    line-height: normal;
+    bottom: 0px;
+    left: 10px;
 }
 
-.landing-login-button:hover, .landing-signup-button:hover {
-    background: #fff;
-    cursor: pointer;
+.footer p {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: 600;
 }
-
