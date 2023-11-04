@@ -14,19 +14,20 @@
             <img src="{{ url_for('static', filename='img/owl.png') }}" alt="Owl Logo">
         </div>
         <div class="landing-text">
-            <h2>Continue with SCSU email</h2>
+            <p>Continue with SCSU email</p>
         </div>
-        <div class="landing-login">
-            <a href="{{ url_for('login') }}">Login</a>
-        <div class="landing-signup">
-            <a href="{{ url_for('signup') }}">Sign Up</a>
+        <div class="landing-buttons"></div>
+            <div class="landing-login-button">
+                <a href="{{ url_for('login') }}">Login</a>
+            <div class="landing-signup-button">
+                <a href="{{ url_for('signup') }}">Sign Up</a>
+            </div>
         </div>
-        <div class="rectangle"></div>
-        <div class="footer">
-            <p>Terms</p>
-            <p>Privacy</p>
-            <p>Contact</p>
-        </div>
+    </div>
+    <div class="footer">
+        <a href="{{ url_for('terms') }}">Terms</a>
+        <a href="{{ url_for('privacy') }}">Privacy</a>
+        <a href="{{ url_for('support') }}">Support</a>
     </div>
 </body>
 </html>
