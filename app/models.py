@@ -8,20 +8,23 @@ class User(db.Model):
     admin = db.Column(db.Boolean, default=False)
     banned = db.Column(db.Boolean, default=False)
 
+    rides = db.relationship('Ride', backref='user')
+    sent_messages = db.relationship('Message', foreign_keys='Message.user_id', backref='sender')
+    received_messages = db.relationship('Message', foreign_keys='Message.recipient_id', backref='recipient')
+    given_ratings = db.relationship('Rating', foreign_keys='Rating.user_id', backref='rater')
+    received_ratings = db.relationship('Rating', foreign_keys='Rating.recipient_id', backref='rated')
+    reviews = db.relationship('Review', backref='reviewer')
+    announcements = db.relationship('Announcement', backref='announcer')
+
 class Profile(db.Model):
-    user_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
     home_town = db.Column(db.String(50))
     about = db.Column(db.Text)
     user_img = db.Column(db.String(255))
-    ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'))
-    rating_id = db.Column(db.Integer, db.ForeignKey('rating.rating_id'))
-    review_id = db.Column(db.Integer, db.ForeignKey('review.review_id'))
 
-    ride = db.relationship('Ride', back_populates='profiles')
-    rating = db.relationship('Rating', back_populates='profiles')
-    review = db.relationship('Review', back_populates='profiles')
+    user = db.relationship('User', backref='profile')
 
 class Ride(db.Model):
     ride_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -39,8 +42,8 @@ class Ride(db.Model):
     dropoff_time = db.Column(db.Time)
     repeating = db.Column(db.Boolean, default=False)
 
-    profiles = db.relationship('Profile', back_populates='ride')
-    user = db.relationship('User', back_populates='rides')
+    ratings = db.relationship('Rating', backref='ride')
+    announcements = db.relationship('Announcement', backref='ride')
 
 class RidePassenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
@@ -56,9 +59,6 @@ class Message(db.Model):
     content = db.Column(db.Text)
     timestamp = db.Column(db.DateTime)
 
-    user = db.relationship('User', foreign_keys=[user_id], backref='sent_messages')
-    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_messages')
-
 class Rating(db.Model):
     rating_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -72,17 +72,17 @@ class Rating(db.Model):
 
     user = db.relationship('User', foreign_keys=[user_id], backref='given_ratings')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_ratings')
-    ride = db.relationship('Ride', back_populates='ratings')
+    ride = db.relationship('Ride', backref='ratings')
 
 class Review(db.Model):
     review_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     rating_id = db.Column(db.Integer, db.ForeignKey('rating.rating_id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
-    recipient_id = db.Column(db.Integer, db.ForeignKey('rating.recipient_id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     review_text = db.Column(db.Text)
 
-    rating = db.relationship('Rating', back_populates='review')
-    user = db.relationship('User', back_populates='reviews')
+    rating = db.relationship('Rating', backref='review')
+    user = db.relationship('User', backref='reviews')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='reviewed_ratings')
 
 class Announcement(db.Model):
@@ -92,4 +92,3 @@ class Announcement(db.Model):
     announcement_date = db.Column(db.DateTime)
 
     user = db.relationship('User', backref='announcements')
-    ride = db.relationship('Ride', backref='announcements')

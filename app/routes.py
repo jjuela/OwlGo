@@ -3,7 +3,6 @@ from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
-import sys
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -11,7 +10,6 @@ def landing():
     register_form = RegistrationForm()
 
     if login_form.validate_on_submit():
-        # Handle login
         user = User.query.filter_by(email=login_form.email.data).first()
         if user and user.check_password(login_form.password.data):
             login_user(user)
@@ -20,7 +18,6 @@ def landing():
             flash('Login failed')
 
     if register_form.validate_on_submit():
-        # Handle registration
         user = User(email=register_form.email.data, password=register_form.password.data)
         db.session.add(user)
         db.session.commit()
@@ -28,11 +25,6 @@ def landing():
         return redirect(url_for('home'))
 
     return render_template('landing.html', login_form=login_form, register_form=register_form)
-
-# example data insertion
-#   user = User(username='john_doe', email='john@example.com')
-#   db.session.add(user)
-#   db.session.commit()
 
 @app.route('/home')
 def home():

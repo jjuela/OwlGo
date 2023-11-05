@@ -25,9 +25,11 @@ class ProfileForm(FlaskForm):
     firstname = StringField('', validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "First name"})
     lastname = StringField('', validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Last name"})
     hometown = StringField('', validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Hometown"})
+
     image = FileField('Profile picture', validators=[FileAllowed(['jpg', 'png'])])
     about = TextAreaField('', validators=[DataRequired()], render_kw={"placeholder": "About me"})
     submit = SubmitField('Create')
+
 
 class AnnouncementForm(FlaskForm):
     announcetext = TextAreaField('Announcement', validators=[DataRequired()])
