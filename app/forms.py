@@ -22,12 +22,12 @@ class RegistrationForm(FlaskForm):
              raise ValidationError('Please use a valid SCSU email address.')          
 
 class ProfileForm(FlaskForm):
-    firstname = StringField('First Name', validators=[DataRequired(), Length(min=2, max=20)])
-    lastname = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=20)])
-    hometown = StringField('Home Town', validators=[DataRequired(), Length(min=2, max=20)])
+    firstname = StringField('', validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "First name"})
+    lastname = StringField('', validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Last name"})
+    hometown = StringField('', validators=[DataRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Hometown"})
     image = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
-    about = TextAreaField('About Me', validators=[DataRequired()])
-    submit = SubmitField('Confirm Profile')
+    about = TextAreaField('', validators=[DataRequired()], render_kw={"placeholder": "About me"})
+    submit = SubmitField('Create profile')
 
 class AnnouncementForm(FlaskForm):
     announcetext = TextAreaField('Announcement', validators=[DataRequired()])
