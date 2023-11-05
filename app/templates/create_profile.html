@@ -7,35 +7,41 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/inter@3.15.4/css/inter.css">
 <body>
     <div class="container">
-        <div class="profile-box">
-            <h1>Create Profile</h1>
-            <form method="POST" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                <div>
-                    {{ form.firstname.label }} {{ form.firstname() }}
-                </div>
-                <div>
-                    {{ form.lastname.label }} {{ form.lastname() }}
-                </div>
-                <div>
-                    {{ form.hometown.label }} {{ form.hometown() }}
-                </div>
-                <div>
-                    {{ form.image.label }} {{ form.image() }}
-                </div>
-                <div>
-                    {{ form.about.label }} {{ form.about() }}
-                </div>
-                <div>
-                    {{ form.submit() }}
-                </div>
-            </form>
+        <div class="scsu-logo">
+            <img src="{{ url_for('static', filename='img/scsu.png') }}" alt="SCSU Logo">
         </div>
-    </div>
-    <div class="footer">
+        <div class="profile-box">
+        <h1>Create profile</h1>
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        <div>
+                            {{ form.firstname.label }} {{ form.firstname() }}
+                        </div>
+                        <div>
+                            {{ form.lastname.label }} {{ form.lastname() }}
+                        </div>
+                        <div>
+                            {{ form.hometown.label }} {{ form.hometown() }}
+                        </div>
+						<div>
+						    {{ form.image.label(class="image-label") }}
+						    {{ form.image(onchange="previewImage(event)") }}
+						    <img id="imagePreview" class="image-preview" src="#" alt="Image Preview" style="display: none;">
+						</div>
+                        <div>
+                            {{ form.about.label }} {{ form.about() }}
+                        </div>
+                        <div>
+                            {{ form.submit() }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+             <div class="footer">
         <p>Terms</p>
         <p>Privacy</p>
         <p>Support</p>
     </div>
+    <script src="{{ url_for('static', filename='js/create_profile.js') }}"></script>
 </body>
 </html>
