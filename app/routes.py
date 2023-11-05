@@ -30,7 +30,7 @@ def landing():
 def home():
     return "home"
 
-@app.route('/create_profile', methods=['POST'])
+@app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
     form = ProfileForm()
     if form.validate_on_submit():
