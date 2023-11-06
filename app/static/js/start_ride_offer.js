@@ -81,3 +81,11 @@ function showLeisureFields() {
     document.getElementById('accessibility-field').style.display = 'block';
     document.getElementById('description-field').style.display = 'block';
 }
+
+document.getElementById('add-stop').addEventListener('click', function() {
+    var stopsField = document.getElementById('stops-field');
+    var newStopField = document.createElement('input');
+    newStopField.type = 'text';
+    newStopField.name = 'stops';
+    stopsField.appendChild(newStopField);
+});

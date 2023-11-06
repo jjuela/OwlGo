@@ -23,8 +23,9 @@
         <div id="stops-field">
             {{ form.stops.label }}
             {% for stop in form.stops %}
-                {{ stop() }}
+                {{ stop }}
             {% endfor %}
+            <button type="button" id="add-stop">Add Stop</button>
         </div>
         <div id="reccuring-field">
             {{ form.reccuring.label }} {{ form.reccuring }}

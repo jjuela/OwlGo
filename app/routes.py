@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
+from flask import request
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -81,6 +82,9 @@ def start_ride_offer():
         db.session.add(ride)
         db.session.commit()
         return "Ride created!"
+     # Add an empty stop field
+    if request.method == 'GET':
+        form.stops.append_entry()
     return render_template('start_ride_offer.html', form=form)
 
 # @app.route('/start_ride/request')
