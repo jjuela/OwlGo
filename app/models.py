@@ -45,7 +45,7 @@ class Ride(db.Model):
 
     ratings = db.relationship('Rating', backref='rated_ride')
 
-class RidePassenger(db.Model):
+class Ride_Passenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
 
@@ -59,8 +59,8 @@ class Message(db.Model):
     content = db.Column(db.Text)
     timestamp = db.Column(db.DateTime)
 
-    user = db.relationship('User', foreign_keys=[user_id], backref='sent_messages')
-    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_messages')
+    user = db.relationship('User', foreign_keys=[user_id], backref='user_messages')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='receiver_messages')
 
 class Rating(db.Model):
     rating_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -73,9 +73,9 @@ class Rating(db.Model):
     communication = db.Column(db.SmallInteger)
     average = db.Column(db.Numeric(3, 2))
 
-    user = db.relationship('User', foreign_keys=[user_id], backref='given_ratings')
-    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_ratings')
-    ride = db.relationship('Ride', backref='ratings')
+    user = db.relationship('User', foreign_keys=[user_id], backref='user_ratings')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='receiver_ratings')
+    ride = db.relationship('Ride', backref='ride_ratings')
 
 class Review(db.Model):
     review_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -86,7 +86,7 @@ class Review(db.Model):
 
     rating = db.relationship('Rating', backref='review')
     user = db.relationship('User', foreign_keys=[user_id], backref='reviews')
-    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='reviewed_ratings')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='receiver_reviews')
 
 class Announcement(db.Model):
     announcement_id = db.Column(db.Integer, primary_key=True)
@@ -94,4 +94,4 @@ class Announcement(db.Model):
     announcement_text = db.Column(db.Text)
     announcement_date = db.Column(db.DateTime)
 
-    user = db.relationship('User', backref='announcements')
+    user = db.relationship('User', backref='created_announcements')
