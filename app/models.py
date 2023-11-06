@@ -10,10 +10,10 @@ class User(db.Model):
 
     rides = db.relationship('Ride', backref='user')
     sent_messages = db.relationship('Message', foreign_keys='Message.user_id', backref='sender')
-    received_messages = db.relationship('Message', foreign_keys='Message.recipient_id', backref='recipient')
+    received_messages = db.relationship('Message', foreign_keys='Message.recipient_id', backref='received')
     given_ratings = db.relationship('Rating', foreign_keys='Rating.user_id', backref='rater')
     received_ratings = db.relationship('Rating', foreign_keys='Rating.recipient_id', backref='rated')
-    given_reviews = db.relationship('Review', foreign_keys='Review.user_id' backref='reviewer')
+    given_reviews = db.relationship('Review', foreign_keys='Review.user_id', backref='reviewer')
     received_reviews = db.relationship('Review', foreign_keys='Review.recipient_id', backref='reviewed')
     announcements = db.relationship('Announcement', backref='announcer')
 
@@ -25,7 +25,7 @@ class Profile(db.Model):
     about = db.Column(db.Text)
     user_img = db.Column(db.String(255))
 
-    user = db.relationship('User', backref='profile')
+    user = db.relationship('User', backref='user_profile')
 
 class Ride(db.Model):
     ride_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -43,15 +43,14 @@ class Ride(db.Model):
     dropoff_time = db.Column(db.Time)
     repeating = db.Column(db.Boolean, default=False)
 
-    ratings = db.relationship('Rating', backref='ride')
-    announcements = db.relationship('Announcement', backref='ride')
+    ratings = db.relationship('Rating', backref='rated_ride')
 
 class RidePassenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
 
     ride = db.relationship('Ride', backref='passengers')
-    passenger = db.relationship('User', backref='rides')
+    passenger = db.relationship('User', backref='ridden_rides')
 
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
