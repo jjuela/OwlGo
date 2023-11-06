@@ -10,34 +10,33 @@
         <div>
             {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
         </div>
-        <div id="location-field" style="display: none;">
-            {{ form.location.label }} {{ form.location }}
+        <div>
+            {{ form.departingFrom.label }} {{ form.departingFrom }}
         </div>
-        <div id="destination-field" style="display: none;">
+        <div>
+            {{ form.departingAt.label }} {{ form.departingAt }}
+        </div>
+        <div>
             {{ form.destination.label }} {{ form.destination }}
         </div>
-        <div id="departing-field" style="display: none;">
-            {{ form.departing.label }} {{ form.departing }}
-        </div>
-        <div id="arrival-field" style="display: none;">
+        <div>
             {{ form.arrival.label }} {{ form.arrival }}
         </div>
-        <div id="duration-field" style="display: none;">
+        <div>
             {{ form.duration.label }} {{ form.duration }}
         </div>
-        <div id="pickup-field" style="display: none;">
-            {{ form.pickup.label }} {{ form.pickup }}
+        <div>
+            {% for stop in form.stops %}
+                {{ stop }}
+            {% endfor %}
         </div>
-        <div id="stops-field" style="display: none;">
-            {{ form.stops.label }} {{ form.stops }}
-        </div>
-        <div id="reccuring-field" style="display: none;">
+        <div>
             {{ form.reccuring.label }} {{ form.reccuring }}
         </div>
-        <div id="accessibility-field" style="display: none;">
+        <div>
             {{ form.accessibility.label }} {{ form.accessibility }}
         </div>
-        <div id="description-field" style="display: none;">
+        <div>
             {{ form.description.label }} {{ form.description }}
         </div>
         <div>
