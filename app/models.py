@@ -13,7 +13,8 @@ class User(db.Model):
     received_messages = db.relationship('Message', foreign_keys='Message.recipient_id', backref='recipient')
     given_ratings = db.relationship('Rating', foreign_keys='Rating.user_id', backref='rater')
     received_ratings = db.relationship('Rating', foreign_keys='Rating.recipient_id', backref='rated')
-    reviews = db.relationship('Review', backref='reviewer')
+    given_reviews = db.relationship('Review', foreign_keys='Review.user_id' backref='reviewer')
+    received_reviews = db.relationship('Review', foreign_keys='Review.recipient_id', backref='reviewed')
     announcements = db.relationship('Announcement', backref='announcer')
 
 class Profile(db.Model):
@@ -59,6 +60,9 @@ class Message(db.Model):
     content = db.Column(db.Text)
     timestamp = db.Column(db.DateTime)
 
+    user = db.relationship('User', foreign_keys=[user_id], backref='sent_messages')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_messages')
+
 class Rating(db.Model):
     rating_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
@@ -82,7 +86,7 @@ class Review(db.Model):
     review_text = db.Column(db.Text)
 
     rating = db.relationship('Rating', backref='review')
-    user = db.relationship('User', backref='reviews')
+    user = db.relationship('User', foreign_keys=[user_id], backref='reviews')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='reviewed_ratings')
 
 class Announcement(db.Model):
