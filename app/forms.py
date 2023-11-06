@@ -36,7 +36,12 @@ class AnnouncementForm(FlaskForm):
     announcedate = DateField('Date', validators=[DataRequired()])
 
 class RideForm(FlaskForm):
-    ridetype = SelectField('Ride Type', choices=[('1', 'Commute'), ('2', 'Errand'), ('3', 'Leisure')], validators=[DataRequired()])
+    ridetype = SelectField('Ride Type', choices=[
+    ('', 'Select one'),
+    ('commute', 'Commute'),
+    ('errand', 'Errand'),
+    ('leisure', 'Leisure'),
+    ], validators=[DataRequired()])
     departingFrom = StringField('', render_kw={"placeholder": "Departing from"}, validators=[DataRequired()])
     departingAt = TimeField('Departing at', render_kw={"placeholder": "Departing at"}, validators=[DataRequired()])
     destination = StringField('', render_kw={"placeholder": "Destination"}, validators=[DataRequired()])
@@ -44,6 +49,15 @@ class RideForm(FlaskForm):
     duration = StringField('', render_kw={"placeholder": "Duration"})
     stops = FieldList(StringField('', render_kw={"placerholder": "Stop"}), min_entries=0)
     reccuring = BooleanField('Recurring')
+    recurring_days = SelectMultipleField('Recurring Days', choices=[
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ])
     accessibility = SelectMultipleField('Accessibility', choices=[
         ('wheelchair', 'Wheelchair accessible'),
         ('visual', 'Visual impairment assistance'),
