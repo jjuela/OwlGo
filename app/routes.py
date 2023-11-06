@@ -61,6 +61,9 @@ def create_announcement():
 def start_ride_offer():
     form = RideForm()
     if form.validate_on_submit():
+        # if form.accessibility.data is None, set it to an empty list
+        if form.accessibility.data is None:
+            form.accessibility.data = []
         ride = Ride(
             ridetype=form.ridetype.data,
             location=form.location.data,
