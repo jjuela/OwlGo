@@ -67,7 +67,6 @@ function showCommuteFields() {
 function showErrandFields() {
     document.getElementById('departingFrom-field').style.display = 'block';
     document.getElementById('departingAt-field').style.display = 'block';
-    document.getElementById('destination-field').style.display = 'block';
     document.getElementById('stops-field').style.display = 'block';
     document.getElementById('accessibility-field').style.display = 'block';
     document.getElementById('description-field').style.display = 'block';
