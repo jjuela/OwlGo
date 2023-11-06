@@ -32,7 +32,7 @@
             {{ form.accessibility.label }}
             {% for value, label in form.accessibility.choices %}
                 <div>
-                    <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if value in form.accessibility.data %} checked {% endif %}>
+                    <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
                     <label for="accessibility-{{ loop.index }}">{{ label }}</label>
                 </div>
             {% endfor %}
