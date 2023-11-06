@@ -29,7 +29,13 @@
             {{ form.reccuring.label }} {{ form.reccuring }}
         </div>
         <div id="accessibility-field">
-            {{ form.accessibility.label }} {{ form.accessibility }}
+            {{ form.accessibility.label }}
+            {% for value, label in form.accessibility.choices %}
+                <div>
+                    <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if value in form.accessibility.data %} checked {% endif %}>
+                    <label for="accessibility-{{ loop.index }}">{{ label }}</label>
+                </div>
+            {% endfor %}
         </div>
         <div id="description-field">
             {{ form.description.label }} {{ form.description }}
