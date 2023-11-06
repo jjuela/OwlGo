@@ -65,6 +65,7 @@ def start_ride_offer():
             ridetype=form.ridetype.data,
             location=form.location.data,
             destination=form.destination.data,
+            departing=form.departing.data,
             arrival=form.arrival.data,
             duration=form.duration.data,
             pickup=form.pickup.data,

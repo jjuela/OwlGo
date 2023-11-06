@@ -1,0 +1,31 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+header a:first-child {
+    order: -1;
+    margin-right: 50px; /* change as needed */
+}
+
+header a:last-child {
+    order: 1;
+}
+
+header img {
+    margin-right: 10px;
+}
+
+footer {
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+}
+
+footer a {
+    display: inline-block;
+    margin-right: 10px;
+    font-weight: 600;
+}

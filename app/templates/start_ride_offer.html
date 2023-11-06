@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/start_ride_offer.css') }}">
+{% endblock %}
+{% block content %}
+    <h1>Start Ride Offer</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
+        </div>
+        <div id="location-field" style="display: none;">
+            {{ form.location.label }} {{ form.location }}
+        </div>
+        <div id="destination-field" style="display: none;">
+            {{ form.destination.label }} {{ form.destination }}
+        </div>
+        <div id="departing-field" style="display: none;">
+            {{ form.departing.label }} {{ form.departing }}
+        </div>
+        <div id="arrival-field" style="display: none;">
+            {{ form.arrival.label }} {{ form.arrival }}
+        </div>
+        <div id="duration-field" style="display: none;">
+            {{ form.duration.label }} {{ form.duration }}
+        </div>
+        <div id="pickup-field" style="display: none;">
+            {{ form.pickup.label }} {{ form.pickup }}
+        </div>
+        <div id="stops-field" style="display: none;">
+            {{ form.stops.label }} {{ form.stops }}
+        </div>
+        <div id="reccuring-field" style="display: none;">
+            {{ form.reccuring.label }} {{ form.reccuring }}
+        </div>
+        <div id="accessibility-field" style="display: none;">
+            {{ form.accessibility.label }} {{ form.accessibility }}
+        </div>
+        <div id="description-field" style="display: none;">
+            {{ form.description.label }} {{ form.description }}
+        </div>
+        <div>
+            {{ form.submit }}
+        </div>
+    </form>
+    <script src="{{ url_for('static', filename='js/start_ride_offer.js') }}"></script>
+{% endblock %}

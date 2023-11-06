@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='images/scsu.png') }}" alt="Home"></a>
+        <a href="{{ url_for('start_ride') }}"><img src="{{ url_for('static', filename='images/create.png') }}" alt="Start Ride"></a>
+        <a href="{{ url_for('find_ride') }}"><img src="{{ url_for('static', filename='images/search.png') }}" alt="Find Ride"></a>
+        <img src="{{ url_for('static', filename='images/bell.png') }}" alt="Notifications"> <!-- link here later -->
+    </header>
+
+    {% block content %}
+    {% endblock %}
+
+    <footer>
+        <!-- links here later -->
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Support</a>
+    </footer>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
+</body>
+</html>
