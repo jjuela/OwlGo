@@ -17,6 +17,14 @@ window.onload = function() {
             }
         }
     });
+
+    document.getElementById('reccuring').addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('recurring_days-field').style.display = 'block';
+        } else {
+            document.getElementById('recurring_days-field').style.display = 'none';
+        }
+    });
 };
 
 function hideAllFields() {
@@ -38,9 +46,20 @@ function showCommuteFields() {
     document.getElementById('destination-field').style.display = 'block';
     document.getElementById('arrival-field').style.display = 'block';
     document.getElementById('reccuring-field').style.display = 'block';
-    if (document.getElementById('reccuring').checked) {
+
+    var reccuringCheckbox = document.getElementById('reccuring');
+    if (reccuringCheckbox.checked) {
         document.getElementById('recurring_days-field').style.display = 'block';
     }
+
+    reccuringCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            document.getElementById('recurring_days-field').style.display = 'block';
+        } else {
+            document.getElementById('recurring_days-field').style.display = 'none';
+        }
+    });
+
     document.getElementById('accessibility-field').style.display = 'block';
     document.getElementById('description-field').style.display = 'block';
 }
