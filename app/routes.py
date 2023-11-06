@@ -57,7 +57,7 @@ def create_announcement():
 
 # @app.route('/start_ride')
 
-@app.route('/start_ride/offer', methods=['GET', 'POST'])
+@app.route('/start_ride_offer', methods=['GET', 'POST'])
 def start_ride_offer():
     form = RideForm()
     if form.validate_on_submit():

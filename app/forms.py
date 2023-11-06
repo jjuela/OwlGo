@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField, TimeField, FieldList
+from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField, TimeField, FieldList, SelectMultipleField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError
 from app.models import User
@@ -38,21 +38,20 @@ class AnnouncementForm(FlaskForm):
 class RideForm(FlaskForm):
     ridetype = SelectField('Ride Type', choices=[('1', 'Commute'), ('2', 'Errand'), ('3', 'Leisure')], validators=[DataRequired()])
     departingFrom = StringField('', render_kw={"placeholder": "Departing from"}, validators=[DataRequired()])
-    departingAt = TimeField('', render_kw={"placeholder": "Departing at"}, validators=[DataRequired()])
+    departingAt = TimeField('Departing at', render_kw={"placeholder": "Departing at"}, validators=[DataRequired()])
     destination = StringField('', render_kw={"placeholder": "Destination"}, validators=[DataRequired()])
-    arrival = TimeField('', render_kw={"placeholder": "Arrival"})
+    arrival = TimeField('Arrival', render_kw={"placeholder": "Arrival"})
     duration = StringField('', render_kw={"placeholder": "Duration"})
     stops = FieldList(StringField('', render_kw={"placerholder": "Stop"}), min_entries=0)
     reccuring = BooleanField('Recurring')
-    accessibility = SelectField('Accessibility', choices=[
-    ('', 'Select...'),
-    ('wheelchair', 'Wheelchair accessible'),
-    ('visual', 'Visual impairment assistance'),
-    ('hearing', 'Hearing impairment assistance'),
-    ('service_dog', 'Service dog friendly'),
-    ('quiet', 'Quiet ride'),
-    ('step_free', 'Step-free access'),
-    # maybe add more?
+    accessibility = SelectMultipleField('Accessibility', choices=[
+        ('wheelchair', 'Wheelchair accessible'),
+        ('visual', 'Visual impairment assistance'),
+        ('hearing', 'Hearing impairment assistance'),
+        ('service_dog', 'Service dog friendly'),
+        ('quiet', 'Quiet ride'),
+        ('step_free', 'Step-free access'),
+        # maybe add more?
     ])
     description = TextAreaField('', render_kw={"placeholder": "Description"}) 
     submit = SubmitField('Post')                        
