@@ -28,6 +28,15 @@
         <div id="reccuring-field">
             {{ form.reccuring.label }} {{ form.reccuring }}
         </div>
+        <div id="recurring_days-field">
+            {{ form.recurring_days.label }}
+            {% for value, label in form.recurring_days.choices %}
+                <div>
+                    <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
+                    <label for="recurring_days-{{ loop.index }}">{{ label }}</label>
+                </div>
+            {% endfor %}
+        </div>
         <div id="accessibility-field">
             {{ form.accessibility.label }}
             {% for value, label in form.accessibility.choices %}

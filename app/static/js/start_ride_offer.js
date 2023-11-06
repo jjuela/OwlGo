@@ -38,7 +38,6 @@ function showCommuteFields() {
     document.getElementById('destination-field').style.display = 'block';
     document.getElementById('arrival-field').style.display = 'block';
     document.getElementById('reccuring-field').style.display = 'block';
-    document.getElementById('reccuring-field').style.display = 'block';
     if (document.getElementById('reccuring').checked) {
         document.getElementById('recurring_days-field').style.display = 'block';
     }

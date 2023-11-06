@@ -74,6 +74,7 @@ def start_ride_offer():
             pickup=form.pickup.data,
             stops=form.stops.data,
             reccuring=form.reccuring.data,
+            recurring_days=form.recurring_days.data,
             accessibility=form.accessibility.data,
             description=form.description.data
         )
