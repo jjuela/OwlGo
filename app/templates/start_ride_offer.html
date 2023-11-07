@@ -1,43 +1,54 @@
-{% extends "base.html" %}
-{% block head %}
-    {{ super() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/start_ride_offer.css') }}">
-{% endblock %}
 {% block content %}
-    <h1>Start Ride Offer</h1>
+    <h1>Offer a ride</h1>
     <form method="POST">
         {{ form.hidden_tag() }}
-        <div>
+        <div class="rideType">
             {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
         </div>
-        <div id="location-field" style="display: none;">
-            {{ form.location.label }} {{ form.location }}
+        <div id="departingFrom-field">
+            {{ form.departingFrom.label }} {{ form.departingFrom }}
         </div>
-        <div id="destination-field" style="display: none;">
+        <div id="departingAt-field">
+            {{ form.departingAt.label }} {{ form.departingAt }}
+        </div>
+        <div id="destination-field">
             {{ form.destination.label }} {{ form.destination }}
         </div>
-        <div id="departing-field" style="display: none;">
-            {{ form.departing.label }} {{ form.departing }}
-        </div>
-        <div id="arrival-field" style="display: none;">
+        <div id="arrival-field">
             {{ form.arrival.label }} {{ form.arrival }}
         </div>
-        <div id="duration-field" style="display: none;">
+        <div id="duration-field">
             {{ form.duration.label }} {{ form.duration }}
         </div>
-        <div id="pickup-field" style="display: none;">
-            {{ form.pickup.label }} {{ form.pickup }}
+        <div id="stops-field">
+            {{ form.stops.label }}
+            {% for stop in form.stops %}
+                {{ stop }}
+            {% endfor %}
+            <button type="button" id="add-stop">Add Stop</button>
         </div>
-        <div id="stops-field" style="display: none;">
-            {{ form.stops.label }} {{ form.stops }}
-        </div>
-        <div id="reccuring-field" style="display: none;">
+        <div id="reccuring-field">
             {{ form.reccuring.label }} {{ form.reccuring }}
         </div>
-        <div id="accessibility-field" style="display: none;">
-            {{ form.accessibility.label }} {{ form.accessibility }}
+        <div id="recurring_days-field">
+            {{ form.recurring_days.label }}
+            {% for value, label in form.recurring_days.choices %}
+                <div>
+                    <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
+                    <label for="recurring_days-{{ loop.index }}">{{ label }}</label>
+                </div>
+            {% endfor %}
         </div>
-        <div id="description-field" style="display: none;">
+        <div id="accessibility-field">
+            {{ form.accessibility.label }}
+            {% for value, label in form.accessibility.choices %}
+                <div>
+                    <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
+                    <label for="accessibility-{{ loop.index }}">{{ label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+        <div id="description-field">
             {{ form.description.label }} {{ form.description }}
         </div>
         <div>
