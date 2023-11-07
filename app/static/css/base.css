@@ -5,16 +5,17 @@ header {
 }
 
 header img {
-    height: 50px;
+    height: 80px;
 }
 
 .right-icons {
     display: flex;
     gap: 10px; 
+    padding: 20px;
 }
 
 .right-icons img {
-    height: 50px;
+    height: 30px;
 }
 
 .profile-pic {
