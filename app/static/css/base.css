@@ -10,11 +10,12 @@ header img {
 
 .right-icons {
     display: flex;
-    gap: 10px; 
+    gap: 25px; 
     padding: 20px;
 }
 
 .right-icons img {
+    margin-top: 12px;
     height: 30px;
 }
 
