@@ -1,3 +1,11 @@
+.h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+    margin-top: 40px;
+}
+
 form {
     width: 100%;
     max-width: 600px;
@@ -15,6 +23,17 @@ form label {
     margin-bottom: 5px;
 }
 
+/* change this */
+
+.rideType form label {
+    font-size: 25px;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+    margin-top: 40px;
+
+}
+
 form input, form select, form textarea {
     width: 100%;
     padding: 10px;
@@ -24,11 +43,19 @@ form input, form select, form textarea {
 }
 
 form input[type="submit"] {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #007BFF;
+    color: #fff;
     cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    display: block;
+    margin: auto;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
 }
 
 form input[type="submit"]:hover {
-    background-color: #45a049;
+    background-color: #003399;
 }

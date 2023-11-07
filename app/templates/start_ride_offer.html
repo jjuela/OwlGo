@@ -1,8 +1,8 @@
 {% block content %}
-    <h1>Start Ride Offer</h1>
+    <h1>Offer a ride</h1>
     <form method="POST">
         {{ form.hidden_tag() }}
-        <div>
+        <div class="rideType">
             {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
         </div>
         <div id="departingFrom-field">

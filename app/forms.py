@@ -69,3 +69,4 @@ class RideForm(FlaskForm):
     ])
     description = TextAreaField('', render_kw={"placeholder": "Description"}) 
     submit = SubmitField('Post')                        
+    # add start_date, end_date maybe?
