@@ -7,7 +7,7 @@ header {
 
 header a:first-child {
     order: -1;
-    margin-right: 50px; /* change as needed */
+    margin-right: 100px; /* change as needed */
 }
 
 header a:last-child {
