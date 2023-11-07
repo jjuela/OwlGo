@@ -1,60 +1,62 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Offer a ride</h1>
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="rideType">
-            {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
-        </div>
-        <div id="departingFrom-field">
-            {{ form.departingFrom.label }} {{ form.departingFrom }}
-        </div>
-        <div id="departingAt-field">
-            {{ form.departingAt.label }} {{ form.departingAt }}
-        </div>
-        <div id="destination-field">
-            {{ form.destination.label }} {{ form.destination }}
-        </div>
-        <div id="arrival-field">
-            {{ form.arrival.label }} {{ form.arrival }}
-        </div>
-        <div id="duration-field">
-            {{ form.duration.label }} {{ form.duration }}
-        </div>
-        <div id="stops-field">
-            {{ form.stops.label }}
-            {% for stop in form.stops %}
-                {{ stop }}
-            {% endfor %}
-            <button type="button" id="add-stop">Add Stop</button>
-        </div>
-        <div id="reccuring-field">
-            {{ form.reccuring.label }} {{ form.reccuring }}
-        </div>
-        <div id="recurring_days-field">
-            {{ form.recurring_days.label }}
-            {% for value, label in form.recurring_days.choices %}
-                <div>
-                    <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
-                    <label for="recurring_days-{{ loop.index }}">{{ label }}</label>
-                </div>
-            {% endfor %}
-        </div>
-        <div id="accessibility-field">
-            {{ form.accessibility.label }}
-            {% for value, label in form.accessibility.choices %}
-                <div>
-                    <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
-                    <label for="accessibility-{{ loop.index }}">{{ label }}</label>
-                </div>
-            {% endfor %}
-        </div>
-        <div id="description-field">
-            {{ form.description.label }} {{ form.description }}
-        </div>
-        <div>
-            {{ form.submit }}
-        </div>
-    </form>
-    <script src="{{ url_for('static', filename='js/start_ride_offer.js') }}"></script>
+    <div class="content">
+        <h1>Offer a ride</h1>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="rideType">
+                {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
+            </div>
+            <div id="departingFrom-field">
+                {{ form.departingFrom.label }} {{ form.departingFrom }}
+            </div>
+            <div id="departingAt-field">
+                {{ form.departingAt.label }} {{ form.departingAt }}
+            </div>
+            <div id="destination-field">
+                {{ form.destination.label }} {{ form.destination }}
+            </div>
+            <div id="arrival-field">
+                {{ form.arrival.label }} {{ form.arrival }}
+            </div>
+            <div id="duration-field">
+                {{ form.duration.label }} {{ form.duration }}
+            </div>
+            <div id="stops-field">
+                {{ form.stops.label }}
+                {% for stop in form.stops %}
+                    {{ stop }}
+                {% endfor %}
+                <button type="button" id="add-stop">Add Stop</button>
+            </div>
+            <div id="reccuring-field">
+                {{ form.reccuring.label }} {{ form.reccuring }}
+            </div>
+            <div id="recurring_days-field">
+                {{ form.recurring_days.label }}
+                {% for value, label in form.recurring_days.choices %}
+                    <div>
+                        <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
+                        <label for="recurring_days-{{ loop.index }}">{{ label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="accessibility-field">
+                {{ form.accessibility.label }}
+                {% for value, label in form.accessibility.choices %}
+                    <div>
+                        <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
+                        <label for="accessibility-{{ loop.index }}">{{ label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="description-field">
+                {{ form.description.label }} {{ form.description }}
+            </div>
+            <div>
+                {{ form.submit }}
+            </div>
+        </form>
+        <script src="{{ url_for('static', filename='js/start_ride_offer.js') }}"></script>
+    </div>
 {% endblock %}
