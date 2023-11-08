@@ -95,7 +95,7 @@ form input, form select, form textarea {
 }
 
 .stop-field {
-    margin: 10px; /* Adjust as needed */
+    margin: 10px;
 }
 
 form input[type="submit"] {
