@@ -24,7 +24,7 @@ def landing():
         db.session.add(user)
         db.session.commit()
         flash('Registration successful')
-        return redirect(url_for('home'))
+        return redirect(url_for('create_profile'))
 
     return render_template('landing.html', login_form=login_form, register_form=register_form)
 
@@ -59,7 +59,7 @@ def create_announcement():
 
 # @app.route('/start_ride')
 
-@app.route('/start_ride_offer', methods=['GET', 'POST'])
+@app.route('/start_ride/offer', methods=['GET', 'POST'])
 def start_ride_offer():
     form = RideForm()
     if form.validate_on_submit():
