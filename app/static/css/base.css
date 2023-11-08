@@ -42,9 +42,6 @@ body {
 }
 
 footer {
-    position: absolute;
-    bottom: 0px;
-    left: 10px;
     flex-shrink: 0;
 }
 
