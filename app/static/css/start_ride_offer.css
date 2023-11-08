@@ -48,6 +48,12 @@ form label {
     margin-left: 0px;
 }
 
+#add-stop {
+    margin-left: 300px;
+    margin-top: -20px;
+
+}
+
 
 
 form input, form select, form textarea {
