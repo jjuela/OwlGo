@@ -52,14 +52,23 @@ form input, form select, form textarea {
     box-sizing: border-box;
 }
 
-#reccuring-field input,
+#reccuring-field input {
+    display: inline-block;
+    width: auto;
+    margin-left: 300px;
+    padding: 0;
+    border: none;
+}
+
+
 #recurring_days-field input[type="checkbox"],
 #accessibility-field input[type="checkbox"] {
     display: inline-block;
     width: auto;
-    margin: 0;
+    margin-left: 300px;
     padding: 0;
     border: none;
+    transform: translateY(16px);
 }
 
 form input[type="submit"] {
