@@ -88,4 +88,8 @@ document.getElementById('add-stop').addEventListener('click', function() {
     newStopField.type = 'text';
     newStopField.name = 'stops';
     stopsField.appendChild(newStopField);
+
+    // button at the end of the fieldlist
+    var button = document.getElementById('add-stop');
+    stopsField.appendChild(button);
 });
