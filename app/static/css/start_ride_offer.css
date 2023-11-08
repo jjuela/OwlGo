@@ -1,5 +1,12 @@
-.h2 {
-    font-size: 30px;
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h2 {
+    font-size: 50px;
     font-weight: 700;
     color: #000;
     text-align: center;
@@ -7,7 +14,7 @@
 }
 
 form {
-    width: 100%;
+    width: 80%;
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
@@ -23,9 +30,8 @@ form label {
     margin-bottom: 5px;
 }
 
-/* change this */
 
-.rideType form label {
+.rideType label {
     font-size: 25px;
     font-weight: 700;
     color: #000;
@@ -35,7 +41,9 @@ form label {
 }
 
 form input, form select, form textarea {
-    width: 100%;
+    display: block;
+    width: 50%;
+    margin: auto;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;

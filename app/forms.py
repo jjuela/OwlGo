@@ -42,14 +42,14 @@ class RideForm(FlaskForm):
     ('errand', 'Errand'),
     ('leisure', 'Leisure'),
     ], validators=[DataRequired()])
-    departingFrom = StringField('', render_kw={"placeholder": "Departing from"}, validators=[DataRequired()])
-    departingAt = TimeField('Departing at', render_kw={"placeholder": "Departing at"}, validators=[DataRequired()])
-    destination = StringField('', render_kw={"placeholder": "Destination"}, validators=[DataRequired()])
+    departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
+    departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"}, validators=[DataRequired()])
+    destination = StringField('Destination', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
     arrival = TimeField('Arrival', render_kw={"placeholder": "Arrival"})
-    duration = StringField('', render_kw={"placeholder": "Duration"})
+    duration = StringField('Duration', render_kw={"placeholder": "Enter time"})
     stops = FieldList(StringField('Stop'), min_entries=1)
     reccuring = BooleanField('Recurring')
-    recurring_days = SelectMultipleField('Recurring Days', choices=[
+    recurring_days = SelectMultipleField('Recurring on days:', choices=[
         ('mon', 'Monday'),
         ('tue', 'Tuesday'),
         ('wed', 'Wednesday'),
@@ -67,6 +67,6 @@ class RideForm(FlaskForm):
         ('step_free', 'Step-free access'),
         # maybe add more?
     ])
-    description = TextAreaField('', render_kw={"placeholder": "Description"}) 
+    description = TextAreaField('Description', render_kw={"placeholder": "Enter description"}) 
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?

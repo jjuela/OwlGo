@@ -3,13 +3,19 @@
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/inter@3.15.4/css/inter.css"> 
+
+    {% block css %}
+    {% endblock %}
 </head>
 <body>
     <header>
         <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='img/scsu.png') }}" alt="Home"></a>
-        <a href="#"><img src="{{ url_for('static', filename='img/create.png') }}" alt="Start Ride"></a> <!-- link here later -->
-        <a href="#"><img src="{{ url_for('static', filename='img/search.png') }}" alt="Find Ride"></a> <!-- link here later -->
-        <img src="{{ url_for('static', filename='img/bell.png') }}" alt="Notifications"> <!-- link here later -->
+        <div class="right-icons">
+            <a href="#"><img src="{{ url_for('static', filename='img/create.png') }}" alt="Start Ride"></a> <!-- link here later -->
+            <a href="#"><img src="{{ url_for('static', filename='img/search.png') }}" alt="Find Ride"></a> <!-- link here later -->
+            <img src="{{ url_for('static', filename='img/bell.png') }}" alt="Notifications"> <!-- link here later -->
+            <div class="profile-pic"></div>
+        </div>
     </header>
 
     {% block content %}
