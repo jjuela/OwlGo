@@ -42,6 +42,13 @@ form label {
 
 }
 
+.main-label {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+
+
 form input, form select, form textarea {
     display: block;
     width: 50%;
@@ -58,6 +65,7 @@ form input, form select, form textarea {
     margin-left: 300px;
     padding: 0;
     border: none;
+    transform: translateY(-22px);
 }
 
 

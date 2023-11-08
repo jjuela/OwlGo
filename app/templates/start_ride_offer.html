@@ -11,32 +11,32 @@
                 {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
             </div>
             <div id="departingFrom-field">
-                {{ form.departingFrom.label }} {{ form.departingFrom }}
+                <label class="main-label">{{ form.departingFrom.label }}</label> {{ form.departingFrom }}
             </div>
             <div id="departingAt-field">
-                {{ form.departingAt.label }} {{ form.departingAt }}
+                <label class="main-label">{{ form.departingAt.label }}</label> {{ form.departingAt }}
             </div>
             <div id="destination-field">
-                {{ form.destination.label }} {{ form.destination }}
+                <label class="main-label">{{ form.destination.label }}</label> {{ form.destination }}
             </div>
             <div id="arrival-field">
-                {{ form.arrival.label }} {{ form.arrival }}
+                <label class="main-label">{{ form.arrival.label }}</label> {{ form.arrival }}
             </div>
             <div id="duration-field">
-                {{ form.duration.label }} {{ form.duration }}
+                <label class="main-label">{{ form.duration.label }}</label> {{ form.duration }}
             </div>
             <div id="stops-field">
-                {{ form.stops.label }}
+                <label class="main-label">{{ form.stops.label }}</label>
                 {% for stop in form.stops %}
                     {{ stop }}
                 {% endfor %}
                 <button type="button" id="add-stop">Add Stop</button>
             </div>
             <div id="reccuring-field">
-                {{ form.reccuring.label }} {{ form.reccuring }}
+                <label class="main-label">{{ form.reccuring.label }}</label> {{ form.reccuring }}
             </div>
             <div id="recurring_days-field">
-                {{ form.recurring_days.label }}
+                <label class=main-label>{{ form.recurring_days.label }}</label>
                 {% for value, label in form.recurring_days.choices %}
                     <div>
                         <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
@@ -45,7 +45,7 @@
                 {% endfor %}
             </div>
             <div id="accessibility-field">
-                {{ form.accessibility.label }}
+                <label class="main-label">{{ form.accessibility.label }}</label>
                 {% for value, label in form.accessibility.choices %}
                     <div>
                         <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
@@ -54,7 +54,7 @@
                 {% endfor %}
             </div>
             <div id="description-field">
-                {{ form.description.label }} {{ form.description }}
+                <label class="main-label">{{ form.description.label }}</label> {{ form.description }}
             </div>
             <div>
                 {{ form.submit }}
