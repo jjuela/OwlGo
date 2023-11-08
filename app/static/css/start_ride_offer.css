@@ -28,6 +28,7 @@ form div {
 form label {
     display: block;
     margin-bottom: 5px;
+    margin-left: 150px;
 }
 
 
@@ -37,6 +38,7 @@ form label {
     color: #000;
     text-align: center;
     margin-top: 40px;
+    margin-left: -180px;
 
 }
 
