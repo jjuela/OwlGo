@@ -59,9 +59,9 @@ class RideForm(FlaskForm):
         ('sun', 'Sunday'),
     ])
     accessibility = SelectMultipleField('Accessibility', choices=[
-        ('wheelchair', 'Wheelchair accessible'),
-        ('visual', 'Visual impairment assistance'),
-        ('hearing', 'Hearing impairment assistance'),
+        ('wheelchair', 'Wheelchair'),
+        ('visual', 'Visual impairment'),
+        ('hearing', 'Hearing impairment'),
         ('service_dog', 'Service dog friendly'),
         ('quiet', 'Quiet ride'),
         ('step_free', 'Step-free access'),
