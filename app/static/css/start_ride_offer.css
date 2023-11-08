@@ -49,11 +49,19 @@ form label {
 }
 
 #add-stop {
-    margin-left: 300px;
-    margin-top: -20px;
-
+    margin-left: 265px;
+    margin-top: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    padding: 10px;
 }
 
+#add-stop:hover {
+    background-color: #003399;
+}
 
 
 form input, form select, form textarea {
@@ -84,6 +92,10 @@ form input, form select, form textarea {
     padding: 0;
     border: none;
     transform: translateY(16px);
+}
+
+.stop-field {
+    margin: 10px; /* Adjust as needed */
 }
 
 form input[type="submit"] {
