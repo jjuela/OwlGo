@@ -28,7 +28,7 @@
             <div id="stops-field">
                 <label class="main-label">{{ form.stops.label }}</label>
                 {% for stop in form.stops %}
-                    {{ stop }}
+                    <div class="stop-field">{{ stop }}</div>
                 {% endfor %}
                 <button type="button" id="add-stop">Add Stop</button>
             </div>
