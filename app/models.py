@@ -1,6 +1,8 @@
-from app import db
+from app import db, login
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50))
     password = db.Column(db.String(256))
@@ -16,6 +18,15 @@ class User(db.Model):
     given_reviews = db.relationship('Review', foreign_keys='Review.user_id', backref='reviewer')
     received_reviews = db.relationship('Review', foreign_keys='Review.recipient_id', backref='reviewed')
     announcements = db.relationship('Announcement', backref='announcer')
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+    
+    def get_id(self):
+        return str(self.user_id)
 
 class Profile(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
@@ -95,3 +106,7 @@ class Announcement(db.Model):
     announcement_date = db.Column(db.DateTime)
 
     user = db.relationship('User', backref='created_announcements')
+
+@login.user_loader
+def load_user(id):
+    return db.session.query(User).get(int(id))

@@ -18,7 +18,8 @@ def landing():
             flash('Login failed')
 
     if register_form.validate_on_submit():
-        user = User(email=register_form.email.data, password=register_form.password.data)
+        user = User(email=register_form.email.data)
+        user.set_password(register_form.password.data)
         db.session.add(user)
         db.session.commit()
         flash('Registration successful')
