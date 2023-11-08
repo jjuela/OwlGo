@@ -52,6 +52,24 @@ form input, form select, form textarea {
     box-sizing: border-box;
 }
 
+form input[type="checkbox"] {
+    display: inline-block;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+
+}
+
+#recurring-field input[type="checkbox"] {
+    display: inline-block;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: none;
+    margin-left: 10px;
+}
+
 form input[type="submit"] {
     background-color: #007BFF;
     color: #fff;
