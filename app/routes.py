@@ -82,9 +82,6 @@ def start_ride_offer():
         db.session.add(ride)
         db.session.commit()
         return "Ride created!"
-     # Add an empty stop field
-    if request.method == 'GET':
-        form.stops.append_entry()
     return render_template('start_ride_offer.html', form=form)
 
 # @app.route('/start_ride/request')
