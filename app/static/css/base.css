@@ -2,30 +2,56 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-}
-
-header a:first-child {
-    order: -1;
-    margin-right: 50px; /* change as needed */
-}
-
-header a:last-child {
-    order: 1;
 }
 
 header img {
-    margin-right: 10px;
+    height: 80px;
+}
+
+.right-icons {
+    display: flex;
+    gap: 25px; 
+    padding: 20px;
+}
+
+.right-icons img {
+    margin-top: 12px;
+    height: 30px;
+}
+
+.profile-pic {
+    width: 50px; /* adjust as needed */
+    height: 50px; /* adjust as needed */
+    border-radius: 50%;
+    background-color: #ccc; /* placeholder  */
+    /* background-image: url('path-to-image'); add path to user's profile picture */
+    background-size: cover;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content {
+    flex: 1 0 auto;
 }
 
 footer {
-    position: absolute;
-    bottom: 0px;
-    left: 10px;
+    flex-shrink: 0;
+    margin-left: 10px;
+    margin-top: 50px;
+    margin-bottom: 5px;
 }
 
 footer a {
     display: inline-block;
     margin-right: 10px;
     font-weight: 600;
+    color: black;
+    text-decoration: none;
 }

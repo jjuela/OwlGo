@@ -45,6 +45,8 @@ class Ride(db.Model):
     vehicle_type = db.Column(db.String(50))
     start_location = db.Column(db.String(100))
     destination = db.Column(db.String(100))
+    reccuring = db.Column(db.Boolean)
+    recurring_days = db.Column(db.String(50))
     accessibility_categories = db.Column(db.String(100))
     completed = db.Column(db.Boolean, default=False)
     ride_description = db.Column(db.Text)
@@ -52,7 +54,6 @@ class Ride(db.Model):
     end_date = db.Column(db.Date)
     pickup_time = db.Column(db.Time)
     dropoff_time = db.Column(db.Time)
-    repeating = db.Column(db.Boolean, default=False)
 
     ratings = db.relationship('Rating', backref='rated_ride')
 

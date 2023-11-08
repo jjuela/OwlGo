@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField
+from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField, TimeField, FieldList, SelectMultipleField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError
 from app.models import User
@@ -36,15 +36,37 @@ class AnnouncementForm(FlaskForm):
     announcedate = DateField('Date', validators=[DataRequired()])
 
 class RideForm(FlaskForm):
-    ridetype = SelectField('Ride Type', choices=[('1', 'Leisure'), ('2', 'Commute'), ('3', 'Errand')])
-    location = StringField('', reder_kw={"placeholder": "Location"})
-    destination = StringField('', render_kw={"placeholder": "Destination"})
-    departing = StringField('', render_kw={"placeholder": "Departing"})
-    arrival = StringField('', render_kw={"placeholder": "Arrival"})
-    duration = StringField('', render_kw={"placeholder": "Duration"})
-    pickup = StringField('', render_kw={"placeholder": "Pick up"})
-    stops = StringField('', render_kw={"placeholder": "Stops"})
+    ridetype = SelectField('Ride Type', choices=[
+    ('', 'Select one'),
+    ('commute', 'Commute'),
+    ('errand', 'Errand'),
+    ('leisure', 'Leisure'),
+    ], validators=[DataRequired()])
+    departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
+    departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"}, validators=[DataRequired()])
+    destination = StringField('Destination', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
+    arrival = TimeField('Arrival', render_kw={"placeholder": "Arrival"})
+    duration = StringField('Duration', render_kw={"placeholder": "Enter time"})
+    stops = FieldList(StringField('Stop'), min_entries=1)
     reccuring = BooleanField('Recurring')
-    accessibility = StringField('', render_kw={"placeholder": "Accessibility"})
-    description = TextAreaField('', render_kw={"placeholder": "Description"}) 
+    recurring_days = SelectMultipleField('Recurring on days:', choices=[
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ])
+    accessibility = SelectMultipleField('Accessibility', choices=[
+        ('wheelchair', 'Wheelchair accessible'),
+        ('visual', 'Visual impairment assistance'),
+        ('hearing', 'Hearing impairment assistance'),
+        ('service_dog', 'Service dog friendly'),
+        ('quiet', 'Quiet ride'),
+        ('step_free', 'Step-free access'),
+        # maybe add more?
+    ])
+    description = TextAreaField('Description', render_kw={"placeholder": "Enter description"}) 
     submit = SubmitField('Post')                        
+    # add start_date, end_date maybe?

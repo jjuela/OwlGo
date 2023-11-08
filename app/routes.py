@@ -3,6 +3,7 @@ from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
+from flask import request
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -58,10 +59,13 @@ def create_announcement():
 
 # @app.route('/start_ride')
 
-@app.route('/start_ride/offer', methods=['GET', 'POST'])
+@app.route('/start_ride_offer', methods=['GET', 'POST'])
 def start_ride_offer():
     form = RideForm()
     if form.validate_on_submit():
+        # if form.accessibility.data is None, set it to an empty list
+        if form.accessibility.data is None:
+            form.accessibility.data = []
         ride = Ride(
             ridetype=form.ridetype.data,
             location=form.location.data,
@@ -72,6 +76,7 @@ def start_ride_offer():
             pickup=form.pickup.data,
             stops=form.stops.data,
             reccuring=form.reccuring.data,
+            recurring_days=form.recurring_days.data,
             accessibility=form.accessibility.data,
             description=form.description.data
         )

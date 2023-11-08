@@ -102,8 +102,6 @@ body {
     font-weight: 600;
 }
 
-/* basic modals, update later */
-
 .modal {
     display: none;
     position: fixed;
