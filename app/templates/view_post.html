@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 
+{% block head %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/view_post.css') }}">
+{% endblock %}
 {% block content %}
+<div class="content">
     <h1>{{ post.ridetype }} to {{ post.destination }}</h1>
     <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
     <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
@@ -11,7 +16,9 @@
     {% endif %}
     {% if post.ridetype == 'commute' or post.ridetype == 'leisure' %}
         <p>Departing from: {{ post.departingFrom }}</p>
-        <p>Departing at: {{ post.departingAt }}</p>
+        {% if post.ridetype != 'commute' %}
+            <p>Departing at: {{ post.departingAt }}</p>
+        {% endif %}
         <p>Arrival: {{ post.arrival }}</p>
         {% if post.ridetype == 'leisure' %}
             <p>Duration: {{ post.duration }}</p>
@@ -25,6 +32,7 @@
         <p>Stops: {{ post.stops }}</p>
     {% endif %}
     <p>Accessibility: {{ post.accessibility }}</p>
-    <p>Description: {{ post.ride_description }}</p>
-    <button type="button" id="requestButton">Request</button> <!-- this will be used to sign up for a ride-->
+    <p class="ride_description">Description: {{ post.ride_description }}</p>
+    <button type="button" id="signupButton">Sign up</button> <!-- this will be used to sign up for a ride-->
+</div>
 {% endblock %}

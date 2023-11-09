@@ -42,7 +42,6 @@ function hideAllFields() {
 
 function showCommuteFields() {
     document.getElementById('departingFrom-field').style.display = 'block';
-    document.getElementById('departingAt-field').style.display = 'block';
     document.getElementById('destination-field').style.display = 'block';
     document.getElementById('arrival-field').style.display = 'block';
     document.getElementById('reccuring-field').style.display = 'block';
