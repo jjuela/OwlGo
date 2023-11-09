@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField, TimeField, FieldList, SelectMultipleField
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError, RequiredIf
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -42,6 +42,14 @@ class RideForm(FlaskForm):
     ('errand', 'Errand'),
     ('leisure', 'Leisure'),
     ], validators=[DataRequired()])
+    vehicle_type = SelectField('Vehicle Type', choices=[
+        ('', 'Select one'),
+        ('sedan', 'Sedan'),
+        ('suv', 'SUV'),
+        ('hatchback', 'Hatchback'),
+        ('pickup', 'Pickup Truck'),
+        ('minivan', 'Minivan')
+    ], validators=[RequiredIf('is_offered')])
     departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
     departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"}, validators=[DataRequired()])
     destination = StringField('Destination', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
@@ -70,3 +78,7 @@ class RideForm(FlaskForm):
     description = TextAreaField('Description', render_kw={"placeholder": "Enter description"}) 
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?
+
+    def __init__(self, is_offered, *args, **kwargs):
+        super(RideForm, self).__init__(*args, **kwargs)
+        self.is_offered = is_offered

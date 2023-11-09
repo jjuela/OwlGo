@@ -1,16 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>{{ post.ridetype }} by {{ user.first_name }} {{ user.last_name }}</h1>
+    <h1>{{ post.ridetype }} to {{ post.destination }}</h1>
+    <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+    <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
+    {% if post.is_offered %}
+        <p>Vehicle Type: {{ post.vehicle_type }}</p>
+        {% set seats = {'sedan': 4, 'suv': 7, 'pickup': 5, 'hatchback': 5, 'minivan': 8} %}
+        <p>Seats Left: {{ seats[post.vehicle_type] - post.occupants if post.vehicle_type in seats else 'N/A' }}</p>
+    {% endif %}
     {% if post.ridetype == 'commute' or post.ridetype == 'leisure' %}
         <p>Departing from: {{ post.departingFrom }}</p>
         <p>Departing at: {{ post.departingAt }}</p>
-        <p>Destination: {{ post.destination }}</p>
         <p>Arrival: {{ post.arrival }}</p>
         {% if post.ridetype == 'leisure' %}
             <p>Duration: {{ post.duration }}</p>
         {% endif %}
-        <p>Recurring: {{ "Yes" if post.reccuring else "No" }}</p>
         {% if post.reccuring %}
             <p>Recurring on days: {{ post.recurring_days }}</p>
         {% endif %}
@@ -20,5 +25,6 @@
         <p>Stops: {{ post.stops }}</p>
     {% endif %}
     <p>Accessibility: {{ post.accessibility }}</p>
-    <p>Description: {{ post.description }}</p>
+    <p>Description: {{ post.ride_description }}</p>
+    <button type="button" id="requestButton">Request</button> <!-- this will be used to sign up for a ride-->
 {% endblock %}
