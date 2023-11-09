@@ -66,6 +66,7 @@ def start_ride_offer():
         # if form.accessibility.data is None, set it to an empty list
         if form.accessibility.data is None:
             form.accessibility.data = []
+        stops = ','.join([stop.data for stop in form.stops.entries])  # process stops data
         ride = Ride(
             ridetype=form.ridetype.data,
             departingFrom=form.departingFrom.data,
@@ -73,11 +74,11 @@ def start_ride_offer():
             departingAt=form.departingAt.data,
             arrival=form.arrival.data,
             duration=form.duration.data,
-            stops=form.stops.data,
+            stops=stops,  # processed stops
             reccuring=form.reccuring.data,
             recurring_days=form.recurring_days.data,
             accessibility=form.accessibility.data,
-            description=form.description.data
+            ride_description=form.description.data
         )
         db.session.add(ride)
         db.session.commit()
