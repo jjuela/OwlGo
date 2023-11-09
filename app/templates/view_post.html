@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ post.ridetype }} by {{ user.first_name }} {{ user.last_name }}</h1>
+    {% if post.ridetype == 'commute' or post.ridetype == 'leisure' %}
+        <p>Departing from: {{ post.departingFrom }}</p>
+        <p>Departing at: {{ post.departingAt }}</p>
+        <p>Destination: {{ post.destination }}</p>
+        <p>Arrival: {{ post.arrival }}</p>
+        {% if post.ridetype == 'leisure' %}
+            <p>Duration: {{ post.duration }}</p>
+        {% endif %}
+        <p>Recurring: {{ "Yes" if post.reccuring else "No" }}</p>
+        {% if post.reccuring %}
+            <p>Recurring on days: {{ post.recurring_days }}</p>
+        {% endif %}
+    {% elif post.ridetype == 'errand' %}
+        <p>Departing from: {{ post.departingFrom }}</p>
+        <p>Departing at: {{ post.departingAt }}</p>
+        <p>Stops: {{ post.stops }}</p>
+    {% endif %}
+    <p>Accessibility: {{ post.accessibility }}</p>
+    <p>Description: {{ post.description }}</p>
+{% endblock %}

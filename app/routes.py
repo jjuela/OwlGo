@@ -96,16 +96,30 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     return render_template('view_profile.html', user=user)
 
-@app.route('/view_post/<post_type>/<int:id>', methods=['GET'])
+@app.route('/view_post/') # removed '<post_type>/<int:id>' and methods=['GET'] temporarily for dummy post
 def view_post(post_type, id):
-    if post_type == 'announcement':
-        post = Announcement.query.get(id)
-    elif post_type == 'ride':
-        post = Ride.query.get(id)
-    else:
-        return "Invalid post type", 400
+    # if post_type == 'announcement':
+    #     post = Announcement.query.get(id)
+    # elif post_type == 'ride':
+    #     post = Ride.query.get(id)
+    # else:
+    #     return "Invalid post type", 400
 
-    if post is None:
-        return "Post not found", 404
+    # if post is None:
+    #     return "Post not found", 404
+
+    # dummy post
+    post = {
+        'username': 'User 1',
+        'ridetype': 'commute',
+        'departingFrom': 'Location A',
+        'departingAt': '10:00 AM',
+        'destination': 'Location B',
+        'arrival': '11:00 AM',
+        'reccuring': True,
+        'recurring_days': 'Monday, Wednesday, Friday',
+        'accessibility': 'Wheelchair accessible',
+        'description': 'This is a test post.'
+    } 
 
     return render_template('view_post.html', post=post)

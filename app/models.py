@@ -57,6 +57,7 @@ class Ride(db.Model):
     arrival = db.Column(db.Time)
     stops = db.Column(db.String(500))
     duration = db.Column(db.String(50))
+    is_offered = db.Column(db.Boolean)
 
     ratings = db.relationship('Rating', backref='rated_ride')
 
