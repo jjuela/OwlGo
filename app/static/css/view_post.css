@@ -10,20 +10,22 @@
 .post-header {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 }
 
-h1, .pfp, h2 {
-    text-align: center;
-    color: white;
+h1 {
+    order: 2;
 }
 
 .pfp {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 10px;
+    order: 1;
+    margin-left: 10px;
+}
+
+h2 {
+    order: 3;
+    width: 100%;
+    text-align: center;
 }
 
 p {
