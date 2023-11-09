@@ -140,7 +140,7 @@ def view_post(): # took out params for dummy data
         last_name='Doe',
         home_town='Location A',
         about='This is a test user.',
-        user_img='static/img/pfp.png'  # replace with the actual path
+        user_img='img/pfp.png'  # replace with the actual path
     )
 
     return render_template('view_post.html', post=post, profile=profile)
