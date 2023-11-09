@@ -102,7 +102,7 @@ def view_profile(user_id):
     return render_template('view_profile.html', user=user)
 
 @app.route('/view_post') # removed '<post_type>/<int:id>' and methods=['GET'] temporarily for dummy post
-def view_post(ride_id):
+def view_post(): # took out params for dummy data
     # if post_type == 'announcement':
     #     post = Announcement.query.get(id)
     # elif post_type == 'ride':
