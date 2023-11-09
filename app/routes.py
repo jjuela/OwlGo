@@ -68,12 +68,11 @@ def start_ride_offer():
             form.accessibility.data = []
         ride = Ride(
             ridetype=form.ridetype.data,
-            location=form.location.data,
+            departingFrom=form.departingFrom.data,
             destination=form.destination.data,
-            departing=form.departing.data,
+            departingAt=form.departingAt.data,
             arrival=form.arrival.data,
             duration=form.duration.data,
-            pickup=form.pickup.data,
             stops=form.stops.data,
             reccuring=form.reccuring.data,
             recurring_days=form.recurring_days.data,

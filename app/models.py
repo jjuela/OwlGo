@@ -52,8 +52,10 @@ class Ride(db.Model):
     ride_description = db.Column(db.Text)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
-    pickup_time = db.Column(db.Time)
-    dropoff_time = db.Column(db.Time)
+    departingAt = db.Column(db.Time)
+    arrival = db.Column(db.Time)
+    stops = db.Column(db.String(500))
+    duration = db.Column(db.String(50))
 
     ratings = db.relationship('Rating', backref='rated_ride')
 
