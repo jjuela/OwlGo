@@ -1,4 +1,4 @@
-import time
+from datetime import time
 from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -101,7 +101,7 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     return render_template('view_profile.html', user=user)
 
-@app.route('/view_post', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
+@app.route('/view_post/', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
 def view_post(): # took out params for dummy data
     # if post_type == 'announcement':
     #     post = Announcement.query.get(id)
