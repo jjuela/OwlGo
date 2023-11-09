@@ -101,8 +101,8 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     return render_template('view_profile.html', user=user)
 
-@app.route('/view_post/') # removed '<post_type>/<int:id>' and methods=['GET'] temporarily for dummy post
-def view_post(post_type, id):
+@app.route('/view_post') # removed '<post_type>/<int:id>' and methods=['GET'] temporarily for dummy post
+def view_post(ride_id):
     # if post_type == 'announcement':
     #     post = Announcement.query.get(id)
     # elif post_type == 'ride':
