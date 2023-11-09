@@ -41,6 +41,7 @@ class Profile(db.Model):
 class Ride(db.Model):
     ride_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    ridetype = db.Column(db.String(50))  
     occupants = db.Column(db.Integer)
     vehicle_type = db.Column(db.String(50))
     start_location = db.Column(db.String(100))
