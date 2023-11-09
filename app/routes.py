@@ -76,7 +76,7 @@ def start_ride_offer():
             duration=form.duration.data,
             stops=stops,  # processed stops
             reccuring=form.reccuring.data,
-            recurring_days=form.recurring_days.data,
+            recurring_days=','.join(form.recurring_days.data),  # process recurring_days data
             accessibility = ','.join(form.accessibility.data),
             ride_description=form.description.data
         )
