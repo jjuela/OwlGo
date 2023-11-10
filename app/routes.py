@@ -115,7 +115,7 @@ def view_post(): # took out params for dummy data
 
     # dummy post
     post = Ride(
-        user_id=1,  # replace with the actual user_id
+        user_id=1,
         ridetype='commute',
         occupants=1,
         vehicle_type='Sedan',
@@ -144,3 +144,8 @@ def view_post(): # took out params for dummy data
     )
 
     return render_template('view_post.html', post=post, profile=profile)
+
+@app.route('/my_rides')
+def my_rides():
+    return render_template('my_rides.html')
+    # this should have active rides and maybe history of rides
