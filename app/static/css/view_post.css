@@ -55,6 +55,11 @@ p {
     border: none;
     outline: none;
     box-shadow: none;
+    cursor: pointer;
+}
+
+#signupButton:hover {
+    background-color: #bfbfbf;
 }
 
 .pfp-and-h2 {
