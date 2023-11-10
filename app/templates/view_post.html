@@ -34,7 +34,9 @@
             <p class="ride_description">Description: {{ post.ride_description }}</p>
         </div>
         <div class="pfp-and-h2">
-            <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+            <div class="pfp-container">
+                <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+            </div>
             <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
             <button type="button" id="signupButton">Sign up</button>
         </div>
