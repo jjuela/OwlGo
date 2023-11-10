@@ -6,36 +6,40 @@
 {% block content %}
 <div class="content">
     <div class="post-header">
-        <h1>{{ post.ridetype }} to {{ post.destination }}</h1>
+        <div class="post-info">
+            <h1>{{ post.ridetype | capitalize }} to {{ post.destination }}</h1>
+            {% if post.ridetype == 'commute' or post.ridetype == 'leisure' %}
+                <p>Departing from: {{ post.departingFrom }}</p>
+                {% if post.ridetype != 'commute' %}
+                    <p>Departing at: {{ post.departingAt }}</p>
+                {% endif %}
+                <p>Arrival: {{ post.arrival }}</p>
+                {% if post.ridetype == 'leisure' %}
+                    <p>Duration: {{ post.duration }}</p>
+                {% endif %}
+                {% if post.reccuring %}
+                    <p>Recurring on days: {{ post.recurring_days }}</p>
+                {% endif %}
+            {% elif post.ridetype == 'errand' %}
+                <p>Departing from: {{ post.departingFrom }}</p>
+                <p>Departing at: {{ post.departingAt }}</p>
+                <p>Stops: {{ post.stops }}</p>
+            {% endif %}
+            {% if post.is_offered %}
+                <p>Vehicle Type: {{ post.vehicle_type }}</p>
+                {% set seats = {'sedan': 4, 'suv': 7, 'pickup': 5, 'hatchback': 5, 'minivan': 8} %}
+                <p>Seats Left: {{ seats[post.vehicle_type] - post.occupants if post.vehicle_type in seats else 'N/A' }}</p>
+            {% endif %}
+            <p>Accessibility: {{ post.accessibility }}</p>
+            <p class="ride_description">Description: {{ post.ride_description }}</p>
+        </div>
         <div class="pfp-and-h2">
-            <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+            <div class="pfp-container">
+                <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+            </div>
             <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
+            <button type="button" id="signupButton">Sign up</button>
         </div>
     </div>
-    {% if post.is_offered %}
-        <p>Vehicle Type: {{ post.vehicle_type }}</p>
-        {% set seats = {'sedan': 4, 'suv': 7, 'pickup': 5, 'hatchback': 5, 'minivan': 8} %}
-        <p>Seats Left: {{ seats[post.vehicle_type] - post.occupants if post.vehicle_type in seats else 'N/A' }}</p>
-    {% endif %}
-    {% if post.ridetype == 'commute' or post.ridetype == 'leisure' %}
-        <p>Departing from: {{ post.departingFrom }}</p>
-        {% if post.ridetype != 'commute' %}
-            <p>Departing at: {{ post.departingAt }}</p>
-        {% endif %}
-        <p>Arrival: {{ post.arrival }}</p>
-        {% if post.ridetype == 'leisure' %}
-            <p>Duration: {{ post.duration }}</p>
-        {% endif %}
-        {% if post.reccuring %}
-            <p>Recurring on days: {{ post.recurring_days }}</p>
-        {% endif %}
-    {% elif post.ridetype == 'errand' %}
-        <p>Departing from: {{ post.departingFrom }}</p>
-        <p>Departing at: {{ post.departingAt }}</p>
-        <p>Stops: {{ post.stops }}</p>
-    {% endif %}
-    <p>Accessibility: {{ post.accessibility }}</p>
-    <p class="ride_description">Description: {{ post.ride_description }}</p>
-    <button type="button" id="signupButton">Sign up</button> <!-- this will be used to sign up for a ride-->
 </div>
 {% endblock %}
