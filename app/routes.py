@@ -148,4 +148,6 @@ def view_post(): # took out params for dummy data
 @app.route('/my_rides')
 def my_rides():
     return render_template('my_rides.html')
-    # this should have active rides and maybe history of rides
+    # after someone signs up for a ride and is accepted, 
+    # they should be able to see it here
+    # this should have active rides and history of rides
