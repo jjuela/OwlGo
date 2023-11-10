@@ -13,7 +13,7 @@
 .post-header {
     grid-column: 1 / 3; /* Span across both columns */
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Distribute space between h1 and .pfp */
     align-items: flex-start;
 }
 
@@ -21,7 +21,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    grid-column: 2; /* Place in the second column */
 }
 
 h1, .pfp, h2 {
@@ -30,7 +29,7 @@ h1, .pfp, h2 {
 }
 
 h1 {
-    font-size: 40px;
+    font: 50px;
 }
 
 .pfp {
@@ -42,17 +41,16 @@ h1 {
 }
 
 p {
-    grid-column: 1;
+    grid-column: 1; /* Start at the first column */
     display: inline-block;
-    width: 100%;
+    width: 50%;
     text-align: left;
     color: white;
 }
 
 #signupButton {
-    grid-column: 2; /* Place in the second column */
-    justify-self: center; /* Center in the column */
     display: block;
+    margin: 0 auto;
     width: 100px;
     height: 50px;
     border-radius: 10px;
