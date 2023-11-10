@@ -4,6 +4,20 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError
 from app.models import User
 
+class RequiredIf(DataRequired):
+    """validator which makes a field required if another field is set and has a truthy value."""
+
+    def __init__(self, other_field_name, *args, **kwargs):
+        self.other_field_name = other_field_name
+        super(RequiredIf, self).__init__(*args, **kwargs)
+
+    def __call__(self, form, field):
+        other_field = form._fields.get(self.other_field_name)
+        if other_field is None:
+            raise Exception('no field named "%s" in form' % self.other_field_name)
+        if bool(other_field.data):
+            super(RequiredIf, self).__call__(form, field)
+
 class LoginForm(FlaskForm):
      email = StringField('', validators=[DataRequired(), Email()], render_kw={"placeholder": "Email"})
      password = PasswordField('', validators=[DataRequired(), Length(min=8)], render_kw={"placeholder": "Password"})
@@ -42,6 +56,14 @@ class RideForm(FlaskForm):
     ('errand', 'Errand'),
     ('leisure', 'Leisure'),
     ], validators=[DataRequired()])
+    vehicle_type = SelectField('Vehicle Type', choices=[
+        ('', 'Select one'),
+        ('sedan', 'Sedan'),
+        ('suv', 'SUV'),
+        ('hatchback', 'Hatchback'),
+        ('pickup', 'Pickup Truck'),
+        ('minivan', 'Minivan')
+    ], validators=[RequiredIf('is_offered')])
     departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
     departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"}, validators=[DataRequired()])
     destination = StringField('Destination', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
@@ -70,3 +92,7 @@ class RideForm(FlaskForm):
     description = TextAreaField('Description', render_kw={"placeholder": "Enter description"}) 
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?
+
+    def __init__(self, is_offered, *args, **kwargs):
+        super(RideForm, self).__init__(*args, **kwargs)
+        self.is_offered = is_offered

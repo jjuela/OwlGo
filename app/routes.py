@@ -1,3 +1,4 @@
+from datetime import time
 from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
@@ -57,7 +58,9 @@ def create_announcement():
             return "Announcement created!"
     return render_template('create_announcement.html', form=form)
 
-# @app.route('/start_ride')
+@app.route('/start_ride')
+def start_ride():
+    return render_template('start_ride.html')
 
 @app.route('/start_ride/offer', methods=['GET', 'POST'])
 def start_ride_offer():
@@ -66,19 +69,21 @@ def start_ride_offer():
         # if form.accessibility.data is None, set it to an empty list
         if form.accessibility.data is None:
             form.accessibility.data = []
+        stops = ','.join([stop.data for stop in form.stops.entries])  # process stops data
         ride = Ride(
+            is_offered=True,
+            vehicle_type=form.vehicle_type.data,
             ridetype=form.ridetype.data,
-            location=form.location.data,
+            departingFrom=form.departingFrom.data,
             destination=form.destination.data,
-            departing=form.departing.data,
+            departingAt=form.departingAt.data,
             arrival=form.arrival.data,
             duration=form.duration.data,
-            pickup=form.pickup.data,
-            stops=form.stops.data,
+            stops=stops,  # processed stops
             reccuring=form.reccuring.data,
-            recurring_days=form.recurring_days.data,
-            accessibility=form.accessibility.data,
-            description=form.description.data
+            recurring_days=','.join(form.recurring_days.data),  # process recurring_days data
+            accessibility = ','.join(form.accessibility.data),
+            ride_description=form.description.data
         )
         db.session.add(ride)
         db.session.commit()
@@ -96,16 +101,46 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     return render_template('view_profile.html', user=user)
 
-@app.route('/view_post/<post_type>/<int:id>', methods=['GET'])
-def view_post(post_type, id):
-    if post_type == 'announcement':
-        post = Announcement.query.get(id)
-    elif post_type == 'ride':
-        post = Ride.query.get(id)
-    else:
-        return "Invalid post type", 400
+@app.route('/view_post/', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
+def view_post(): # took out params for dummy data
+    # if post_type == 'announcement':
+    #     post = Announcement.query.get(id)
+    # elif post_type == 'ride':
+    #     post = Ride.query.get(id)
+    # else:
+    #     return "Invalid post type", 400
 
-    if post is None:
-        return "Post not found", 404
+    # if post is None:
+    #     return "Post not found", 404
 
-    return render_template('view_post.html', post=post)
+    # dummy post
+    post = Ride(
+        user_id=1,  # replace with the actual user_id
+        ridetype='commute',
+        occupants=1,
+        vehicle_type='Sedan',
+        departingFrom='Location A',
+        destination='Location B',
+        reccuring=True,
+        recurring_days='Monday, Wednesday, Friday',
+        accessibility='Wheelchair accessible',
+        completed=False,
+        ride_description='This is a test post.',
+        departingAt=time(10, 0),  # 10:00 AM
+        arrival=time(11, 0),  # 11:00 AM
+        stops=None,
+        duration=None,
+        is_offered=True
+    )
+
+    # dummy profile
+    profile = Profile(
+        user_id=1,
+        first_name='John',
+        last_name='Doe',
+        home_town='Location A',
+        about='This is a test user.',
+        user_img='img/pfp.png'  # replace with the actual path
+    )
+
+    return render_template('view_post.html', post=post, profile=profile)
