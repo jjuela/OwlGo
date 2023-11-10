@@ -5,10 +5,12 @@
 {% endblock %}
 {% block content %}
 <div class="content">
-    <h1>{{ post.ridetype }} to {{ post.destination }}</h1>
-    <div class="pfp-and-h2">
-        <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
-        <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
+    <div class="post-header">
+        <h1>{{ post.ridetype }} to {{ post.destination }}</h1>
+        <div class="pfp-and-h2">
+            <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+            <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
+        </div>
     </div>
     {% if post.is_offered %}
         <p>Vehicle Type: {{ post.vehicle_type }}</p>
