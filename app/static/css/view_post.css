@@ -1,24 +1,24 @@
 .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    align-items: start;
     background-color: #808080;
     margin: auto;
     border-radius: 10px;
     padding: 50px;
     padding-top: 20px;
+    margin-top: 10px;
 }
 
 .post-header {
-    display: flex;
-    justify-content: space-between; /* Distribute space between h1 and .pfp */
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
 }
 
-.pfp-and-h2 {
+.post-info {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
 }
 
 h1, .pfp, h2 {
@@ -27,37 +27,49 @@ h1, .pfp, h2 {
 }
 
 h1 {
-    font: 50px;
+    font-size: 40px;
 }
 
-.pfp {
+.pfp-container {
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    overflow: hidden;
+}
+
+.pfp {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    margin-top: 20px;
 }
 
 p {
-    display: inline-block;
-    width: 50%;
-    text-align: center;
+    text-align: left;
     color: white;
+    margin-top: 10px;
 }
 
 #signupButton {
-    display: block;
-    margin: 0 auto;
     width: 100px;
-    height: 50px;
+    height: 40px;
     border-radius: 10px;
     background-color: #d9d9d9;
     color: black;
-
+    font-weight: 700;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    cursor: pointer;
 }
 
-.ride_description {
-    display: block;
-    width: 100%;
-    text-align: center;
+#signupButton:hover {
+    background-color: #bfbfbf;
+}
+
+.pfp-and-h2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
