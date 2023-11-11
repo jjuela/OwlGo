@@ -71,6 +71,11 @@ def start_ride_offer():
         if form.accessibility.data is None:
             form.accessibility.data = []
         stops = ','.join([stop.data for stop in form.stops.entries])  # process stops data
+
+        # manually convert departingAt and arrival to datetime.time objects if they're not empty
+        departingAt = datetime.strptime(form.departingAt.data, '%I:%M %p').time() if form.departingAt.data else None
+        arrival = datetime.strptime(form.arrival.data, '%I:%M %p').time() if form.arrival.data else None
+
         ride = Ride(
             user_id=current_user.id,
             is_offered=True,
@@ -78,8 +83,8 @@ def start_ride_offer():
             ridetype=form.ridetype.data,
             departingFrom=form.departingFrom.data,
             destination=form.destination.data,
-            departingAt=form.departingAt.data,
-            arrival=form.arrival.data,
+            departingAt=departingAt,  # use the converted departingAt
+            arrival=arrival,  # use the converted arrival
             duration=form.duration.data,
             stops=stops,  # processed stops
             reccuring=form.reccuring.data,

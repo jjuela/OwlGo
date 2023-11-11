@@ -3,6 +3,7 @@ from wtforms import StringField, IntegerField, SubmitField, StringField, Passwor
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError
 from app.models import User
+from typing import Optional
 
 class RequiredIf(DataRequired):
     """validator which makes a field required if another field is set and has a truthy value."""
@@ -65,9 +66,9 @@ class RideForm(FlaskForm):
         ('minivan', 'Minivan')
     ])
     departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
-    departingAt = TimeField('Departing at', format='%I:%M %p', render_kw={"placeholder": "Enter time"})
+    departingAt = StringField('Departing At', validators=[Optional()])
     destination = StringField('Destination', render_kw={"placeholder": "Enter location"})
-    arrival = TimeField('Arrival', format='%I:%M %p', render_kw={"placeholder": "Arrival"})
+    arrival = StringField('Arrival', validators=[Optional()])
     duration = StringField('Duration', render_kw={"placeholder": "Enter time"})
     stops = FieldList(StringField('Stop'), min_entries=1)
     reccuring = BooleanField('Recurring')
