@@ -18,4 +18,6 @@ with app.app_context():
 csrf = CSRFProtect(app)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
+app.config['UPLOAD_FOLDER'] = 'app/static/uploads'
+
 from app import routes
