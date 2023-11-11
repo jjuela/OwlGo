@@ -93,7 +93,7 @@ class RideForm(FlaskForm):
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?
 
-    def validate(self):
+    def validate(self, extra_validators=None):
         # original validate fn
         initial_validation = super(RideForm, self).validate()
 
