@@ -1,10 +1,12 @@
-from datetime import time
 from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
 from flask import request
+from datetime import datetime
+from werkzeug.utils import secure_filename
+import os
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -37,11 +39,42 @@ def home():
 def create_profile():
     form = ProfileForm()
     if form.validate_on_submit():
-        profile = Profile(user_id = current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data, user_img=form.image.data)
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+            form.image.data.save(upload_path)
+            profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data, user_img=filename)
+        else:
+            profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data)
         db.session.add(profile)
         db.session.commit()
         return "Profile created!"
     return render_template('create_profile.html', form=form)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = ProfileForm()
+    if form.validate_on_submit():
+        current_user.user_profile.first_name = form.firstname.data
+        current_user.user_profile.last_name = form.lastname.data
+        current_user.user_profile.home_town = form.hometown.data
+        current_user.user_profile.about = form.about.data
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)  # create directory if it does not exist
+            form.image.data.save(upload_path)
+            current_user.user_profile.user_img = filename
+        db.session.commit()
+        return redirect(url_for('home'))
+    elif request.method == 'GET':
+        form.firstname.data = current_user.user_profile.first_name
+        form.lastname.data = current_user.user_profile.last_name
+        form.hometown.data = current_user.user_profile.home_town
+        form.about.data = current_user.user_profile.about
+    return render_template('edit_profile.html', form=form)
         
 # @app.route('/home_admin')
 
@@ -64,20 +97,27 @@ def start_ride():
 
 @app.route('/start_ride/offer', methods=['GET', 'POST'])
 def start_ride_offer():
-    form = RideForm()
+    form = RideForm(is_offer_route=True)
+    print(request.form)
     if form.validate_on_submit():
         # if form.accessibility.data is None, set it to an empty list
         if form.accessibility.data is None:
             form.accessibility.data = []
         stops = ','.join([stop.data for stop in form.stops.entries])  # process stops data
+
+        # manually convert departingAt and arrival to datetime.time objects if they're not empty
+        departingAt = datetime.strptime(form.departingAt.data, '%I:%M %p').time() if form.departingAt.data else None
+        arrival = datetime.strptime(form.arrival.data, '%I:%M %p').time() if form.arrival.data else None
+
         ride = Ride(
+            user_id=current_user.user_id,
             is_offered=True,
             vehicle_type=form.vehicle_type.data,
             ridetype=form.ridetype.data,
             departingFrom=form.departingFrom.data,
             destination=form.destination.data,
-            departingAt=form.departingAt.data,
-            arrival=form.arrival.data,
+            departingAt=departingAt,  # use the converted departingAt
+            arrival=arrival,  # use the converted arrival
             duration=form.duration.data,
             stops=stops,  # processed stops
             reccuring=form.reccuring.data,
@@ -86,8 +126,15 @@ def start_ride_offer():
             ride_description=form.description.data
         )
         db.session.add(ride)
-        db.session.commit()
+        try:
+            db.session.commit()
+            print("Ride committed to database")
+        except Exception as e:
+            print("Error committing ride to database:", e)
         return "Ride created!"
+    else:
+        print("Form did not validate on submit")
+        print(form.errors)
     return render_template('start_ride_offer.html', form=form)
 
 # @app.route('/start_ride/request')
@@ -101,49 +148,21 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     return render_template('view_profile.html', user=user)
 
-@app.route('/view_post/', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
-def view_post(): # took out params for dummy data
-    # if post_type == 'announcement':
-    #     post = Announcement.query.get(id)
-    # elif post_type == 'ride':
-    #     post = Ride.query.get(id)
-    # else:
-    #     return "Invalid post type", 400
+@app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
+def view_post(ride_id):
+    post = Ride.query.get_or_404(ride_id)
+    if post is None:
+        return "Post not found", 404
+    profile = Profile.query.get_or_404(post.user_id)
+    user_img_url = url_for('static', filename='uploads/' + profile.user_img)
+    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
 
-    # if post is None:
-    #     return "Post not found", 404
-
-    # dummy post
-    post = Ride(
-        user_id=1,
-        ridetype='commute',
-        occupants=1,
-        vehicle_type='Sedan',
-        departingFrom='Location A',
-        destination='Location B',
-        reccuring=True,
-        recurring_days='Monday, Wednesday, Friday',
-        accessibility='Wheelchair accessible',
-        completed=False,
-        ride_description='This is a test post.',
-        departingAt=time(10, 0),  # 10:00 AM
-        arrival=time(11, 0),  # 11:00 AM
-        stops=None,
-        duration=None,
-        is_offered=True
-    )
-
-    # dummy profile
-    profile = Profile(
-        user_id=1,
-        first_name='John',
-        last_name='Doe',
-        home_town='Location A',
-        about='This is a test user.',
-        user_img='img/pfp.png'  # replace with the actual path
-    )
-
-    return render_template('view_post.html', post=post, profile=profile)
+@app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
+def view_announcement(announcement_id):
+    announcement = Announcement.query.get_or_404(announcement_id)
+    if announcement is None:
+        return "Announcement not found", 404
+    return render_template('view_announcement.html', announcement=announcement)
 
 @app.route('/my_rides')
 def my_rides():
@@ -151,3 +170,5 @@ def my_rides():
     # after someone signs up for a ride and is accepted, 
     # they should be able to see it here
     # this should have active rides and history of rides
+    # this should also have an option to cancel a ride
+
