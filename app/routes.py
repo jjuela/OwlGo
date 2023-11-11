@@ -65,7 +65,7 @@ def start_ride():
 @app.route('/start_ride/offer', methods=['GET', 'POST'])
 def start_ride_offer():
     form = RideForm(is_offer_route=True)
-    print(form.departingAt.format)
+    print(request.form)
     if form.validate_on_submit():
         # if form.accessibility.data is None, set it to an empty list
         if form.accessibility.data is None:
