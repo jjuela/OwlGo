@@ -150,6 +150,7 @@ def view_post(ride_id):
         return "Post not found", 404
     profile = Profile.query.get_or_404(post.user_id)
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
+    print(user_img_url)
     return render_template('view_post.html', post=post, profile=profile)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
