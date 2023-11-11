@@ -58,7 +58,9 @@ def edit_profile():
         current_user.user_profile.about = form.about.data
         if form.image.data:
             filename = secure_filename(form.image.data.filename)
-            form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)  # create directory if it does not exist
+            form.image.data.save(upload_path)
             current_user.user_profile.user_img = filename
         db.session.commit()
         return redirect(url_for('view_profile'))
