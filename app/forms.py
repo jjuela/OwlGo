@@ -65,8 +65,8 @@ class RideForm(FlaskForm):
         ('minivan', 'Minivan')
     ], validators=[RequiredIf('is_offered')])
     departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
-    departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"}, validators=[DataRequired()])
-    destination = StringField('Destination', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
+    departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"})
+    destination = StringField('Destination', render_kw={"placeholder": "Enter location"})
     arrival = TimeField('Arrival', render_kw={"placeholder": "Arrival"})
     duration = StringField('Duration', render_kw={"placeholder": "Enter time"})
     stops = FieldList(StringField('Stop'), min_entries=1)
@@ -93,6 +93,29 @@ class RideForm(FlaskForm):
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?
 
+    def validate(self):
+        # original validate fn
+        initial_validation = super(RideForm, self).validate()
+
+        # if initial validation fails, don't bother
+        if not initial_validation:
+            return False
+
+        # validate according to ride type
+        if self.ridetype.data == 'commute':
+            if not self.departingFrom.data or not self.destination.data or not self.arrival.data or not self.vehicle_type.data:
+                raise ValidationError("All fields for commute ride type must be filled out")
+        elif self.ridetype.data == 'errand':
+            if not self.departingFrom.data or not self.departingAt.data or not self.vehicle_type.data:
+                raise ValidationError("All fields for errand ride type must be filled out")
+        elif self.ridetype.data == 'leisure':
+            if not self.departingFrom.data or not self.departingAt.data or not self.destination.data or not self.arrival.data or not self.duration.data or not self.vehicle_type.data:
+                raise ValidationError("All fields for leisure ride type must be filled out")
+
+        # all validations passed
+        return True
+
     def __init__(self, is_offered, *args, **kwargs):
         super(RideForm, self).__init__(*args, **kwargs)
         self.is_offered = is_offered
+
