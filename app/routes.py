@@ -87,8 +87,14 @@ def start_ride_offer():
             ride_description=form.description.data
         )
         db.session.add(ride)
-        db.session.commit()
+        try:
+            db.session.commit()
+            print("Ride committed to database")
+        except Exception as e:
+            print("Error committing ride to database:", e)
         return "Ride created!"
+    else:
+        print("Form did not validate on submit")
     return render_template('start_ride_offer.html', form=form)
 
 # @app.route('/start_ride/request')
