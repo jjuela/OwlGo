@@ -101,49 +101,52 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     return render_template('view_profile.html', user=user)
 
-@app.route('/view_post/', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
-def view_post(): # took out params for dummy data
-    # if post_type == 'announcement':
-    #     post = Announcement.query.get(id)
-    # elif post_type == 'ride':
-    #     post = Ride.query.get(id)
-    # else:
-    #     return "Invalid post type", 400
-
-    # if post is None:
-    #     return "Post not found", 404
+@app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
+def view_post(ride_id):
+    post = Ride.query.get_or_404(ride_id)
+    if post is None:
+        return "Post not found", 404
+    profile = Profile.query.get_or_404(post.user_id)
+    return render_template('view_post.html', post=post, profile=profile)
 
     # dummy post
-    post = Ride(
-        user_id=1,
-        ridetype='commute',
-        occupants=1,
-        vehicle_type='Sedan',
-        departingFrom='Location A',
-        destination='Location B',
-        reccuring=True,
-        recurring_days='Monday, Wednesday, Friday',
-        accessibility='Wheelchair accessible',
-        completed=False,
-        ride_description='This is a test post.',
-        departingAt=time(10, 0),  # 10:00 AM
-        arrival=time(11, 0),  # 11:00 AM
-        stops=None,
-        duration=None,
-        is_offered=True
-    )
+    # post = Ride(
+    #     user_id=1,
+    #     ridetype='commute',
+    #     occupants=1,
+    #     vehicle_type='Sedan',
+    #     departingFrom='Location A',
+    #     destination='Location B',
+    #     reccuring=True,
+    #     recurring_days='Monday, Wednesday, Friday',
+    #     accessibility='Wheelchair accessible',
+    #     completed=False,
+    #     ride_description='This is a test post.',
+    #     departingAt=time(10, 0),  # 10:00 AM
+    #     arrival=time(11, 0),  # 11:00 AM
+    #     stops=None,
+    #     duration=None,
+    #     is_offered=True
+    # )
 
-    # dummy profile
-    profile = Profile(
-        user_id=1,
-        first_name='John',
-        last_name='Doe',
-        home_town='Location A',
-        about='This is a test user.',
-        user_img='img/pfp.png'  # replace with the actual path
-    )
+    # # dummy profile
+    # profile = Profile(
+    #     user_id=1,
+    #     first_name='John',
+    #     last_name='Doe',
+    #     home_town='Location A',
+    #     about='This is a test user.',
+    #     user_img='img/pfp.png'  # replace with the actual path
+    # )
 
-    return render_template('view_post.html', post=post, profile=profile)
+    # return render_template('view_post.html', post=post, profile=profile)
+
+@app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
+def view_announcement(announcement_id):
+    announcement = Announcement.query.get_or_404(announcement_id)
+    if announcement is None:
+        return "Announcement not found", 404
+    return render_template('view_announcement.html', announcement=announcement)
 
 @app.route('/my_rides')
 def my_rides():
