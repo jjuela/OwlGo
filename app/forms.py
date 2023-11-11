@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField, TimeField, FieldList, SelectMultipleField
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError, Optional
 from app.models import User
 
 class RequiredIf(DataRequired):
@@ -63,12 +63,12 @@ class RideForm(FlaskForm):
         ('hatchback', 'Hatchback'),
         ('pickup', 'Pickup Truck'),
         ('minivan', 'Minivan')
-    ], validators=[RequiredIf('is_offered')])
+    ])
     departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
-    departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"}, validators=[DataRequired()])
-    destination = StringField('Destination', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
-    arrival = TimeField('Arrival', render_kw={"placeholder": "Arrival"})
-    duration = StringField('Duration', render_kw={"placeholder": "Enter time"})
+    departingAt = StringField('Departing At', validators=[Optional()], render_kw={"placeholder": "Enter time in format HH:MM AM/PM"})
+    destination = StringField('Destination', render_kw={"placeholder": "Enter location"})
+    arrival = StringField('Arrival', validators=[Optional()], render_kw={"placeholder": "Enter time in format HH:MM AM/PM"})
+    duration = StringField('Duration', render_kw={"placeholder": "Enter time in minutes or hours"})
     stops = FieldList(StringField('Stop'), min_entries=1)
     reccuring = BooleanField('Recurring')
     recurring_days = SelectMultipleField('Recurring on days:', choices=[
@@ -93,6 +93,37 @@ class RideForm(FlaskForm):
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?
 
-    def __init__(self, is_offered, *args, **kwargs):
+def validate(self):
+    # original validate fn
+    initial_validation = super(RideForm, self).validate()
+
+    # if initial validation fails, don't bother
+    if not initial_validation:
+        return False
+
+    # check if vehicle_type is required and not filled out
+    if self.is_offer_route and not self.vehicle_type.data:
+        self.vehicle_type.errors.append("Vehicle type is required when offering a ride")
+        return False
+
+    # validate according to ride type
+    if self.ridetype.data == 'commute':
+        if not self.departingFrom.data or not self.destination.data or not self.arrival.data:
+            self.errors.append("All fields for commute ride type must be filled out")
+            return False
+    elif self.ridetype.data == 'errand':
+        if not self.departingFrom.data or not self.departingAt.data or not self.stops.data:
+            self.errors.append("All fields for errand ride type must be filled out")
+            return False
+    elif self.ridetype.data == 'leisure':
+        if not self.departingFrom.data or not self.departingAt.data or not self.destination.data or not self.arrival.data or not self.duration.data:
+            self.errors.append("All fields for leisure ride type must be filled out")
+            return False
+
+    # all validations passed
+    return True
+
+    def __init__(self, is_offer_route, *args, **kwargs):
         super(RideForm, self).__init__(*args, **kwargs)
-        self.is_offered = is_offered
+        self.is_offer_route = is_offer_route
+

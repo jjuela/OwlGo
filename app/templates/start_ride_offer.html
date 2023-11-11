@@ -5,12 +5,12 @@
 {% block content %}
     <div class="content">
         <h1>Offer a ride</h1>
-        <form method="POST">
+        <form method="POST" action="{{ url_for('start_ride_offer') }}">
             {{ form.hidden_tag() }}
             <div class="rideType">
                 {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
             </div>
-            <div class="vehicleType">
+            <div id="vehicleType-field">
                 <label class="main-label">{{ form.vehicle_type.label }}</label> {{ form.vehicle_type(id="vehicle_type") }}
             </div>
             <div id="departingFrom-field">
