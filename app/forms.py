@@ -107,19 +107,19 @@ class RideForm(FlaskForm):
 
         # validate according to ride type
         if self.ridetype.data == 'commute':
-            if not self.departingFrom.data or not self.destination.data or not self.arrival.data or not self.vehicle_type.data:
+            if not self.departingFrom.data or not self.destination.data or not self.arrival.data:
                 raise ValidationError("All fields for commute ride type must be filled out")
         elif self.ridetype.data == 'errand':
-            if not self.departingFrom.data or not self.departingAt.data or not self.vehicle_type.data:
+            if not self.departingFrom.data or not self.departingAt.data or not self.stops.data:
                 raise ValidationError("All fields for errand ride type must be filled out")
         elif self.ridetype.data == 'leisure':
-            if not self.departingFrom.data or not self.departingAt.data or not self.destination.data or not self.arrival.data or not self.duration.data or not self.vehicle_type.data:
+            if not self.departingFrom.data or not self.departingAt.data or not self.destination.data or not self.arrival.data or not self.duration.data:
                 raise ValidationError("All fields for leisure ride type must be filled out")
 
         # all validations passed
         return True
 
-    def __init__(self, is_offered, *args, **kwargs):
+    def __init__(self, is_offer_route, *args, **kwargs):
         super(RideForm, self).__init__(*args, **kwargs)
-        self.is_offered = is_offered
+        self.is_offer_route = is_offer_route
 
