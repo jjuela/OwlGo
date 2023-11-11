@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     given_reviews = db.relationship('Review', foreign_keys='Review.user_id', backref='reviewer')
     received_reviews = db.relationship('Review', foreign_keys='Review.recipient_id', backref='reviewed')
     announcements = db.relationship('Announcement', backref='announcer')
+    user_profile = db.relationship('Profile', backref='user_profile_backref', uselist=False)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -36,13 +37,13 @@ class Profile(db.Model):
     about = db.Column(db.Text)
     user_img = db.Column(db.String(255))
 
-    user = db.relationship('User', backref='user_profile')
+    user = db.relationship('User', backref='user_profile_backref')
 
 class Ride(db.Model):
     ride_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     ridetype = db.Column(db.String(50))  
-    occupants = db.Column(db.Integer)
+    occupants = db.Column(db.Integer, default=1)
     vehicle_type = db.Column(db.String(50))
     departingFrom = db.Column(db.String(100))
     destination = db.Column(db.String(100))
