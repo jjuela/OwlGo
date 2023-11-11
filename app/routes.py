@@ -63,7 +63,7 @@ def edit_profile():
             form.image.data.save(upload_path)
             current_user.user_profile.user_img = filename
         db.session.commit()
-        return redirect(url_for('view_profile'))
+        return redirect(url_for('home'))
     elif request.method == 'GET':
         form.firstname.data = current_user.user_profile.first_name
         form.lastname.data = current_user.user_profile.last_name
