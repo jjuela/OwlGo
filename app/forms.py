@@ -1,9 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField, TimeField, FieldList, SelectMultipleField
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError, Optional
 from app.models import User
-from typing import Optional
 
 class RequiredIf(DataRequired):
     """validator which makes a field required if another field is set and has a truthy value."""
