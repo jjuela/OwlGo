@@ -52,21 +52,21 @@ def create_profile():
 def edit_profile():
     form = ProfileForm()
     if form.validate_on_submit():
-        current_user.profile.first_name = form.firstname.data
-        current_user.profile.last_name = form.lastname.data
-        current_user.profile.home_town = form.hometown.data
-        current_user.profile.about = form.about.data
+        current_user.user_profile.first_name = form.firstname.data
+        current_user.user_profile.last_name = form.lastname.data
+        current_user.user_profile.home_town = form.hometown.data
+        current_user.user_profile.about = form.about.data
         if form.image.data:
             filename = secure_filename(form.image.data.filename)
             form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            current_user.profile.user_img = filename
+            current_user.user_profile.user_img = filename
         db.session.commit()
         return redirect(url_for('view_profile'))
     elif request.method == 'GET':
-        form.firstname.data = current_user.profile.first_name
-        form.lastname.data = current_user.profile.last_name
-        form.hometown.data = current_user.profile.home_town
-        form.about.data = current_user.profile.about
+        form.firstname.data = current_user.user_profile.first_name
+        form.lastname.data = current_user.user_profile.last_name
+        form.hometown.data = current_user.user_profile.home_town
+        form.about.data = current_user.user_profile.about
     return render_template('edit_profile.html', form=form)
         
 # @app.route('/home_admin')
