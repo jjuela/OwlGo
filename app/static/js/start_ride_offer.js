@@ -38,7 +38,6 @@ function hideAllFields() {
     document.getElementById('recurring_days-field').style.display = 'none';
     document.getElementById('accessibility-field').style.display = 'none';
     document.getElementById('description-field').style.display = 'none';
-    document.getElementById('vehicleType-field').style.display = 'none';
 }
 
 function showCommuteFields() {
@@ -46,7 +45,6 @@ function showCommuteFields() {
     document.getElementById('destination-field').style.display = 'block';
     document.getElementById('arrival-field').style.display = 'block';
     document.getElementById('reccuring-field').style.display = 'block';
-    document.getElementById('vehicleType-field').style.display = 'block';
 
     var reccuringCheckbox = document.getElementById('reccuring');
     if (reccuringCheckbox.checked) {
@@ -71,7 +69,6 @@ function showErrandFields() {
     document.getElementById('stops-field').style.display = 'block';
     document.getElementById('accessibility-field').style.display = 'block';
     document.getElementById('description-field').style.display = 'block';
-    document.getElementById('vehicleType-field').style.display = 'block';
 }
 
 function showLeisureFields() {
@@ -82,7 +79,6 @@ function showLeisureFields() {
     document.getElementById('duration-field').style.display = 'block';
     document.getElementById('accessibility-field').style.display = 'block';
     document.getElementById('description-field').style.display = 'block';
-    document.getElementById('vehicleType-field').style.display = 'block';
 }
 
 document.getElementById('add-stop').addEventListener('click', function() {
