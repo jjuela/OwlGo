@@ -168,3 +168,12 @@ def my_rides():
     # after someone signs up for a ride and is accepted, 
     # they should be able to see it here
     # this should have active rides and history of rides
+
+@app.route('/update_occupants')
+def update_occupants():
+    rides = Ride.query.all()
+    for ride in rides:
+        if ride.occupants is None:
+            ride.occupants = 1
+    db.session.commit()
+    return "Occupants updated"
