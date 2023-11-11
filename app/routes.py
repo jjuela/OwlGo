@@ -1,10 +1,10 @@
-from datetime import time
 from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
 from flask import request
+from datetime import datetime
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
