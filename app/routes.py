@@ -95,6 +95,7 @@ def start_ride_offer():
         return "Ride created!"
     else:
         print("Form did not validate on submit")
+        print(form.errors)
     return render_template('start_ride_offer.html', form=form)
 
 # @app.route('/start_ride/request')
