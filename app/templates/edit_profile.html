@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="profile-box">
+            <h1>Edit profile</h1>
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div>
+                    {{ form.firstname.label }} {{ form.firstname() }}
+                </div>
+                <div>
+                    {{ form.lastname.label }} {{ form.lastname() }}
+                </div>
+                <div>
+                    {{ form.hometown.label }} {{ form.hometown() }}
+                </div>
+                <div>
+                    {{ form.image.label(class="image-label") }}
+                    {{ form.image(onchange="previewImage(event)") }}
+                    <img id="imagePreview" class="image-preview" src="#" alt="Image Preview" style="display: none;">
+                </div>
+                <div>
+                    {{ form.about.label }} {{ form.about() }}
+                </div>
+                <div>
+                    {{ form.submit() }}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

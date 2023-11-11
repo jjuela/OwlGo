@@ -5,6 +5,8 @@ from app import app, db
 from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
 from flask import request
 from datetime import datetime
+from werkzeug.utils import secure_filename
+import os
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -37,11 +39,35 @@ def home():
 def create_profile():
     form = ProfileForm()
     if form.validate_on_submit():
-        profile = Profile(user_id = current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data, user_img=form.image.data)
+        filename = secure_filename(form.image.data.filename)
+        form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data, user_img=filename)
         db.session.add(profile)
         db.session.commit()
         return "Profile created!"
     return render_template('create_profile.html', form=form)
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = ProfileForm()
+    if form.validate_on_submit():
+        current_user.profile.first_name = form.firstname.data
+        current_user.profile.last_name = form.lastname.data
+        current_user.profile.home_town = form.hometown.data
+        current_user.profile.about = form.about.data
+        if form.image.data:
+            filename = secure_filename(form.image.data.filename)
+            form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            current_user.profile.user_img = filename
+        db.session.commit()
+        return redirect(url_for('view_profile'))
+    elif request.method == 'GET':
+        form.firstname.data = current_user.profile.first_name
+        form.lastname.data = current_user.profile.last_name
+        form.hometown.data = current_user.profile.home_town
+        form.about.data = current_user.profile.about
+    return render_template('edit_profile.html', form=form)
         
 # @app.route('/home_admin')
 
@@ -123,38 +149,6 @@ def view_post(ride_id):
     profile = Profile.query.get_or_404(post.user_id)
     return render_template('view_post.html', post=post, profile=profile)
 
-    # dummy post
-    # post = Ride(
-    #     user_id=1,
-    #     ridetype='commute',
-    #     occupants=1,
-    #     vehicle_type='Sedan',
-    #     departingFrom='Location A',
-    #     destination='Location B',
-    #     reccuring=True,
-    #     recurring_days='Monday, Wednesday, Friday',
-    #     accessibility='Wheelchair accessible',
-    #     completed=False,
-    #     ride_description='This is a test post.',
-    #     departingAt=time(10, 0),  # 10:00 AM
-    #     arrival=time(11, 0),  # 11:00 AM
-    #     stops=None,
-    #     duration=None,
-    #     is_offered=True
-    # )
-
-    # # dummy profile
-    # profile = Profile(
-    #     user_id=1,
-    #     first_name='John',
-    #     last_name='Doe',
-    #     home_town='Location A',
-    #     about='This is a test user.',
-    #     user_img='img/pfp.png'  # replace with the actual path
-    # )
-
-    # return render_template('view_post.html', post=post, profile=profile)
-
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 def view_announcement(announcement_id):
     announcement = Announcement.query.get_or_404(announcement_id)
@@ -168,12 +162,5 @@ def my_rides():
     # after someone signs up for a ride and is accepted, 
     # they should be able to see it here
     # this should have active rides and history of rides
+    # this should also have an option to cancel a ride
 
-@app.route('/update_occupants')
-def update_occupants():
-    rides = Ride.query.all()
-    for ride in rides:
-        if ride.occupants is None:
-            ride.occupants = 1
-    db.session.commit()
-    return "Occupants updated"

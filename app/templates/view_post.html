@@ -26,7 +26,7 @@
                 <p>Stops: {{ post.stops }}</p>
             {% endif %}
             {% if post.is_offered %}
-                <p>Vehicle Type: {{ post.vehicle_type }}</p>
+                <p>Vehicle type: {{ post.vehicle_type | capitalize }}</p>
                 {% set seats = {'sedan': 4, 'suv': 7, 'pickup': 5, 'hatchback': 5, 'minivan': 8} %}
                 <p>Seats Left: {{ seats[post.vehicle_type] - post.occupants if post.vehicle_type in seats else 'N/A' }}</p>
             {% endif %}
@@ -35,7 +35,7 @@
         </div>
         <div class="pfp-and-h2">
             <div class="pfp-container">
-                <img src="{{ url_for('static', filename=profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+                <img src="{{ url_for('static', filename='uploads/' + profile.user_img) }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
             </div>
             <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
             <button type="button" id="signupButton">Sign up</button>
