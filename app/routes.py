@@ -77,7 +77,7 @@ def start_ride_offer():
         arrival = datetime.strptime(form.arrival.data, '%I:%M %p').time() if form.arrival.data else None
 
         ride = Ride(
-            user_id=current_user.id,
+            user_id=current_user.user_id,
             is_offered=True,
             vehicle_type=form.vehicle_type.data,
             ridetype=form.ridetype.data,
