@@ -71,6 +71,7 @@ def start_ride_offer():
             form.accessibility.data = []
         stops = ','.join([stop.data for stop in form.stops.entries])  # process stops data
         ride = Ride(
+            user_id=current_user.id,
             is_offered=True,
             vehicle_type=form.vehicle_type.data,
             ridetype=form.ridetype.data,
