@@ -1,0 +1,73 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+}
+
+.pfp {
+    border-radius: 50%;
+    margin-right: 20px;
+}
+
+.name-and-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.vertical-line {
+    height: 50px;
+    border-left: 1px solid black;
+    margin: 0 20px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.profile-statistics {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.star {
+    width: 20px;
+    height: 20px;
+    background-image: url('/img/star.png');
+    background-size: cover;
+}
+
+.ratings-reviews {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ratings {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.horizontal-line {
+    width: 100%;
+    border-top: 1px solid black;
+}
+
+.reviews {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.review {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

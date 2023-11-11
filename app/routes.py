@@ -146,7 +146,18 @@ def view_profile(user_id):
     user = User.query.get_or_404(user_id)
     if user is None:
         return "User profile unavailable", 404
-    return render_template('view_profile.html', user=user)
+    
+    completed_rides = len([ride for ride in user.rides if ride.completed])
+    reviews = len(user.received_reviews)
+    ratings = len(user.received_ratings)
+
+    # calculate average
+    if ratings:
+        average_rating = sum([rating.rating for rating in ratings]) / len(ratings)
+    else:
+        average_rating = 0
+
+    return render_template('view_profile.html', user=user, completed_rides=completed_rides, reviews=reviews, ratings=ratings, average_rating=average_rating)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
 def view_post(ride_id):

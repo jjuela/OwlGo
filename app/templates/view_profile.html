@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content">
+    <div class="profile-about">
+        <div class="profile-header">
+                <div class="name-and-buttons">
+                    <img src="{{ url_for('static', filename='uploads/' + user.user_profile_backref.user_img) }}" alt="{{ user.user_profile_backref.first_name }}'s profile picture" class="pfp">
+                    <h1>{{ user.user_profile_backref.first_name }} {{ user.user_profile_backref.last_name }}</h1>
+                    <div class="vertical-line"></div>
+                    <div class="button-group">
+                        <button class="message-button">
+                            <img src="{{ url_for('static', filename='img/message.png') }}" alt="Message">
+                        </button>
+                        <button class="more.button">
+                            <img src="{{ url_for('static', filename='img/more.png') }}" alt="More">
+                        </button>
+                    </div>
+                </div>
+            <p>{{ user.user_profile_backref.home_town }}</p>
+            <p>{{ user.user_profile_backref.about }}</p>
+        </div>
+    </div>
+    <div class="profile-statistics">
+        <div class="star"></div>
+        <div class="average">
+            <p>{{ user.user_profile_backref.average_rating }}</p>
+        </div>
+        <div class="vertical-line"></div>
+        <div class="completed-rides">
+            <p>{{ completed_rides }} completed rides</p>
+        </div>
+        <div class="vertical-line"></div>
+        <div class="reviews">
+            <p>{{ reviews }} reviews</p>
+        </div>
+    </div>
+    <div class="ratings-reviews">
+        <div class="ratings">
+            {% for rating in ratings %}
+            <div class="rating">
+                <p>Communication: 
+                    {% for i in range(5) %}
+                    <span class="{{ 'star' if i < rating.communication else 'star-empty' }}"></span>
+                    {% endfor %}
+                    {{ rating.communication }}
+                </p>
+                <p>Safety: 
+                    {% for i in range(5) %}
+                    <span class="{{ 'star' if i < rating.safety else 'star-empty' }}"></span>
+                    {% endfor %}
+                    {{ rating.safety }}
+                </p>
+                <p>Punctuality: 
+                    {% for i in range(5) %}
+                    <span class="{{ 'star' if i < rating.punctuality else 'star-empty' }}"></span>
+                    {% endfor %}
+                    {{ rating.punctuality }}
+                </p>
+                <p>Cleanliness: 
+                    {% for i in range(5) %}
+                    <span class="{{ 'star' if i < rating.cleanliness else 'star-empty' }}"></span>
+                    {% endfor %}
+                    {{ rating.cleanliness }}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="horizontal-line"></div>
+        <div class="reviews">
+            {% for review in reviews %}
+            <div class="review">
+                <img src="{{ url_for('static', filename='uploads/' + review.user.user_profile_backref.user_img) }}" alt="{{ review.user.user_profile_backref.first_name }}'s profile picture" class="pfp">
+                <h3>{{ review.user.user_profile_backref.first_name }} {{ review.user.user_profile_backref.last_name }}</h3>
+                <p>{{ review.review_text }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
