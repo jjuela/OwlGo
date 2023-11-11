@@ -18,6 +18,7 @@ class User(UserMixin, db.Model):
     given_reviews = db.relationship('Review', foreign_keys='Review.user_id', backref='reviewer')
     received_reviews = db.relationship('Review', foreign_keys='Review.recipient_id', backref='reviewed')
     announcements = db.relationship('Announcement', backref='announcer')
+    user_profile = db.relationship('Profile', backref='user', uselist=False)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
