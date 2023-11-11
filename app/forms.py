@@ -63,7 +63,7 @@ class RideForm(FlaskForm):
         ('hatchback', 'Hatchback'),
         ('pickup', 'Pickup Truck'),
         ('minivan', 'Minivan')
-    ], validators=[RequiredIf('is_offered')])
+    ])
     departingFrom = StringField('Departing from', render_kw={"placeholder": "Enter location"}, validators=[DataRequired()])
     departingAt = TimeField('Departing at', render_kw={"placeholder": "Enter time"})
     destination = StringField('Destination', render_kw={"placeholder": "Enter location"})
@@ -100,6 +100,10 @@ class RideForm(FlaskForm):
         # if initial validation fails, don't bother
         if not initial_validation:
             return False
+        
+        # check if vehicle_type is required and not filled out
+        if self.is_offer_route and not self.vehicle_type.data:
+            raise ValidationError("Vehicle type is required when offering a ride")
 
         # validate according to ride type
         if self.ridetype.data == 'commute':
