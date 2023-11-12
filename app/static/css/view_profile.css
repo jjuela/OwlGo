@@ -137,7 +137,7 @@
     align-items: center;
 }
 
-.category, .stars, .average {
+.category, .stars, .category_average {
     display: flex;
     align-items: center;
 }
@@ -150,7 +150,7 @@
     width: 100px;
 }
 
-.average {
+.category_average {
     width: 50px;
 }
 
