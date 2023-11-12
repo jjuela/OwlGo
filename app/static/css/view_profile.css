@@ -60,6 +60,14 @@
     background-color: #bfbfbf;
 }
 
+.name-buttons-about {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+}
+
 .town-about {
     margin-left: 10px;
 }
