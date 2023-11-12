@@ -159,12 +159,9 @@ def view_profile(user_id):
         category_ratings = [getattr(rating, category) for rating in ratings]
         average_ratings[category] = sum(category_ratings) / len(category_ratings) if category_ratings else 0
 
-    # calculate overall average rating
-    overall_average_rating = sum([rating.average for rating in ratings]) / len(ratings) if ratings else 0
-
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, average_rating=overall_average_rating)
+                           ratings=average_ratings)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
 def view_post(ride_id):
