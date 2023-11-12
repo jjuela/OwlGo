@@ -2,6 +2,14 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    background-color: #808080;
+    margin: 30px 100px 0px 100px;
+    border-radius: 20px;
+    padding: 20px;
+}
+
+.body {
+    color: white;
 }
 
 .profile-header {
@@ -22,8 +30,8 @@
 }
 
 .vertical-line {
-    height: 50px;
-    border-left: 1px solid black;
+    height: 30px;
+    border-left: 2px solid white;
     margin: 0 20px;
 }
 
@@ -34,9 +42,9 @@
 
 .message-button, .more-button {
     background-color: #d9d9d9;
-    border-radius: 30px;
-    height: 20px;
-    width: 25px;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
     display: inline-block;
     border: none;
     outline: none;
@@ -77,8 +85,11 @@
 }
 
 .horizontal-line {
-    width: 100%;
-    border-top: 1px solid black;
+    display: block;
+    width: 50%;
+    margin: 0 auto;
+    border-top: 2px solid white;
+    border-radius: 10px;
 }
 
 .reviews {
