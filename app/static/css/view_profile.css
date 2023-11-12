@@ -6,9 +6,6 @@
     margin: 30px 100px 0px 100px;
     border-radius: 20px;
     padding: 20px;
-}
-
-.body {
     color: white;
 }
 
@@ -31,8 +28,9 @@
 
 .vertical-line {
     height: 30px;
-    border-left: 2px solid white;
+    border-left: 3px solid white;
     margin: 0 20px;
+    border-radius: 10px;
 }
 
 .button-group {
@@ -86,9 +84,9 @@
 }
 
 .horizontal-line {
-    width: 50%;
+    width: 70%;
     margin: 0 auto;
-    border-top: 2px solid white;
+    border-top: 3px solid white;
     border-radius: 10px;
 }
 
