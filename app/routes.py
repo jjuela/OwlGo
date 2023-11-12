@@ -147,13 +147,13 @@ def view_profile(user_id):
     if user is None:
         return "User profile unavailable", 404
     
-    completed_rides = len([ride for ride in user.profile_backref.rides if ride.completed])
-    reviews = len(user.profile_backref.received_reviews)
-    ratings = len(user.profile_backref.received_ratings)
+    completed_rides = len([ride for ride in user.rides if ride.completed])
+    reviews = len(user.received_reviews)
+    ratings = len(user.received_ratings)
 
     # calculate average
     if ratings:
-        average_rating = sum([rating.rating for rating in ratings]) / len(ratings)
+        average_rating = sum([rating.average for rating in user.received_ratings]) / len(ratings)
     else:
         average_rating = 0
 
