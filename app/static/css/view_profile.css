@@ -101,8 +101,27 @@
 
 .ratings {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 10px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.rating p {
+    margin: 0;
+}
+
+.stars {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .horizontal-line {
