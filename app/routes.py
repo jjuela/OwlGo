@@ -147,8 +147,6 @@ def view_profile(user_id):
     if user is None:
         return "User profile unavailable", 404
     
-    print(user.received_reviews)
-
     completed_rides = len([ride for ride in user.rides if ride.completed])
     review_list = user.received_reviews
     ratings = len(user.received_ratings)

@@ -36,36 +36,6 @@
         </div>
     </div>
     <div class="ratings-reviews">
-        <div class="ratings">
-            {% for rating in ratings %}
-            <div class="rating">
-                <p>Communication: 
-                    {% for i in range(5) %}
-                    <span class="{{ 'star' if i < rating.communication else 'star-empty' }}"></span>
-                    {% endfor %}
-                    {{ rating.communication }}
-                </p>
-                <p>Safety: 
-                    {% for i in range(5) %}
-                    <span class="{{ 'star' if i < rating.safety else 'star-empty' }}"></span>
-                    {% endfor %}
-                    {{ rating.safety }}
-                </p>
-                <p>Punctuality: 
-                    {% for i in range(5) %}
-                    <span class="{{ 'star' if i < rating.punctuality else 'star-empty' }}"></span>
-                    {% endfor %}
-                    {{ rating.punctuality }}
-                </p>
-                <p>Cleanliness: 
-                    {% for i in range(5) %}
-                    <span class="{{ 'star' if i < rating.cleanliness else 'star-empty' }}"></span>
-                    {% endfor %}
-                    {{ rating.cleanliness }}
-                </p>
-            </div>
-            {% endfor %}
-        </div>
         <div class="horizontal-line"></div>
         <div class="reviews">
             {% for review in reviews %}
