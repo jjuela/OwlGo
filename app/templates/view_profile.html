@@ -5,7 +5,7 @@
     <div class="profile-about">
         <div class="profile-header">
                 <div class="name-and-buttons">
-                    <img src="{{ url_for('static', filename='uploads/' + user.profile_backref.user_img) }}" alt="{{ user.profile_backref.first_name }}'s profile picture" class="pfp">
+                    <img src="{{ url_for('static', filename='uploads/' + user.user_profile.user_img) }}" alt="{{ user.user_profile.first_name }}'s profile picture" class="pfp">
                     <h1>{{ user.profile_backref.first_name }} {{ user.profile_backref.last_name }}</h1>
                     <div class="vertical-line"></div>
                     <div class="button-group">
