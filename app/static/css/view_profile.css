@@ -126,14 +126,14 @@
 } */
 
 .ratings {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
 }
 
 .rating {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
     align-items: center;
 }
 
