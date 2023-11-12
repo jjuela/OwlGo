@@ -12,6 +12,7 @@
 .profile-header {
     display: flex;
     align-items: center;
+    flex-direction: column;
 }
 
 .pfp {
@@ -57,6 +58,10 @@
 
 .message-button:hover, .more-button:hover {
     background-color: #bfbfbf;
+}
+
+.town-about {
+    margin-left: 10px;
 }
 
 .profile-statistics {
