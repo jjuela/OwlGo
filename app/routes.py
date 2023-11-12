@@ -164,7 +164,7 @@ def view_post(ride_id):
     post = Ride.query.get_or_404(ride_id)
     if post is None:
         return "Post not found", 404
-    profile = Profile.query.get_or_404(post.user_id)
+    profile = post.user.profile_backref
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
 
