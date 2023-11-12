@@ -149,7 +149,7 @@ def view_profile(user_id):
     if user is None:
         return "User profile unavailable", 404
     
-    profile = user.profile_backref  # get the Profile instance associated with the User
+    profile = user.profile_backref[0]  # get the Profile instance associated with the User. have to do [0] since i don't want to change the backref
     home_town = profile.home_town
     about = profile.about
 
