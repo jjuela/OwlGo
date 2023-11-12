@@ -146,6 +146,14 @@
     width: 150px;
 }
 
+.stars {
+    width: 100px;
+}
+
+.average {
+    width: 50px;
+}
+
 .horizontal-line {
     width: 80%;
     margin: 0 auto;
