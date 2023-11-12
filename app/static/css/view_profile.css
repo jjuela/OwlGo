@@ -52,7 +52,8 @@
 
 .message-button img, .more-button img {
     width: 100%;
-    height: 100%;
+    height: 80%;
+    margin-top: 3px;
 }
 
 .message-button:hover, .more-button:hover {
@@ -68,7 +69,7 @@
 .star {
     width: 20px;
     height: 20px;
-    background-image: url('/img/star.png');
+    background-image: url('/static/img/star.png');
     background-size: cover;
 }
 
@@ -85,7 +86,6 @@
 }
 
 .horizontal-line {
-    display: block;
     width: 50%;
     margin: 0 auto;
     border-top: 2px solid white;
