@@ -168,9 +168,8 @@ def view_post(ride_id):
     post = Ride.query.get_or_404(ride_id)
     if post is None:
         return "Post not found", 404
-    profile = post.user.profile_backref
-    user_img_url = url_for('static', filename='uploads/' + post.user.profile_backref.user_img)
-    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
+    user_img_url = url_for('static', filename='uploads/' + post.user.user_profile.user_img)
+    return render_template('view_post.html', post=post, user_img_url=user_img_url)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 def view_announcement(announcement_id):
