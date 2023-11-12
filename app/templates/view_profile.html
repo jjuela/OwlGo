@@ -70,7 +70,7 @@
         <div class="reviews">
             {% for review in reviews %}
             <div class="review">
-                <img src="{{ url_for('static', filename='uploads/' + review.user.user_profile_backref.user_img) }}" alt="{{ review.user.user_profile_backref.first_name }}'s profile picture" class="pfp">
+                <img src="{{ url_for('static', filename='uploads/' + review.user.profile_backref.user_img) }}" alt="{{ review.user.user_profile_backref.first_name }}'s profile picture" class="pfp">
                 <h3>{{ review.user.user_profile_backref.first_name }} {{ review.user.user_profile_backref.last_name }}</h3>
                 <p>{{ review.review_text }}</p>
             </div>
