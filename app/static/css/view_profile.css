@@ -105,6 +105,7 @@
     gap: 10px;
     flex-wrap: wrap;
     justify-content: space-between;
+    width: 100%;
 }
 
 .rating {
@@ -115,13 +116,9 @@
     gap: 10px;
 }
 
-.rating p {
-    margin: 0;
-}
-
 .stars {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 5px;
 }
 
