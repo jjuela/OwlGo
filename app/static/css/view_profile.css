@@ -75,10 +75,11 @@
 
 
 .star {
-    width: 16px;
-    height: 15px;
+    width: .94em;
+    height: .9em;
     background-image: url('/static/img/star.png');
     background-size: cover;
+    margin-bottom: 3px;
 }
 
 .ratings-reviews {
