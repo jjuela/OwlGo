@@ -149,6 +149,10 @@ def view_profile(user_id):
     if user is None:
         return "User profile unavailable", 404
     
+    profile = user.profile_backref  # get the Profile instance associated with the User
+    home_town = profile.home_town
+    about = profile.about
+
     completed_rides = len([ride for ride in user.rides if ride.completed])
     review_count = len(user.received_reviews)  # get the number of received reviews
     ratings = user.received_ratings
@@ -162,7 +166,7 @@ def view_profile(user_id):
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings)
+                           ratings=average_ratings, home_town=home_town, about=about)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET']) 
 def view_post(ride_id):
