@@ -61,7 +61,7 @@
 .profile-statistics {
     display: flex;
     align-items: center;
-    gap: 2px;
+    gap: 6.8px;
     width: 200px;
 }
 
@@ -82,7 +82,18 @@
     margin-bottom: 3px;
 }
 
-.ratings-reviews {
+.star-empty {
+    width: 1em;
+    height: 1em;
+    background-image: url('/static/img/star-empty.png');
+    background-size: cover;
+}
+
+.star-empty.filled {
+    background-image: url('/static/img/star.png');
+}
+
+.reviews-box {
     display: flex;
     flex-direction: column;
     gap: 20px;

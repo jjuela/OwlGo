@@ -7,6 +7,7 @@ from flask import request
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
+from sqlalchemy import func
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -148,16 +149,19 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     
     completed_rides = len([ride for ride in user.rides if ride.completed])
-    review_count = len(user.received_reviews)
-    ratings = len(user.received_ratings)
+    review_count = len(user.received_reviews)  # Get the number of received reviews
+    ratings = user.receiver_ratings
 
-    # calculate average
-    if ratings:
-        average_rating = sum([rating.average for rating in user.received_ratings]) / len(ratings)
-    else:
-        average_rating = 0
+    # calculate average for each category
+    categories = ['communication', 'safety', 'punctuality', 'cleanliness']
+    average_ratings = {}
+    for category in categories:
+        category_ratings = [getattr(rating, category) for rating in ratings]
+        average_ratings[category] = sum(category_ratings) / len(category_ratings) if category_ratings else 0
 
-    return render_template('view_profile.html', user=user, completed_rides=completed_rides, review_count=review_count, ratings=ratings, average_rating=average_rating, reviews=user.received_reviews)
+    return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
+                           review_count=review_count, reviews=user.received_reviews, 
+                           ratings=average_ratings, average_rating=user.average)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
 def view_post(ride_id):

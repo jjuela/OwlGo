@@ -39,8 +39,21 @@
             <p>{{ review_count }} reviews</p>
         </div>
     </div>
+    <div class="ratings">
+        {% for category, average in ratings.items() %}
+            <div class="rating">
+                <p>{{ category.capitalize() }}</p>
+                <div class="stars">
+                    {% for i in range(5) %}
+                        <div class="star-empty {% if i < average %}filled{% endif %}"></div>
+                    {% endfor %}
+                </div>
+                <p>{{ average }}</p>
+            </div>
+        {% endfor %}
+    </div>
     <div class="horizontal-line"></div>
-    <div class="ratings-reviews">
+    <div class="reviews-box">
         <div class="reviews">
             {% for review in reviews %}
             <div class="review">
