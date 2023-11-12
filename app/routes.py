@@ -149,7 +149,7 @@ def view_profile(user_id):
         return "User profile unavailable", 404
     
     completed_rides = len([ride for ride in user.rides if ride.completed])
-    review_count = len(user.received_reviews)  # Get the number of received reviews
+    review_count = len(user.received_reviews)  # get the number of received reviews
     ratings = user.received_ratings
 
     # calculate average for each category
@@ -163,12 +163,12 @@ def view_profile(user_id):
                            review_count=review_count, reviews=user.received_reviews, 
                            ratings=average_ratings)
 
-@app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
+@app.route('/view_post/<int:ride_id>', methods=['GET']) 
 def view_post(ride_id):
     post = Ride.query.get_or_404(ride_id)
     if post is None:
         return "Post not found", 404
-    profile = post.user.profile_backref
+    profile = post.user.user_profile
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
 
