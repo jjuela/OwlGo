@@ -61,15 +61,18 @@
 .profile-statistics {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 2px;
+    width: 200px;
 }
 
 .vertical-line-s {
     height: 30px;
     border-left: 3px solid white;
-    margin: 0 20px;
+    margin: 0 5px;
     border-radius: 10px;
 }
+
+
 
 .star {
     width: 16px;
