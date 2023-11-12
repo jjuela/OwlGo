@@ -46,7 +46,6 @@
     display: inline-block;
     border: none;
     outline: none;
-    cursor: pointer;
 }
 
 .message-button img, .more-button img {
@@ -72,6 +71,8 @@
     margin: 0 5px;
     border-radius: 10px;
 }
+
+
 
 .star {
     width: .94em;

@@ -7,6 +7,7 @@ from flask import request
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
+from sqlalchemy import func
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -57,23 +58,23 @@ def create_profile():
 def edit_profile():
     form = ProfileForm()
     if form.validate_on_submit():
-        current_user.user_profile.first_name = form.firstname.data
-        current_user.user_profile.last_name = form.lastname.data
-        current_user.user_profile.home_town = form.hometown.data
-        current_user.user_profile.about = form.about.data
+        current_user.profile_backref.first_name = form.firstname.data
+        current_user.profile_backref.last_name = form.lastname.data
+        current_user.profile_backref.home_town = form.hometown.data
+        current_user.profile_backref.about = form.about.data
         if form.image.data:
             filename = secure_filename(form.image.data.filename)
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             os.makedirs(os.path.dirname(upload_path), exist_ok=True)  # create directory if it does not exist
             form.image.data.save(upload_path)
-            current_user.user_profile.user_img = filename
+            current_user.profile_backref.user_img = filename
         db.session.commit()
         return redirect(url_for('home'))
     elif request.method == 'GET':
-        form.firstname.data = current_user.user_profile.first_name
-        form.lastname.data = current_user.user_profile.last_name
-        form.hometown.data = current_user.user_profile.home_town
-        form.about.data = current_user.user_profile.about
+        form.firstname.data = current_user.profile_backref.first_name
+        form.lastname.data = current_user.profile_backref.last_name
+        form.hometown.data = current_user.profile_backref.home_town
+        form.about.data = current_user.profile_backref.about
     return render_template('edit_profile.html', form=form)
         
 # @app.route('/home_admin')
@@ -146,14 +147,28 @@ def view_profile(user_id):
     user = User.query.get_or_404(user_id)
     if user is None:
         return "User profile unavailable", 404
-    return render_template('view_profile.html', user=user)
+    
+    completed_rides = len([ride for ride in user.rides if ride.completed])
+    review_count = len(user.received_reviews)  # Get the number of received reviews
+    ratings = user.received_ratings
+
+    # calculate average for each category
+    categories = ['communication', 'safety', 'punctuality', 'cleanliness']
+    average_ratings = {}
+    for category in categories:
+        category_ratings = [getattr(rating, category) for rating in ratings]
+        average_ratings[category] = sum(category_ratings) / len(category_ratings) if category_ratings else 0
+
+    return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
+                           review_count=review_count, reviews=user.received_reviews, 
+                           ratings=average_ratings)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
 def view_post(ride_id):
     post = Ride.query.get_or_404(ride_id)
     if post is None:
         return "Post not found", 404
-    profile = Profile.query.get_or_404(post.user_id)
+    profile = post.user.profile_backref
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
 
