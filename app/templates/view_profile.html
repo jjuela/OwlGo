@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/view_profile.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="profile-about">
+        <div class="profile-header">
+                <div class="name-and-buttons">
+                    <img src="{{ url_for('static', filename='uploads/' + user.user_profile.user_img) }}" alt="{{ user.user_profile.first_name }}'s profile picture" class="pfp">
+                    <h1>{{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h1>
+                    <div class="vertical-line"></div>
+                    <div class="button-group">
+                        <button class="message-button">
+                            <img src="{{ url_for('static', filename='img/message.png') }}" alt="Message">
+                        </button>
+                        <button class="more-button">
+                            <img src="{{ url_for('static', filename='img/more.png') }}" alt="More">
+                        </button>
+                    </div>
+                </div>
+            <p>{{ user.profile_backref.home_town }}</p>
+            <p>{{ user.profile_backref.about }}</p>
+        </div>
+    </div>
+    <div class="profile-statistics">
+        <div class="star"></div>
+        <div class="average">
+            <p>0</p> <!--pull from ratings later-->
+        </div>
+        <div class="vertical-line-s"></div>
+        <div class="completed-rides">
+            <p>{{ completed_rides }} rides</p>
+        </div>
+        <div class="vertical-line-s"></div>
+        <div class="num-reviews">
+            <p>{{ review_count }} reviews</p>
+        </div>
+    </div>
+    <div class="ratings">
+        {% for category, average in ratings.items() %}
+            <div class="rating">
+                <p class="category">{{ category.capitalize() }}</p>
+                <div class="stars">
+                    {% for i in range(5) %}
+                        <div class="star-empty {% if i < average %}filled{% endif %}"></div>
+                    {% endfor %}
+                </div>
+                <p class="category_average">{{ average }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="horizontal-line"></div>
+    <div class="reviews-box">
+        <div class="reviews">
+            {% for review in reviews %}
+            <div class="review">
+                <img src="{{ url_for('static', filename='uploads/' + review.user.profile_backref.user_img) }}" alt="{{ review.user.profile_backref.first_name }}'s profile picture" class="pfp">
+                <h3>{{ review.user.profile_backref.first_name }} {{ review.user.profile_backref.last_name }}</h3>
+                <p>{{ review.review_text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

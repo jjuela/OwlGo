@@ -35,7 +35,9 @@
         </div>
         <div class="pfp-and-h2">
             <div class="pfp-container">
-                <img src="{{ user_img_url }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+                <a href="{{ url_for('view_profile', user_id=profile.user_id) }}">
+                    <img src="{{ user_img_url }}" alt="{{ profile.first_name }}'s profile picture" class="pfp">
+                </a>
             </div>
             <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
             <button type="button" id="signupButton">Sign up</button>
