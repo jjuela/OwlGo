@@ -36,22 +36,30 @@ def landing():
 def home():
     return "home"
 
-@app.route('/create_profile', methods=['GET','POST'])
-def create_profile():
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
     form = ProfileForm()
+    profile = current_user.profile_backref[0]  # get the first (and only) Profile instance
     if form.validate_on_submit():
+        profile.first_name = form.firstname.data
+        profile.last_name = form.lastname.data
+        profile.home_town = form.hometown.data
+        profile.about = form.about.data
         if form.image.data:
             filename = secure_filename(form.image.data.filename)
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)  # create directory if it does not exist
             form.image.data.save(upload_path)
-            profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data, user_img=filename)
-        else:
-            profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data)
-        db.session.add(profile)
+            profile.user_img = filename
         db.session.commit()
-        return "Profile created!"
-    return render_template('create_profile.html', form=form)
+        return redirect(url_for('home'))
+    elif request.method == 'GET':
+        form.firstname.data = profile.first_name
+        form.lastname.data = profile.last_name
+        form.hometown.data = profile.home_town
+        form.about.data = profile.about
+    return render_template('edit_profile.html', form=form)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
