@@ -37,7 +37,7 @@ class Profile(db.Model):
     about = db.Column(db.Text)
     user_img = db.Column(db.String(255))
 
-    user = db.relationship('User', backref='user_profile_backref')
+    user = db.relationship('User', backref='profile_backref')
 
 class Ride(db.Model):
     ride_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

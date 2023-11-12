@@ -57,23 +57,23 @@ def create_profile():
 def edit_profile():
     form = ProfileForm()
     if form.validate_on_submit():
-        current_user.user_profile.first_name = form.firstname.data
-        current_user.user_profile.last_name = form.lastname.data
-        current_user.user_profile.home_town = form.hometown.data
-        current_user.user_profile.about = form.about.data
+        current_user.profile_backref.first_name = form.firstname.data
+        current_user.profile_backref.last_name = form.lastname.data
+        current_user.profile_backref.home_town = form.hometown.data
+        current_user.profile_backref.about = form.about.data
         if form.image.data:
             filename = secure_filename(form.image.data.filename)
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             os.makedirs(os.path.dirname(upload_path), exist_ok=True)  # create directory if it does not exist
             form.image.data.save(upload_path)
-            current_user.user_profile.user_img = filename
+            current_user.profile_backref.user_img = filename
         db.session.commit()
         return redirect(url_for('home'))
     elif request.method == 'GET':
-        form.firstname.data = current_user.user_profile.first_name
-        form.lastname.data = current_user.user_profile.last_name
-        form.hometown.data = current_user.user_profile.home_town
-        form.about.data = current_user.user_profile.about
+        form.firstname.data = current_user.profile_backref.first_name
+        form.lastname.data = current_user.profile_backref.last_name
+        form.hometown.data = current_user.profile_backref.home_town
+        form.about.data = current_user.profile_backref.about
     return render_template('edit_profile.html', form=form)
         
 # @app.route('/home_admin')
@@ -147,9 +147,9 @@ def view_profile(user_id):
     if user is None:
         return "User profile unavailable", 404
     
-    completed_rides = len([ride for ride in user.rides if ride.completed])
-    reviews = len(user.received_reviews)
-    ratings = len(user.received_ratings)
+    completed_rides = len([ride for ride in user.profile_backref.rides if ride.completed])
+    reviews = len(user.profile_backref.received_reviews)
+    ratings = len(user.profile_backref.received_ratings)
 
     # calculate average
     if ratings:
