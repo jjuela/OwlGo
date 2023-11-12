@@ -28,6 +28,12 @@
     align-items: center;
 }
 
+.name-buttons-about {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
 .vertical-line {
     height: 30px;
     border-left: 3px solid white;
@@ -59,14 +65,6 @@
 
 .message-button:hover, .more-button:hover {
     background-color: #bfbfbf;
-}
-
-.name-buttons-about {
-    margin-top: 20px
-}
-
-.town-about {
-    margin-left: 10px;
 }
 
 .profile-statistics {

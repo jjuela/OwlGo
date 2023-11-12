@@ -9,8 +9,8 @@
     <div class="profile-about">
         <div class="profile-header">
             <div class="name-and-buttons">
-                <img src="{{ url_for('static', filename='uploads/' + user.user_profile.user_img) }}" alt="{{ user.user_profile.first_name }}'s profile picture" class="pfp">
                 <div class="name-buttons-about">
+                    <img src="{{ url_for('static', filename='uploads/' + user.user_profile.user_img) }}" alt="{{ user.user_profile.first_name }}'s profile picture" class="pfp">
                     <h1>{{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h1>
                     <div class="vertical-line"></div>
                     <div class="button-group">
