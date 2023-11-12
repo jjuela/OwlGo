@@ -42,13 +42,13 @@
     <div class="ratings">
         {% for category, average in ratings.items() %}
             <div class="rating">
-                <p>{{ category.capitalize() }}</p>
+                <p class="category">{{ category.capitalize() }}</p>
                 <div class="stars">
                     {% for i in range(5) %}
                         <div class="star-empty {% if i < average %}filled{% endif %}"></div>
                     {% endfor %}
                 </div>
-                <p>{{ average }}</p>
+                <p class="average">{{ average }}</p>
             </div>
         {% endfor %}
     </div>
