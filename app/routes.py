@@ -157,7 +157,7 @@ def view_profile(user_id):
     else:
         average_rating = 0
 
-    return render_template('view_profile.html', user=user, completed_rides=completed_rides, reviews=review_count, ratings=ratings, average_rating=average_rating, reviews=user.received_reviews)
+    return render_template('view_profile.html', user=user, completed_rides=completed_rides, review_count=review_count, ratings=ratings, average_rating=average_rating, reviews=user.received_reviews)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET']) # removed '<post_type>/<int:id>' temporarily for dummy post
 def view_post(ride_id):
