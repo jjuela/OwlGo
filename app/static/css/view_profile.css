@@ -1,0 +1,149 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #808080;
+    margin: 30px 100px 0px 100px;
+    border-radius: 20px;
+    padding: 50px;
+    color: white;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+}
+
+.pfp {
+    border-radius: 50%;
+    margin-right: 20px;
+    width: 200px;
+    height: 200px;
+}
+
+.name-and-buttons {
+    display: flex;
+    align-items: center;
+}
+
+.vertical-line {
+    height: 30px;
+    border-left: 3px solid white;
+    margin: 0 20px;
+    border-radius: 10px;
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+}
+
+.message-button, .more-button {
+    background-color: #d9d9d9;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    display: inline-block;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.message-button img, .more-button img {
+    width: 100%;
+    height: 80%;
+    margin-top: 3px;
+}
+
+.message-button:hover, .more-button:hover {
+    background-color: #bfbfbf;
+}
+
+.profile-statistics {
+    display: flex;
+    align-items: center;
+    gap: 6.8px;
+    width: 200px;
+}
+
+.vertical-line-s {
+    height: 30px;
+    border-left: 3px solid white;
+    margin: 0 5px;
+    border-radius: 10px;
+}
+
+.star {
+    width: .94em;
+    height: .9em;
+    background-image: url('/static/img/star.png');
+    background-size: cover;
+    margin-bottom: 3px;
+}
+
+.star-empty {
+    width: .94em;
+    height: .9em;
+    background-image: url('/static/img/star-empty.png');
+    background-size: cover;
+    margin-bottom: 3px;
+}
+
+.star-empty.filled {
+    background-image: url('/static/img/star.png');
+}
+
+.reviews-box {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ratings {
+    display: flex;
+    flex-direction: column;
+}
+
+.rating {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.category, .stars, .category_average {
+    display: flex;
+    align-items: center;
+}
+
+.category {
+    width: 150px;
+}
+
+.stars {
+    width: 100px;
+    gap: 5px;
+}
+
+.category_average {
+    width: 50px;
+}
+
+.horizontal-line {
+    width: 80%;
+    margin: 0 auto;
+    border-top: 3px solid white;
+    border-radius: 10px;
+}
+
+.reviews {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.review {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
