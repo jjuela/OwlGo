@@ -142,6 +142,10 @@
     align-items: center;
 }
 
+.category {
+    width: 150px;
+}
+
 .horizontal-line {
     width: 80%;
     margin: 0 auto;
