@@ -8,21 +8,23 @@
 <div class="content">
     <div class="profile-about">
         <div class="profile-header">
-                <div class="name-and-buttons">
-                    <img src="{{ url_for('static', filename='uploads/' + user.user_profile.user_img) }}" alt="{{ user.user_profile.first_name }}'s profile picture" class="pfp">
-                    <h1>{{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h1>
-                    <div class="vertical-line"></div>
-                    <div class="button-group">
-                        <button class="message-button">
-                            <img src="{{ url_for('static', filename='img/message.png') }}" alt="Message">
-                        </button>
-                        <button class="more-button">
-                            <img src="{{ url_for('static', filename='img/more.png') }}" alt="More">
-                        </button>
-                    </div>
+            <div class="name-and-buttons">
+                <img src="{{ url_for('static', filename='uploads/' + user.user_profile.user_img) }}" alt="{{ user.user_profile.first_name }}'s profile picture" class="pfp">
+                <h1>{{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h1>
+                <div class="vertical-line"></div>
+                <div class="button-group">
+                    <button class="message-button">
+                        <img src="{{ url_for('static', filename='img/message.png') }}" alt="Message">
+                    </button>
+                    <button class="more-button">
+                        <img src="{{ url_for('static', filename='img/more.png') }}" alt="More">
+                    </button>
                 </div>
-            <p>{{ user.profile_backref.home_town }}</p>
-            <p>{{ user.profile_backref.about }}</p>
+            </div>
+            <div class="home-about">
+                <p>{{ home_town }}</p>
+                <p>{{ about }}</p>
+            </div>
         </div>
     </div>
     <div class="profile-statistics">

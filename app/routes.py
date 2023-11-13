@@ -57,24 +57,25 @@ def create_profile():
 @login_required
 def edit_profile():
     form = ProfileForm()
+    profile = current_user.profile_backref[0]  # get the first (and only) Profile instance
     if form.validate_on_submit():
-        current_user.profile_backref.first_name = form.firstname.data
-        current_user.profile_backref.last_name = form.lastname.data
-        current_user.profile_backref.home_town = form.hometown.data
-        current_user.profile_backref.about = form.about.data
+        profile.first_name = form.firstname.data
+        profile.last_name = form.lastname.data
+        profile.home_town = form.hometown.data
+        profile.about = form.about.data
         if form.image.data:
             filename = secure_filename(form.image.data.filename)
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             os.makedirs(os.path.dirname(upload_path), exist_ok=True)  # create directory if it does not exist
             form.image.data.save(upload_path)
-            current_user.profile_backref.user_img = filename
+            profile.user_img = filename
         db.session.commit()
         return redirect(url_for('home'))
     elif request.method == 'GET':
-        form.firstname.data = current_user.profile_backref.first_name
-        form.lastname.data = current_user.profile_backref.last_name
-        form.hometown.data = current_user.profile_backref.home_town
-        form.about.data = current_user.profile_backref.about
+        form.firstname.data = profile.first_name
+        form.lastname.data = profile.last_name
+        form.hometown.data = profile.home_town
+        form.about.data = profile.about
     return render_template('edit_profile.html', form=form)
         
 # @app.route('/home_admin')
@@ -148,6 +149,10 @@ def view_profile(user_id):
     if user is None:
         return "User profile unavailable", 404
     
+    profile = user.profile_backref[0]  # get the Profile instance associated with the User. have to do [0] since i don't want to change the backref
+    home_town = profile.home_town
+    about = profile.about
+
     completed_rides = len([ride for ride in user.rides if ride.completed])
     review_count = len(user.received_reviews)  # get the number of received reviews
     ratings = user.received_ratings
@@ -161,7 +166,7 @@ def view_profile(user_id):
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings)
+                           ratings=average_ratings, home_town=home_town, about=about)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET']) 
 def view_post(ride_id):
