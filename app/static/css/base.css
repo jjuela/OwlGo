@@ -90,7 +90,7 @@ body.modal-open {
     font-size: 28px;
     font-weight: bold;
     padding: 10px;
-    transition: background 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out;
     margin-right: 5px;
 }
 
@@ -121,11 +121,11 @@ body.modal-open {
 }
 
 .modal-links a:hover {
-    background: #d3d3d3;
+    color: #808080;
 }
 
 .horizontal-line {
-    width: 100%;
+    width: 120%;
     height: 1px;
     background-color: #d3d3d3;
     margin-top: 20px;
