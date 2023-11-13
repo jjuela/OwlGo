@@ -184,8 +184,8 @@ def sign_up_form(ride_id):
             print('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
         
-        new_passenger = Ride_Passenger(ride_id=ride_id, passenger_id=current_user.user_id)
-        db.session.add(new_passenger)
+        new_request = Ride_Passenger(ride_id=ride_id, passenger_id=current_user.user_id)
+        db.session.add(new_request)
         db.session.commit()
 
         custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
@@ -207,9 +207,11 @@ def confirm_ride(ride_id, passenger_id):
             print('You are not authorized to confirm this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-        ride_passenger = Ride_Passenger.query.filter_by(ride_id=ride_id, passenger_id=passenger.user_id).first()
-        if ride_passenger:
-            ride_passenger.confirmed = True
+        ride_request = Ride_Passenger.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
+        if ride_request:
+            ride_passanger = Ride_Passenger(ride_id=ride_id, passenger_id=passenger_id, confirmed=True)
+            db.session.add(ride_passanger)
+            db.session.delte(ride_request)
             db.session.commit()
 
             print('The ride has been confirmed.')

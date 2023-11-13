@@ -70,6 +70,12 @@ class Ride_Passenger(db.Model):
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')
 
+class Ride_Request(db.Model):
+    ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
+    passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
+
+    ride = db.relationship('Ride', backref='requests')
+    passenger = db.relationship('User', backref='ride_requests')
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
