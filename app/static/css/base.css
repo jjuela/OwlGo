@@ -79,11 +79,19 @@ body.modal-open {
 }
 
 .close-modal {
-    position: absolute;
-    background: none;
+    font-family:'Courier New', Courier, monospace;
+    background: #d3d3d3;
     border: none;
-    font-size: 1.5em;
+    color: #333;
+    font-size: 1em;
+    padding: 10px;
+    border-radius: 50%;
     cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.close-modal:hover {
+    background: #8e8d8d;
 }
 
 .modal-pfp {
