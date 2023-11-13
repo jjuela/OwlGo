@@ -18,6 +18,19 @@
                 <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture">
             </div>
         </div>
+        <div id="profile-modal" class="profile-modal">
+            <button id="close-modal" class="close-modal">X</button>
+            <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture">
+            <h2>{{ current_user.user_profile.first_name }} {{ current_user.user_profile.last_name }}</h2>
+            <ul>
+                <li><a href="#">Profile</a></li>
+                <li><a href="#">Edit profile</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#">Rides</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Log out</a></li>
+            </ul>
+        </div>
     </header>
 
     {% block content %}
