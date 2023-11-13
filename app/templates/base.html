@@ -14,7 +14,31 @@
             <a href="#"><img src="{{ url_for('static', filename='img/create.png') }}" alt="Start Ride"></a> <!-- link here later -->
             <a href="#"><img src="{{ url_for('static', filename='img/search.png') }}" alt="Find Ride"></a> <!-- link here later -->
             <img src="{{ url_for('static', filename='img/bell.png') }}" alt="Notifications"> <!-- link here later -->
-            <div class="profile-pic"></div>
+            <div class="profile-pic">
+                <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture">
+            </div>
+        </div>
+        <div id="overlay" class="overlay"></div>
+        <div id="profile-modal" class="profile-modal">
+            <div class="modal-header">
+                <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture" class="modal-pfp">
+                <h2>{{ current_user.user_profile.first_name }} {{ current_user.user_profile.last_name }}</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-links">
+                <div class="horizontal-line-base"></div>
+                <a href="#">Profile</a>
+                <a href="#">Edit profile</a>
+                <a href="#">Messages</a>
+                <a href="#">Rides</a>
+                <div class="horizontal-line-base"></div>
+                <a href="#">Terms</a>
+                <a href="#">Privacy</a>
+                <a href="#">Support</a>
+                <div class="horizontal-line-base"></div>
+                <a href="#">Settings</a>
+                <a href="#">Log out</a>
+            </div>
         </div>
     </header>
 
