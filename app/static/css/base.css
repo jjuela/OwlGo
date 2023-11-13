@@ -120,6 +120,10 @@ body.modal-open {
     text-decoration: none;
 }
 
+.modal-links a:hover {
+    background: #d3d3d3;
+}
+
 .horizontal-line {
     width: 100%;
     height: 1px;
