@@ -65,6 +65,7 @@ class Ride(db.Model):
 class Ride_Passenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
+    confirmed = db.Column(db.Boolean, default=False)  # Add this line
 
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')

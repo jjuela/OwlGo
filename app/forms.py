@@ -93,6 +93,34 @@ class RideForm(FlaskForm):
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?
 
+class SignUpForm(FlaskForm):
+    pickup_town = StringField('Pick Up Town', validators=[DataRequired(), Length(max=50)])
+    drop_off_town = StringField('Drop Off Town', validators=[DataRequired(), Length(max=50)])
+    ride_type = SelectField('Ride Type', choices=[
+        ('', 'Select one'),
+        ('commute', 'Commute'),
+        ('errand', 'Errand'),
+        ('leisure', 'Leisure'),
+    ], validators=[DataRequired()])
+
+    # Specific fields for commute ride
+    commute_days = SelectMultipleField('Commute Days', choices=[
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ])
+    
+    custom_message = TextAreaField('Message to Driver', validators=[Length(max=500)], render_kw={"placeholder": " Custom dropoff location, etc."})
+    
+    # Specific field for errands ride
+    requested_stops = StringField('Requested Stops')
+
+    submit = SubmitField('Sign Up')
+
 def validate(self):
     # original validate fn
     initial_validation = super(RideForm, self).validate()

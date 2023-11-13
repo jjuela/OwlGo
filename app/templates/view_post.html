@@ -40,7 +40,7 @@
                 </a>
             </div>
             <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
-            <button type="button" id="signupButton">Sign up</button>
+            <a href="{{ url_for('sign_up_form', ride_id=post.ride_id) }}" class="btn" id="signupButton">Sign up</a>
         </div>
     </div>
 </div>

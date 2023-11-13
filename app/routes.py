@@ -2,7 +2,7 @@ from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Rev
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm
 from flask import request
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -171,6 +171,51 @@ def view_post(ride_id):
     profile = post.user.user_profile
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
+
+@app.route('/sign_up_form/<int:ride_id>', methods=['GET', 'POST'])
+@login_required
+def sign_up_form(ride_id):
+    ride = Ride.query.get_or_404(ride_id)
+    form = SignUpForm()
+
+    if form.validate_on_submit():
+        existing_passenger = Ride_Passenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+        if existing_passenger:
+            print('You are already signed up for this ride.')
+            return redirect(url_for('view_post', ride_id=ride_id))
+        
+        new_passenger = Ride_Passenger(ride_id=ride_id, passenger_id=current_user.user_id)
+        db.session.add(new_passenger)
+        db.session.commit()
+
+        custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
+        message = Message(user_id=current_user.user_id, recipient_id=ride.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
+        db.session.add(message)
+        db.session.commit()
+
+        print('Your request to join the ride has been sent.')
+        return redirect(url_for('view_post', ride_id=ride_id))
+
+@app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
+@login_required 
+def confirm_ride(ride_id, passenger_id):
+    ride = Ride.query.get_or_404(ride_id)
+    passenger = User.query.get_or_404(passenger_id)
+
+    if request.method == 'POST':
+        if current_user.user_id != ride.user_id:
+            print('You are not authorized to confirm this ride.')
+            return redirect(url_for('view_post', ride_id=ride_id))
+
+        ride_passenger = Ride_Passenger.query.filter_by(ride_id=ride_id, passenger_id=passenger.user_id).first()
+        if ride_passenger:
+            ride_passenger.confirmed = True
+            db.session.commit()
+
+            print('The ride has been confirmed.')
+            return redirect(url_for('view_post', ride_id=ride_id))
+
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 def view_announcement(announcement_id):
