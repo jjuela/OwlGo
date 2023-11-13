@@ -79,12 +79,13 @@ body.modal-open {
 }
 
 .modal-header h2 {
-    color: #aaa;
+    color: #808080;
     font-size: 20px;
+    margin-right: 70px;
 }
 
 .close {
-    color: #aaa;
+    color: #808080;
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -110,7 +111,7 @@ body.modal-open {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 20px;
     margin-top: 20px;
 }
 
