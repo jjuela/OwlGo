@@ -18,9 +18,10 @@
                 <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture">
             </div>
         </div>
+        <div id="overlay" class="overlay"></div>
         <div id="profile-modal" class="profile-modal">
             <button id="close-modal" class="close-modal">X</button>
-            <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture">
+            <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture" class="modal-pfp">
             <h2>{{ current_user.user_profile.first_name }} {{ current_user.user_profile.last_name }}</h2>
             <ul>
                 <li><a href="#">Profile</a></li>
