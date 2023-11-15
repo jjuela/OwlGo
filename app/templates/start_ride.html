@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/start_ride.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <div class="start-header">
+        <h1>Start a Ride</h1>
+    </div>
+    <div class="start-buttons">
+        <div class="offer">
+            <a href="{{ url_for('start_ride_offer') }}">
+                <h2><span>Offer</span> <span>a ride</span></h2>
+                <img src="{{ url_for('static', filename='img/offer.png') }}" alt="Offer" class="offer-img">
+            </a>
+        </div>
+        <div class="request">
+            <a href="#">
+                <h2><span>Request</span> <span>a ride</span></h2>
+                <img src="{{ url_for('static', filename='img/request.png') }}" alt="Request" class="request-img">
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
