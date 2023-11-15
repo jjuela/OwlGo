@@ -1,0 +1,123 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+h1 {
+    font-size: 50px;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+    margin-top: 40px;
+}
+
+form {
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #535353;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding-bottom: 40px;
+}
+
+form div {
+    margin-bottom: 10px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    margin-left: 150px;
+    color: white;
+}
+
+
+.rideType label {
+    font-size: 25px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    margin-top: 40px;
+    margin-left: -180px;
+
+}
+
+.main-label {
+    font-size: 20px;
+    font-weight: 500;
+    margin-left: 0px;
+}
+
+#add-stop {
+    margin-left: 150px;
+    margin-top: 10px;
+    background-color: #007BFF;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    padding: 10px;
+    width: 300px;
+}
+
+#add-stop:hover {
+    background-color: #003399;
+}
+
+
+form input, form select, form textarea {
+    background: white;
+    display: block;
+    width: 50%;
+    margin: auto;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#reccuring-field input {
+    display: inline-block;
+    width: auto;
+    margin-left: 300px;
+    padding: 0;
+    border: none;
+    transform: translateY(-22px);
+}
+
+
+#recurring_days-field input[type="checkbox"],
+#accessibility-field input[type="checkbox"] {
+    display: inline-block;
+    width: auto;
+    margin-left: 300px;
+    padding: 0;
+    border: none;
+    transform: translateY(16px);
+}
+
+.stop-field {
+    margin: 10px;
+}
+
+form input[type="submit"] {
+    background-color: #007BFF;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    display: block;
+    margin: auto;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+}
+
+form input[type="submit"]:hover {
+    background-color: #003399;
+}
