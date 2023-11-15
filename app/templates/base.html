@@ -11,7 +11,7 @@
     <header>
         <a href="{{ url_for('home') }}"><img src="{{ url_for('static', filename='img/scsu.png') }}" alt="Home"></a>
         <div class="right-icons">
-            <a href="#"><img src="{{ url_for('static', filename='img/create.png') }}" alt="Start Ride"></a> <!-- link here later -->
+            <a href="{{ url_for('start_ride')}}"><img src="{{ url_for('static', filename='img/create.png') }}" alt="Start Ride"></a> <!-- link here later -->
             <a href="#"><img src="{{ url_for('static', filename='img/search.png') }}" alt="Find Ride"></a> <!-- link here later -->
             <img src="{{ url_for('static', filename='img/bell.png') }}" alt="Notifications"> <!-- link here later -->
             <div class="profile-pic">
@@ -27,8 +27,8 @@
             </div>
             <div class="modal-links">
                 <div class="horizontal-line-base"></div>
-                <a href="#">Profile</a>
-                <a href="#">Edit profile</a>
+                <a href="{{ url_for('view_profile', user_id=current_user.user_id) }}">Profile</a>
+                <a href="{{ url_for('edit_profile') }}">Edit profile</a>
                 <a href="#">Messages</a>
                 <a href="#">Rides</a>
                 <div class="horizontal-line-base"></div>
