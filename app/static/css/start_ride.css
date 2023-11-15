@@ -1,0 +1,71 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1 {
+    font-size: 50px;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+    margin-top: 0px;
+}
+
+.start-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 250px;
+    padding: 10px;
+}
+
+.offer, .request {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    border-radius: 10px;
+    background: #535353;
+    height: 350px;
+    width: 250px;
+    transition: background 0.3s ease-in-out;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.offer h2, .request h2 {
+    font-size: 40px;
+    font-weight: 700;
+    color: white;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.offer h2 span, .request h2 span {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.offer-img, .request-img {
+    width: 50%;
+    margin-top: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 10px 20px;
+    transition: filter 0.3s ease-in-out;
+}
+
+.offer a, .request a {
+    text-decoration: none;
+}
+
+.offer:hover, .request:hover {
+    background: #808080;
+}
+
+.offer:hover .offer-img, .request:hover .request-img {
+    filter: invert(0.25);
+}

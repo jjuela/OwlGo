@@ -47,7 +47,6 @@ function showCommuteFields() {
     document.getElementById('destination-field').style.display = 'block';
     document.getElementById('arrival-field').style.display = 'block';
     document.getElementById('reccuring-field').style.display = 'block';
-    document.getElementById('vehicleType-field').style.display = 'block';
     document.getElementById('submit-field').style.display = 'block'; 
 
     var reccuringCheckbox = document.getElementById('reccuring');
@@ -73,7 +72,6 @@ function showErrandFields() {
     document.getElementById('stops-field').style.display = 'block';
     document.getElementById('accessibility-field').style.display = 'block';
     document.getElementById('description-field').style.display = 'block';
-    document.getElementById('vehicleType-field').style.display = 'block';
     document.getElementById('submit-field').style.display = 'block'; 
 }
 
@@ -85,7 +83,6 @@ function showLeisureFields() {
     document.getElementById('duration-field').style.display = 'block';
     document.getElementById('accessibility-field').style.display = 'block';
     document.getElementById('description-field').style.display = 'block';
-    document.getElementById('vehicleType-field').style.display = 'block';
     document.getElementById('submit-field').style.display = 'block'; 
 }
 

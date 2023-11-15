@@ -93,14 +93,13 @@ def create_announcement():
             return "Announcement created!"
     return render_template('create_announcement.html', form=form)
 
-@app.route('/start_ride')
+@app.route('/start_ride/')
 def start_ride():
     return render_template('start_ride.html')
 
 @app.route('/start_ride/offer', methods=['GET', 'POST'])
 def start_ride_offer():
     form = RideForm(is_offer_route=True)
-    print(request.form)
     if form.validate_on_submit():
         # if form.accessibility.data is None, set it to an empty list
         if form.accessibility.data is None:
@@ -128,18 +127,41 @@ def start_ride_offer():
             ride_description=form.description.data
         )
         db.session.add(ride)
-        try:
-            db.session.commit()
-            print("Ride committed to database")
-        except Exception as e:
-            print("Error committing ride to database:", e)
-        return "Ride created!"
-    else:
-        print("Form did not validate on submit")
-        print(form.errors)
+        db.session.commit()
     return render_template('start_ride_offer.html', form=form)
 
-# @app.route('/start_ride/request')
+@app.route('/start_ride/request', methods=['GET', 'POST'])
+def start_ride_request():
+    form = RideForm(is_offer_route=True)
+    if form.validate_on_submit():
+        # if form.accessibility.data is None, set it to an empty list
+        if form.accessibility.data is None:
+            form.accessibility.data = []
+        stops = ','.join([stop.data for stop in form.stops.entries])  # process stops data
+
+        # manually convert departingAt and arrival to datetime.time objects if they're not empty
+        departingAt = datetime.strptime(form.departingAt.data, '%I:%M %p').time() if form.departingAt.data else None
+        arrival = datetime.strptime(form.arrival.data, '%I:%M %p').time() if form.arrival.data else None
+
+        ride = Ride(
+            user_id=current_user.user_id,
+            is_offered=False,
+            vehicle_type=form.vehicle_type.data,
+            ridetype=form.ridetype.data,
+            departingFrom=form.departingFrom.data,
+            destination=form.destination.data,
+            departingAt=departingAt,  # use the converted departingAt
+            arrival=arrival,  # use the converted arrival
+            duration=form.duration.data,
+            stops=stops,  # processed stops
+            reccuring=form.reccuring.data,
+            recurring_days=','.join(form.recurring_days.data),  # process recurring_days data
+            accessibility = ','.join(form.accessibility.data),
+            ride_description=form.description.data
+        )
+        db.session.add(ride)
+        db.session.commit()
+    return render_template('start_ride_request.html', form=form)
 
 # @app.route('/find_ride')
 

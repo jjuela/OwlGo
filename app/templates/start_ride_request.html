@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block css %}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/start_ride_offer.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/start_ride_request.css') }}">
 {% endblock %}
 {% block content %}
     <div class="content">
-        <h1>Offer a ride</h1>
-        <form method="POST" action="{{ url_for('start_ride_offer') }}">
+        <h1>Request a ride</h1>
+        <form method="POST" action="{{ url_for('start_ride_request') }}">
             {{ form.hidden_tag() }}
             <div class="rideType">
                 {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
@@ -63,6 +63,6 @@
                 {{ form.submit }}
             </div>
         </form>
-        <script src="{{ url_for('static', filename='js/start_ride_offer.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/start_ride_request.js') }}"></script>
     </div>
 {% endblock %}
