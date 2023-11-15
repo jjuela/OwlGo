@@ -69,7 +69,7 @@ class RideForm(FlaskForm):
     destination = StringField('Destination', render_kw={"placeholder": "Enter location"})
     arrival = StringField('Arrival', validators=[Optional()], render_kw={"placeholder": "Enter time in format HH:MM AM/PM"})
     duration = StringField('Duration', render_kw={"placeholder": "Enter time in minutes or hours"})
-    stops = FieldList(StringField('Stop'), min_entries=1)
+    stops = FieldList(StringField('Stop'), min_entries=0, render_kw={"placeholder": "Enter a stop"})
     reccuring = BooleanField('Recurring')
     recurring_days = SelectMultipleField('Recurring on days:', choices=[
         ('mon', 'Monday'),
