@@ -250,11 +250,13 @@ def find_a_ride():
             destination=search_form.destination.data
         )
 
-        if search_form.departingAt.data and search_form.departingAt_AM_PM.data:
-            rides = rides.filter_by(departingAt=f"{search_form.departingAt.data} {search_form.departingAt_AM_PM.data}")
-
-        if search_form.arrival.data and search_form.arrival_AM_PM.data:
-            rides = rides.filter_by(arrival=f"{search_form.arrival.data} {search_form.arrival_AM_PM.data}")
+        if search_form.time_start.data and search_form.time_end.data:
+            start = datetime.strptime(search_form.time_start.data, "%I:%M%p")
+            end = datetime.strptime(search_form.time_end.data, "%I:%M%p")
+            if search_form.time_choice.data == 'Departing':
+                rides = rides.filter(and_(Ride.departingAt >= start, Ride.departingAt <= end))
+            elif search_form.time_choice.data == 'Arriving':
+                rides = rides.filter(and_(Ride.arrival >= start, Ride.arrival <= end))
 
         if filter_form.validate_on_submit():
             rides = rides.filter_by(

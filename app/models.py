@@ -76,13 +76,13 @@ class Ride_Request(db.Model):
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
     ride = db.relationship('Ride', backref='requests')
     passenger = db.relationship('User', backref='ride_requests')
-    timestamp = db.Column(db.DateTime, default=db.datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     role = db.Column(db.String(10))
     commute_days = db.Column(db.String(50))
     accessibility = db.Column(db.String(100))
     custom_message = db.Column(db.String(500))
     requested_stops = db.Column(db.String(100))
-    
+
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
