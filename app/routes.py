@@ -2,7 +2,7 @@ from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Rev
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, FilterForm
 from flask import request
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -237,6 +237,42 @@ def view_announcement(announcement_id):
     if announcement is None:
         return "Announcement not found", 404
     return render_template('view_announcement.html', announcement=announcement)
+
+@app.route('/Find_A_Ride', methods=['GET', 'POST'])
+def find_a_ride():
+    search_form = SearchForm()
+    filter_form = FilterForm()
+
+    if search_form.validate_on_submit():
+        rides = Ride.query.filter_by(
+            ridetype=search_form.ridetype.data,
+            departingFrom=search_form.departingFrom.data,
+            destination=search_form.destination.data
+        )
+
+        if search_form.departingAt.data and search_form.departingAt_AM_PM.data:
+            rides = rides.filter_by(departingAt=f"{search_form.departingAt.data} {search_form.departingAt_AM_PM.data}")
+
+        if search_form.arrival.data and search_form.arrival_AM_PM.data:
+            rides = rides.filter_by(arrival=f"{search_form.arrival.data} {search_form.arrival_AM_PM.data}")
+
+        if filter_form.validate_on_submit():
+            rides = rides.filter_by(
+                vehicle_type=filter_form.vehicle_type.data,
+                duration=filter_form.duration.data,
+                stops=filter_form.stops.data,
+                reccuring=filter_form.reccuring.data,
+                recurring_days=filter_form.recurring_days.data,
+                accessibility=filter_form.accessibility.data,
+                description=filter_form.description.data
+            )
+
+        rides = rides.all()
+
+    else:
+        rides = []
+
+    return render_template('find_a_ride.html', search_form=search_form, filter_form=filter_form, rides=rides)
 
 @app.route('/my_rides')
 def my_rides():

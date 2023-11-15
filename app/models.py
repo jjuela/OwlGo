@@ -82,6 +82,7 @@ class Ride_Request(db.Model):
     accessibility = db.Column(db.String(100))
     custom_message = db.Column(db.String(500))
     requested_stops = db.Column(db.String(100))
+    
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)

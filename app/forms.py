@@ -126,6 +126,52 @@ class SignUpForm(FlaskForm):
 
     submit = SubmitField('Sign Up')
 
+class FilterForm(FlaskForm):
+    vehicle_type = SelectField('Vehicle Type', choices=[
+        ('', 'Select one'),
+        ('sedan', 'Sedan'),
+        ('suv', 'SUV'),
+        ('hatchback', 'Hatchback'),
+        ('pickup', 'Pickup Truck'),
+        ('minivan', 'Minivan')
+    ], validators=[Optional()])
+    duration = StringField('Duration', validators=[Optional()])
+    stops = FieldList(StringField('Stop'), min_entries=1)
+    reccuring = BooleanField('Recurring')
+    recurring_days = SelectMultipleField('Recurring on days:', choices=[
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ], validators=[Optional()])
+    accessibility = SelectMultipleField('Accessibility', choices=[
+        ('wheelchair', 'Wheelchair'),
+        ('visual', 'Visual impairment'),
+        ('hearing', 'Hearing impairment'),
+        ('service_dog', 'Service dog friendly'),
+        ('quiet', 'Quiet ride'),
+        ('step_free', 'Step-free access'),
+    ], validators=[Optional()])
+    description = TextAreaField('Description', validators=[Optional()])
+    submit = SubmitField('Filter')
+class SearchForm(FlaskForm):
+    ridetype = SelectField('Ride Type', choices=[
+        ('', 'Select one'),
+        ('commute', 'Commute'),
+        ('errand', 'Errand'),
+        ('leisure', 'Leisure')
+    ], validators=[Optional()])
+    departingFrom = StringField('Departing from', validators=[Optional()])
+    destination = StringField('Destination', validators=[Optional()])
+    departingAt = SelectField('Departing At', choices=[(f"{i}:00", f"{i}:00") for i in range(1, 13)], validators=[Optional()])
+    departingAt_AM_PM = SelectField('AM/PM', choices=[('AM', 'AM'), ('PM', 'PM')], validators=[Optional()])
+    arrival = SelectField('Arrival', choices=[(f"{i}:00", f"{i}:00") for i in range(1, 13)], validators=[Optional()])
+    arrival_AM_PM = SelectField('AM/PM', choices=[('AM', 'AM'), ('PM', 'PM')], validators=[Optional()])
+    submit = SubmitField('Search')
+
 def validate(self):
     # original validate fn
     initial_validation = super(RideForm, self).validate()
