@@ -167,8 +167,8 @@ class SearchForm(FlaskForm):
     departingFrom = StringField('Departing from', validators=[Optional()])
     destination = StringField('Destination', validators=[Optional()])
     time_choice = SelectField('Time Choice', choices=[('Departing', 'Departing'), ('Arriving', 'Arriving')], validators=[Optional()])
-    time_start = SelectField('Time Start', choices=[(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") for i in range(1, 12)], validators=[Optional()])
-    time_end = SelectField('Time End', choices=[(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") for i in range(1, 12)], validators=[Optional()])
+    time_start = SelectField('Time Start', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+    time_end = SelectField('Time End', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
     submit = SubmitField('Search')
 
 def validate(self):
