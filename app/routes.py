@@ -1,4 +1,4 @@
-from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement
+from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement, Ride_Request
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
@@ -163,38 +163,42 @@ def view_profile(user_id):
                            review_count=review_count, reviews=user.received_reviews, 
                            ratings=average_ratings)
 
-@app.route('/view_post/<int:ride_id>', methods=['GET']) 
+@app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
+#@login_required 
 def view_post(ride_id):
     post = Ride.query.get_or_404(ride_id)
     if post is None:
         return "Post not found", 404
     profile = post.user.user_profile
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
-    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
-
-@app.route('/sign_up_form/<int:ride_id>', methods=['GET', 'POST'])
-@login_required
-def sign_up_form(ride_id):
-    ride = Ride.query.get_or_404(ride_id)
     form = SignUpForm()
-
     if form.validate_on_submit():
-        existing_passenger = Ride_Passenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
-        if existing_passenger:
+        existing_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+        if existing_request:
             print('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
         
-        new_request = Ride_Passenger(ride_id=ride_id, passenger_id=current_user.user_id)
+        new_request = Ride_Request(
+            ride_id=ride_id,
+            passenger_id=current_user.user_id,
+            role=form.role.data,
+            commute_days=','.join(form.commute_days.data),
+            accessibility=','.join(form.accessibility.data),
+            custom_message=form.custom_message.data,
+            requested_stops=','.join(form.requested_stops.data)
+        )
         db.session.add(new_request)
         db.session.commit()
 
         custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
-        message = Message(user_id=current_user.user_id, recipient_id=ride.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
+        message = Message(user_id=current_user.user_id, recipient_id=post.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
         db.session.add(message)
         db.session.commit()
 
         print('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
+
+    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
 
 @app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
 @login_required 
@@ -207,11 +211,19 @@ def confirm_ride(ride_id, passenger_id):
             print('You are not authorized to confirm this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-        ride_request = Ride_Passenger.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
+        ride_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
         if ride_request:
-            ride_passanger = Ride_Passenger(ride_id=ride_id, passenger_id=passenger_id, confirmed=True)
-            db.session.add(ride_passanger)
-            db.session.delte(ride_request)
+            ride_passenger = Ride_Passenger(
+                ride_id=ride_id,
+                passenger_id=passenger_id,
+                role=ride_request.role,
+                commute_days=ride_request.commute_days,
+                accessibility=ride_request.accessibility,
+                custom_message=ride_request.custom_message,
+                requested_stops=ride_request.requested_stops
+            )
+            db.session.add(ride_passenger)
+            db.session.delete(ride_request)
             db.session.commit()
 
             print('The ride has been confirmed.')

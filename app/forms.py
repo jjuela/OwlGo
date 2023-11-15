@@ -94,13 +94,10 @@ class RideForm(FlaskForm):
     # add start_date, end_date maybe?
 
 class SignUpForm(FlaskForm):
-    pickup_town = StringField('Pick Up Town', validators=[DataRequired(), Length(max=50)])
-    drop_off_town = StringField('Drop Off Town', validators=[DataRequired(), Length(max=50)])
-    ride_type = SelectField('Ride Type', choices=[
-        ('', 'Select one'),
-        ('commute', 'Commute'),
-        ('errand', 'Errand'),
-        ('leisure', 'Leisure'),
+
+    role = SelectField('Role', choices=[
+        ('driver', 'Driver'),
+        ('passenger', 'Passenger'),
     ], validators=[DataRequired()])
 
     # Specific fields for commute ride
@@ -113,11 +110,19 @@ class SignUpForm(FlaskForm):
         ('sat', 'Saturday'),
         ('sun', 'Sunday'),
     ])
-    
+
+    accessibility = SelectMultipleField('Accessibility', choices=[
+        ('wheelchair', 'Wheelchair'),
+        ('visual', 'Visual impairment'),
+        ('hearing', 'Hearing impairment'),
+        ('service_dog', 'Service dog friendly'),
+        ('quiet', 'Quiet ride'),
+        ('step_free', 'Step-free access'),
+    ])
     custom_message = TextAreaField('Message to Driver', validators=[Length(max=500)], render_kw={"placeholder": " Custom dropoff location, etc."})
     
     # Specific field for errands ride
-    requested_stops = StringField('Requested Stops')
+    requested_stops = FieldList(StringField('Requested Stop'), min_entries=1)
 
     submit = SubmitField('Sign Up')
 
