@@ -155,7 +155,6 @@ class FilterForm(FlaskForm):
         ('quiet', 'Quiet ride'),
         ('step_free', 'Step-free access'),
     ], validators=[Optional()])
-    description = TextAreaField('Description', validators=[Optional()])
     submit = SubmitField('Filter')
 class SearchForm(FlaskForm):
     ridetype = SelectField('Ride Type', choices=[
