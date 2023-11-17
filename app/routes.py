@@ -2,7 +2,7 @@ from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Rev
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, FilterForm
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm
 from flask import request
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -268,44 +268,42 @@ def view_announcement(announcement_id):
 
 @app.route('/Find_A_Ride', methods=['GET', 'POST'])
 def find_a_ride():
-    search_form = SearchForm()
-    filter_form = FilterForm()
+    form = SearchForm()
 
-    if search_form.validate_on_submit():
+    if form.validate_on_submit():
         rides = Ride.query.filter_by(
-            ridetype=search_form.ridetype.data,
-            departingFrom=search_form.departingFrom.data,
-            destination=search_form.destination.data
+            ridetype=form.ridetype.data,
+            departingFrom=form.departingFrom.data,
+            destination=form.destination.data
         )
 
-        if search_form.time_start.data and search_form.time_end.data:
-            start = datetime.strptime(search_form.time_start.data, "%I:%M%p")
-            end = datetime.strptime(search_form.time_end.data, "%I:%M%p")
-            if search_form.time_choice.data == 'Departing':
+        if form.time_start.data and form.time_end.data:
+            start = datetime.strptime(form.time_start.data, "%I:%M%p")
+            end = datetime.strptime(form.time_end.data, "%I:%M%p")
+            if form.time_choice.data == 'Departing':
                 rides = rides.filter(and_(Ride.departingAt >= start, Ride.departingAt <= end))
-            elif search_form.time_choice.data == 'Arriving':
+            elif form.time_choice.data == 'Arriving':
                 rides = rides.filter(and_(Ride.arrival >= start, Ride.arrival <= end))
 
-        if filter_form.validate_on_submit():
-            if filter_form.vehicle_type.data:
-                rides = rides.filter(Ride.vehicle_type == filter_form.vehicle_type.data)
-            if filter_form.duration.data:
-                rides = rides.filter(Ride.duration == filter_form.duration.data)
-            if filter_form.stops.data:
-                rides = rides.filter(Ride.stops.in_(filter_form.stops.data))
-            if filter_form.reccuring.data:
-                rides = rides.filter(Ride.reccuring == filter_form.reccuring.data)
-            if filter_form.recurring_days.data:
-                rides = rides.filter(Ride.recurring_days.in_(filter_form.recurring_days.data))
-            if filter_form.accessibility.data:
-                rides = rides.filter(Ride.accessibility.in_(filter_form.accessibility.data))
+        if form.vehicle_type.data:
+            rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
+        if form.duration.data:
+            rides = rides.filter(Ride.duration == form.duration.data)
+        if form.stops.data:
+            rides = rides.filter(Ride.stops.in_(form.stops.data))
+        if form.reccuring.data:
+            rides = rides.filter(Ride.reccuring == form.reccuring.data)
+        if form.recurring_days.data:
+            rides = rides.filter(Ride.recurring_days.in_(form.recurring_days.data))
+        if form.accessibility.data:
+            rides = rides.filter(Ride.accessibility.in_(form.accessibility.data))
 
         rides = rides.all()
 
     else:
         rides = []
 
-    return render_template('find_a_ride.html', search_form=search_form, filter_form=filter_form, rides=rides)
+    return render_template('find_a_ride.html', form=form, rides=rides)
 
 @app.route('/my_rides')
 def my_rides():
