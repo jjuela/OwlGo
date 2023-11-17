@@ -1,6 +1,7 @@
 from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from datetime import datetime
 
 class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -65,9 +66,22 @@ class Ride(db.Model):
 class Ride_Passenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
-
+    confirmed = db.Column(db.Boolean, default=False)  # Add this line
+    is_driver = db.Column(db.Boolean, default=False)
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')
+
+class Ride_Request(db.Model):
+    ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
+    passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
+    ride = db.relationship('Ride', backref='requests')
+    passenger = db.relationship('User', backref='ride_requests')
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    role = db.Column(db.String(10))
+    commute_days = db.Column(db.String(50))
+    accessibility = db.Column(db.String(100))
+    custom_message = db.Column(db.String(500))
+    requested_stops = db.Column(db.String(100))
 
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

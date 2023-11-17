@@ -93,6 +93,83 @@ class RideForm(FlaskForm):
     submit = SubmitField('Post')                        
     # add start_date, end_date maybe?
 
+class SignUpForm(FlaskForm):
+
+    role = SelectField('Role', choices=[
+        ('driver', 'Driver'),
+        ('passenger', 'Passenger'),
+    ], validators=[DataRequired()])
+
+    # Specific fields for commute ride
+    commute_days = SelectMultipleField('Commute Days', choices=[
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ])
+
+    accessibility = SelectMultipleField('Accessibility', choices=[
+        ('wheelchair', 'Wheelchair'),
+        ('visual', 'Visual impairment'),
+        ('hearing', 'Hearing impairment'),
+        ('service_dog', 'Service dog friendly'),
+        ('quiet', 'Quiet ride'),
+        ('step_free', 'Step-free access'),
+    ])
+    custom_message = TextAreaField('Message to Driver', validators=[Length(max=500)], render_kw={"placeholder": " Custom dropoff location, etc."})
+    
+    # Specific field for errands ride
+    requested_stops = FieldList(StringField('Requested Stop'), min_entries=1)
+
+    submit = SubmitField('Sign Up')
+
+class FilterForm(FlaskForm):
+    vehicle_type = SelectField('Vehicle Type', choices=[
+        ('', 'Select one'),
+        ('sedan', 'Sedan'),
+        ('suv', 'SUV'),
+        ('hatchback', 'Hatchback'),
+        ('pickup', 'Pickup Truck'),
+        ('minivan', 'Minivan')
+    ], validators=[Optional()])
+    duration = StringField('Duration', validators=[Optional()])
+    stops = FieldList(StringField('Stop'), min_entries=1)
+    reccuring = BooleanField('Recurring')
+    recurring_days = SelectMultipleField('Recurring on days:', choices=[
+        ('mon', 'Monday'),
+        ('tue', 'Tuesday'),
+        ('wed', 'Wednesday'),
+        ('thu', 'Thursday'),
+        ('fri', 'Friday'),
+        ('sat', 'Saturday'),
+        ('sun', 'Sunday'),
+    ], validators=[Optional()])
+    accessibility = SelectMultipleField('Accessibility', choices=[
+        ('wheelchair', 'Wheelchair'),
+        ('visual', 'Visual impairment'),
+        ('hearing', 'Hearing impairment'),
+        ('service_dog', 'Service dog friendly'),
+        ('quiet', 'Quiet ride'),
+        ('step_free', 'Step-free access'),
+    ], validators=[Optional()])
+    submit = SubmitField('Filter')
+class SearchForm(FlaskForm):
+    ridetype = SelectField('Ride Type', choices=[
+        ('', 'Select one'),
+        ('commute', 'Commute'),
+        ('errand', 'Errand'),
+        ('leisure', 'Leisure')
+    ], validators=[Optional()])
+    departingFrom = StringField('Departing from', validators=[Optional()])
+    destination = StringField('Destination', validators=[Optional()])
+    time_choice = SelectField('Time Choice', choices=[('Departing', 'Departing'), ('Arriving', 'Arriving')], validators=[Optional()])
+    time_start = SelectField('Time Start', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+    time_end = SelectField('Time End', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+    submit = SubmitField('Search')
+
 def validate(self):
     # original validate fn
     initial_validation = super(RideForm, self).validate()

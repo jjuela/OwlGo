@@ -1,8 +1,8 @@
-from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement
+from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement, Ride_Request
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, FilterForm
 from flask import request
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -190,14 +190,73 @@ def view_profile(user_id):
                            review_count=review_count, reviews=user.received_reviews, 
                            ratings=average_ratings, home_town=home_town, about=about)
 
-@app.route('/view_post/<int:ride_id>', methods=['GET']) 
+@app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
+#@login_required 
 def view_post(ride_id):
     post = Ride.query.get_or_404(ride_id)
     if post is None:
         return "Post not found", 404
     profile = post.user.user_profile
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
+    form = SignUpForm()
+    if form.validate_on_submit():
+        existing_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+        if existing_request:
+            print('You are already signed up for this ride.')
+            return redirect(url_for('view_post', ride_id=ride_id))
+        
+        new_request = Ride_Request(
+            ride_id=ride_id,
+            passenger_id=current_user.user_id,
+            role=form.role.data,
+            commute_days=','.join(form.commute_days.data),
+            accessibility=','.join(form.accessibility.data),
+            custom_message=form.custom_message.data,
+            requested_stops=','.join(form.requested_stops.data)
+        )
+        db.session.add(new_request)
+        db.session.commit()
+
+        custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
+        message = Message(user_id=current_user.user_id, recipient_id=post.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
+        db.session.add(message)
+        db.session.commit()
+
+        print('Your request to join the ride has been sent.')
+        return redirect(url_for('view_post', ride_id=ride_id))
+
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
+
+@app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
+@login_required 
+def confirm_ride(ride_id, passenger_id):
+    ride = Ride.query.get_or_404(ride_id)
+    passenger = User.query.get_or_404(passenger_id)
+
+    if request.method == 'POST':
+        if current_user.user_id != ride.user_id:
+            print('You are not authorized to confirm this ride.')
+            return redirect(url_for('view_post', ride_id=ride_id))
+
+        ride_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
+        if ride_request:
+            ride_passenger = Ride_Passenger(
+                ride_id=ride_id,
+                passenger_id=passenger_id,
+                role=ride_request.role,
+                commute_days=ride_request.commute_days,
+                accessibility=ride_request.accessibility,
+                custom_message=ride_request.custom_message,
+                requested_stops=ride_request.requested_stops
+            )
+            db.session.add(ride_passenger)
+            db.session.delete(ride_request)
+            db.session.commit()
+
+            print('The ride has been confirmed.')
+            return redirect(url_for('view_post', ride_id=ride_id))
+
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 def view_announcement(announcement_id):
@@ -205,6 +264,44 @@ def view_announcement(announcement_id):
     if announcement is None:
         return "Announcement not found", 404
     return render_template('view_announcement.html', announcement=announcement)
+
+@app.route('/Find_A_Ride', methods=['GET', 'POST'])
+def find_a_ride():
+    search_form = SearchForm()
+    filter_form = FilterForm()
+
+    if search_form.validate_on_submit():
+        rides = Ride.query.filter_by(
+            ridetype=search_form.ridetype.data,
+            departingFrom=search_form.departingFrom.data,
+            destination=search_form.destination.data
+        )
+
+        if search_form.time_start.data and search_form.time_end.data:
+            start = datetime.strptime(search_form.time_start.data, "%I:%M%p")
+            end = datetime.strptime(search_form.time_end.data, "%I:%M%p")
+            if search_form.time_choice.data == 'Departing':
+                rides = rides.filter(and_(Ride.departingAt >= start, Ride.departingAt <= end))
+            elif search_form.time_choice.data == 'Arriving':
+                rides = rides.filter(and_(Ride.arrival >= start, Ride.arrival <= end))
+
+        if filter_form.validate_on_submit():
+            rides = rides.filter_by(
+                vehicle_type=filter_form.vehicle_type.data,
+                duration=filter_form.duration.data,
+                stops=filter_form.stops.data,
+                reccuring=filter_form.reccuring.data,
+                recurring_days=filter_form.recurring_days.data,
+                accessibility=filter_form.accessibility.data,
+                description=filter_form.description.data
+            )
+
+        rides = rides.all()
+
+    else:
+        rides = []
+
+    return render_template('find_a_ride.html', search_form=search_form, filter_form=filter_form, rides=rides)
 
 @app.route('/my_rides')
 def my_rides():
