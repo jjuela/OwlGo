@@ -8,6 +8,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import func
+from sqlalchemy import and_
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
