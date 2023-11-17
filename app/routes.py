@@ -294,7 +294,6 @@ def find_a_ride():
                 reccuring=filter_form.reccuring.data,
                 recurring_days=filter_form.recurring_days.data,
                 accessibility=filter_form.accessibility.data,
-                description=filter_form.description.data
             )
 
         rides = rides.all()
