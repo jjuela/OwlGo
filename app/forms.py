@@ -126,7 +126,21 @@ class SignUpForm(FlaskForm):
 
     submit = SubmitField('Sign Up')
 
-class FilterForm(FlaskForm):
+class SearchForm(FlaskForm):
+    # Fields from the original SearchForm
+    ridetype = SelectField('Ride Type', choices=[
+        ('', 'Select one'),
+        ('commute', 'Commute'),
+        ('errand', 'Errand'),
+        ('leisure', 'Leisure')
+    ], validators=[Optional()])
+    departingFrom = StringField('Departing from', validators=[Optional()])
+    destination = StringField('Destination', validators=[Optional()])
+    time_choice = SelectField('Time Choice', choices=[('Departing', 'Departing'), ('Arriving', 'Arriving')], validators=[Optional()])
+    time_start = SelectField('Time Start', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+    time_end = SelectField('Time End', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+
+    # Fields from the FilterForm
     vehicle_type = SelectField('Vehicle Type', choices=[
         ('', 'Select one'),
         ('sedan', 'Sedan'),
@@ -155,19 +169,7 @@ class FilterForm(FlaskForm):
         ('quiet', 'Quiet ride'),
         ('step_free', 'Step-free access'),
     ], validators=[Optional()])
-    submit = SubmitField('Filter')
-class SearchForm(FlaskForm):
-    ridetype = SelectField('Ride Type', choices=[
-        ('', 'Select one'),
-        ('commute', 'Commute'),
-        ('errand', 'Errand'),
-        ('leisure', 'Leisure')
-    ], validators=[Optional()])
-    departingFrom = StringField('Departing from', validators=[Optional()])
-    destination = StringField('Destination', validators=[Optional()])
-    time_choice = SelectField('Time Choice', choices=[('Departing', 'Departing'), ('Arriving', 'Arriving')], validators=[Optional()])
-    time_start = SelectField('Time Start', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
-    time_end = SelectField('Time End', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+
     submit = SubmitField('Search')
 
 def validate(self):

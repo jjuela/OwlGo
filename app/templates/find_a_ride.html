@@ -3,13 +3,6 @@
 <head>
     <title>Find A Ride</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            $("#filterButton").click(function(){
-                $("#filterForm").toggle();
-            });
-        });
-    </script>
 </head>
 <body>
     <h1>Find A Ride</h1>
@@ -35,7 +28,6 @@
         {{ filter_form.reccuring.label }} {{ filter_form.reccuring() }}<br>
         {{ filter_form.recurring_days.label }} {{ filter_form.recurring_days() }}<br>
         {{ filter_form.accessibility.label }} {{ filter_form.accessibility() }}<br>
-        {{ filter_form.description.label }} {{ filter_form.description() }}<br>
         {{ filter_form.submit() }}
     </form>
 
