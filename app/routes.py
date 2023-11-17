@@ -287,14 +287,18 @@ def find_a_ride():
                 rides = rides.filter(and_(Ride.arrival >= start, Ride.arrival <= end))
 
         if filter_form.validate_on_submit():
-            rides = rides.filter_by(
-                vehicle_type=filter_form.vehicle_type.data,
-                duration=filter_form.duration.data,
-                stops=filter_form.stops.data,
-                reccuring=filter_form.reccuring.data,
-                recurring_days=filter_form.recurring_days.data,
-                accessibility=filter_form.accessibility.data,
-            )
+            if filter_form.vehicle_type.data:
+                rides = rides.filter(Ride.vehicle_type == filter_form.vehicle_type.data)
+            if filter_form.duration.data:
+                rides = rides.filter(Ride.duration == filter_form.duration.data)
+            if filter_form.stops.data:
+                rides = rides.filter(Ride.stops.in_(filter_form.stops.data))
+            if filter_form.reccuring.data:
+                rides = rides.filter(Ride.reccuring == filter_form.reccuring.data)
+            if filter_form.recurring_days.data:
+                rides = rides.filter(Ride.recurring_days.in_(filter_form.recurring_days.data))
+            if filter_form.accessibility.data:
+                rides = rides.filter(Ride.accessibility.in_(filter_form.accessibility.data))
 
         rides = rides.all()
 
