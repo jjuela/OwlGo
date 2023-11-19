@@ -16,6 +16,9 @@
         <div class="destination">
             {{ form.destination.label }} {{ form.destination(id="destination") }}
         </div>
+        <div class="stops">
+            {{ form.stops.label }} {{ form.stops(id="stops") }}
+        </div>
         <div class="time-choice">
             {{ form.time_choice.label }} {{ form.time_choice(id="time_choice") }}
         </div>
@@ -25,26 +28,30 @@
         <div class="time-end">
             {{ form.time_end.label }} {{ form.time_end(id="time_end") }}
         </div>
-        <div class="vehicle-type">
-            {{ form.vehicle_type.label }} {{ form.vehicle_type(id="vehicle_type") }}
-        </div>
-        <div class="duration">
-            {{ form.duration.label }} {{ form.duration(id="duration") }}
-        </div>
-        <div class="stops">
-            {{ form.stops.label }} {{ form.stops(id="stops") }}
-        </div>
-        <div class="reccuring">
-            {{ form.reccuring.label }} {{ form.reccuring(id="reccuring") }}
-        </div>
-        <div class="recurring-days">
-            {{ form.recurring_days.label }} {{ form.recurring_days(id="recurring_days") }}
-        </div>
-        <div class="accessibility">
-            {{ form.accessibility.label }} {{ form.accessibility(id="accessibility") }}
-        </div>
-        <div class="submit">
-            {{ form.submit() }}
+
+        <button type="button" id="openModalButton">Filters</button>
+        <div id="filtersModal" class="modal">
+            <div class="modal-content">
+                <span id="closeModalButton">&times;</span>
+                <div class="vehicle-type">
+                    {{ form.vehicle_type.label }} {{ form.vehicle_type(id="vehicle_type") }}
+                </div>
+                <div class="duration">
+                    {{ form.duration.label }} {{ form.duration(id="duration") }}
+                </div>
+                <div class="reccuring">
+                    {{ form.reccuring.label }} {{ form.reccuring(id="reccuring") }}
+                </div>
+                <div class="recurring-days">
+                    {{ form.recurring_days.label }} {{ form.recurring_days(id="recurring_days") }}
+                </div>
+                <div class="accessibility">
+                    {{ form.accessibility.label }} {{ form.accessibility(id="accessibility") }}
+                </div>
+            </div>
+            <div class="submit">
+                {{ form.submit() }}
+            </div>
         </div>
     </form>
     {% if rides %}
@@ -59,7 +66,10 @@
         {% endfor %}
     </ul>
     {% else %}
-    <p>No rides found.</p>
+    <p>No rides found</p>
+    <p>Try a different search</p>
+    <p>or</p>
+    <a href="{{ url_for('start_ride_offer') }}">Start a ride</a>
     {% endif %}
     <script src="{{ url_for('static', filename='js/find_ride.js') }}"></script>
 </div>
