@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/find_ride.css') }}">
+{% endblock %}
+{% block content %}
+<div class="content">
+    <h1>Find a ride</h1>
+    <form method="POST" action="{{ url_for('find_ride') }}">
+        {{ form.hidden_tag() }}
+        <div class="rideType">
+            {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
+        </div>
+        <div class="departingFrom">
+            {{ form.departingFrom.label }} {{ form.departingFrom(id="departingFrom") }}
+        </div>
+        <div class="destination">
+            {{ form.destination.label }} {{ form.destination(id="destination") }}
+        </div>
+        <div class="time-choice">
+            {{ form.time_choice.label }} {{ form.time_choice(id="time_choice") }}
+        </div>
+        <div class="time-start">
+            {{ form.time_start.label }} {{ form.time_start(id="time_start") }}
+        </div>
+        <div class="time-end">
+            {{ form.time_end.label }} {{ form.time_end(id="time_end") }}
+        </div>
+        <div class="vehicle-type">
+            {{ form.vehicle_type.label }} {{ form.vehicle_type(id="vehicle_type") }}
+        </div>
+        <div class="duration">
+            {{ form.duration.label }} {{ form.duration(id="duration") }}
+        </div>
+        <div class="stops">
+            {{ form.stops.label }} {{ form.stops(id="stops") }}
+        </div>
+        <div class="reccuring">
+            {{ form.reccuring.label }} {{ form.reccuring(id="reccuring") }}
+        </div>
+        <div class="recurring-days">
+            {{ form.recurring_days.label }} {{ form.recurring_days(id="recurring_days") }}
+        </div>
+        <div class="accessibility">
+            {{ form.accessibility.label }} {{ form.accessibility(id="accessibility") }}
+        </div>
+        <div class="submit">
+            {{ form.submit() }}
+        </div>
+    </form>
+    {% if rides %}
+    <ul>
+        {% for ride in rides %}
+        <li>
+            <h3>{{ ride.ridetype }}</h3>
+            <p>Departing from: {{ ride.departingFrom }}</p>
+            <p>Destination: {{ ride.destination }}</p>
+            <!-- more -->
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No rides found.</p>
+    {% endif %}
+    <script src="{{ url_for('static', filename='js/find_ride.js') }}"></script>
+</div>
+{% endblock %}
