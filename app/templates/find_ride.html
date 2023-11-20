@@ -7,52 +7,72 @@
     <h1>Find a ride</h1>
     <form method="POST" action="{{ url_for('find_ride') }}">
         {{ form.hidden_tag() }}
-        <div class="rideType">
+        <div id="rideType">
             {{ form.ridetype.label }} {{ form.ridetype(id="ridetype") }}
         </div>
-        <div class="departingFrom">
+        <div id="departingFrom-field">
             {{ form.departingFrom.label }} {{ form.departingFrom(id="departingFrom") }}
         </div>
-        <div class="destination">
+        <div id="destination-field">
             {{ form.destination.label }} {{ form.destination(id="destination") }}
         </div>
-        <div class="stops">
+        <div id="stops-field">
             {{ form.stops.label }} {{ form.stops(id="stops") }}
         </div>
-        <div class="time-choice">
-            {{ form.time_choice.label }} {{ form.time_choice(id="time_choice") }}
-        </div>
-        <div class="time-start">
-            {{ form.time_start.label }} {{ form.time_start(id="time_start") }}
-        </div>
-        <div class="time-end">
-            {{ form.time_end.label }} {{ form.time_end(id="time_end") }}
+        <div class="time-fields">
+            <div id="time-choice-field">
+                {{ form.time_choice.label }} {{ form.time_choice(id="time_choice") }}
+            </div>
+            <div class="start-end">
+                <div id="time-start-field">
+                    {{ form.time_start.label }} {{ form.time_start(id="time_start") }}
+                </div>
+                <div id="time-end-field">
+                    {{ form.time_end.label }} {{ form.time_end(id="time_end") }}
+                </div>
+            </div>
         </div>
 
-        <button type="button" id="openModalButton">Filters</button>
+        <button type="button" id="filter">
+            <img id="filter-image" src="{{ url_for('static', filename='img/filter.png') }}" alt="Filter">
+            Filters
+        </button>
         <div id="filtersModal" class="modal">
             <div class="modal-content">
                 <span id="closeModalButton">&times;</span>
-                <div class="vehicle-type">
+                <div id="vehicle-type-field">
                     {{ form.vehicle_type.label }} {{ form.vehicle_type(id="vehicle_type") }}
                 </div>
-                <div class="duration">
+                <div id="duration-field">
                     {{ form.duration.label }} {{ form.duration(id="duration") }}
                 </div>
-                <div class="reccuring">
+                <div id="reccuring-field">
                     {{ form.reccuring.label }} {{ form.reccuring(id="reccuring") }}
                 </div>
-                <div class="recurring-days">
-                    {{ form.recurring_days.label }} {{ form.recurring_days(id="recurring_days") }}
+                <div id="recurring-days-field">
+                    <label>{{ form.recurring_days.label }}</label>
+                    {% for value, label in form.recurring_days.choices %}
+                        <div>
+                            <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
+                            <label for="recurring_days-{{ loop.index }}">{{ label }}</label>
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="accessibility">
-                    {{ form.accessibility.label }} {{ form.accessibility(id="accessibility") }}
+                <div id="accessibility-field">
+                    <label>{{ form.accessibility.label }}</label>
+                    {% for value, label in form.accessibility.choices %}
+                        <div>
+                            <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
+                            <label for="accessibility-{{ loop.index }}">{{ label }}</label>
+                        </div>
+                    {% endfor %}
                 </div>
-            </div>
-            <div class="submit">
-                {{ form.submit() }}
             </div>
         </div>
+        <button type="submit" id="submit" name="submit">
+            <img id="submit-image" src="{{ url_for('static', filename='img/search2.png') }}" alt="Search">
+            Search
+        </button>
     </form>
     {% if rides %}
     <ul>
@@ -66,10 +86,14 @@
         {% endfor %}
     </ul>
     {% else %}
-    <p>No rides found</p>
-    <p>Try a different search</p>
-    <p>or</p>
-    <a href="{{ url_for('start_ride_offer') }}">Start a ride</a>
+    <div class="no-rides">
+        <p>No rides found</p>
+        <p>Try a different search</p>
+        <p>or</p>
+        <div class="start-ride-link">
+            <a href="{{ url_for('start_ride') }}">Start a ride</a>
+        </div>
+    </div>
     {% endif %}
     <script src="{{ url_for('static', filename='js/find_ride.js') }}"></script>
 </div>

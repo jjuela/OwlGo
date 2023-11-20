@@ -1,12 +1,11 @@
 window.onload = function() {
-    // hide fields first
+    // hide fields on load
     hideAllFields();
 
     document.getElementById('ridetype').addEventListener('change', function() {
-        // hide fields first
         hideAllFields();
 
-        // show on ride type
+        // show fields when ride type is selected
         if (this.value) {
             if (this.value == 'commute') {
                 showCommuteFields();
@@ -18,87 +17,79 @@ window.onload = function() {
         }
     });
 
-    document.getElementById('reccuring').addEventListener('change', function() {
-        if (this.checked) {
-            document.getElementById('recurring_days-field').style.display = 'block';
-        } else {
-            document.getElementById('recurring_days-field').style.display = 'none';
-        }
-    });
-};
-
+// hide fields and filters
 function hideAllFields() {
     document.getElementById('departingFrom-field').style.display = 'none';
     document.getElementById('destination-field').style.display = 'none';
     document.getElementById('duration-field').style.display = 'none';
     document.getElementById('stops-field').style.display = 'none';
     document.getElementById('reccuring-field').style.display = 'none';
-    document.getElementById('recurring_days-field').style.display = 'none';
+    document.getElementById('recurring-days-field').style.display = 'none';
     document.getElementById('accessibility-field').style.display = 'none';
-    document.getElementById('vehicleType-field').style.display = 'none';
+    document.getElementById('vehicle-type-field').style.display = 'none';
     document.getElementById('time-choice-field').style.display = 'none';
-    document.getElementById('submit-field').style.display = 'none';
+    document.getElementById('time-start-field').style.display = 'none';
+    document.getElementById('time-end-field').style.display = 'none';
+    document.getElementById('submit').style.display = 'none';
+    document.getElementById('filter').style.display = 'none';
 }
 
+// show commute fields and filters
 function showCommuteFields() {
     document.getElementById('departingFrom-field').style.display = 'block';
     document.getElementById('destination-field').style.display = 'block';
-    document.getElementById('arrival-field').style.display = 'block';
     document.getElementById('reccuring-field').style.display = 'block';
-    document.getElementById('submit-field').style.display = 'block'; 
+
+    document.getElementById('submit').style.display = 'block'; 
 
     var reccuringCheckbox = document.getElementById('reccuring');
     if (reccuringCheckbox.checked) {
-        document.getElementById('recurring_days-field').style.display = 'block';
+        document.getElementById('recurring-days-field').style.display = 'block';
     }
 
     reccuringCheckbox.addEventListener('change', function() {
         if (this.checked) {
-            document.getElementById('recurring_days-field').style.display = 'block';
+            document.getElementById('recurring-days-field').style.display = 'block';
         } else {
-            document.getElementById('recurring_days-field').style.display = 'none';
+            document.getElementById('recurring-days-field').style.display = 'none';
         }
     });
 
     document.getElementById('accessibility-field').style.display = 'block';
-    document.getElementById('description-field').style.display = 'block';
+    document.getElementById('time-choice-field').style.display = 'block';
+    document.getElementById('time-start-field').style.display = 'block';
+    document.getElementById('time-end-field').style.display = 'block';
+    document.getElementById('filter').style.display = 'block';
 }
 
+// show errand fields and filters
 function showErrandFields() {
     document.getElementById('departingFrom-field').style.display = 'block';
-    document.getElementById('departingAt-field').style.display = 'block';
     document.getElementById('stops-field').style.display = 'block';
     document.getElementById('accessibility-field').style.display = 'block';
-    document.getElementById('description-field').style.display = 'block';
-    document.getElementById('submit-field').style.display = 'block'; 
+    document.getElementById('time-choice-field').style.display = 'block';
+    document.getElementById('time-start-field').style.display = 'block';
+    document.getElementById('time-end-field').style.display = 'block';
+    document.getElementById('submit').style.display = 'block'; 
+    document.getElementById('filter').style.display = 'block';
 }
 
+// show leisure fields and filters
 function showLeisureFields() {
     document.getElementById('departingFrom-field').style.display = 'block';
-    document.getElementById('departingAt-field').style.display = 'block';
     document.getElementById('destination-field').style.display = 'block';
-    document.getElementById('arrival-field').style.display = 'block';
     document.getElementById('duration-field').style.display = 'block';
     document.getElementById('accessibility-field').style.display = 'block';
-    document.getElementById('description-field').style.display = 'block';
-    document.getElementById('submit-field').style.display = 'block'; 
+    document.getElementById('time-choice-field').style.display = 'block';
+    document.getElementById('time-start-field').style.display = 'block';
+    document.getElementById('time-end-field').style.display = 'block';
+    document.getElementById('submit').style.display = 'block'; 
+    document.getElementById('filter').style.display = 'block';
 }
 
-document.getElementById('add-stop').addEventListener('click', function() {
-    var stopsField = document.getElementById('stops-field');
-    var newStopField = document.createElement('input');
-    newStopField.type = 'text';
-    newStopField.name = 'stops';
-    stopsField.appendChild(newStopField);
-
-    // button at the end of the fieldlist
-    var button = document.getElementById('add-stop');
-    stopsField.appendChild(button);
-});
-
-
+// filters modal
 var modal = document.getElementById("filtersModal");
-var btn = document.getElementById("openModalButton");
+var btn = document.getElementById("filter");
 var span = document.getElementById("closeModalButton");
 
 btn.onclick = function() {
@@ -113,5 +104,4 @@ window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
   }
-}
-
+}};

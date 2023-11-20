@@ -136,10 +136,10 @@ class SearchForm(FlaskForm):
     ], validators=[Optional()])
     departingFrom = StringField('Departing from', validators=[Optional()])
     destination = StringField('Destination', validators=[Optional()])
-    time_choice = SelectField('Time Choice', choices=[('Departing', 'Departing'), ('Arriving', 'Arriving')], validators=[Optional()])
+    time_choice = SelectField('Time range', choices=[('Departing', 'Departing'), ('Arriving', 'Arriving')], validators=[Optional()])
     # specify range of times that the user can choose from
-    time_start = SelectField('Time Start', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
-    time_end = SelectField('Time End', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+    time_start = SelectField('from', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
+    time_end = SelectField('to', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
 
     # Fields from the FilterForm
     vehicle_type = SelectField('Vehicle Type', choices=[
@@ -151,7 +151,7 @@ class SearchForm(FlaskForm):
         ('minivan', 'Minivan')
     ], validators=[Optional()])
     duration = StringField('Duration', validators=[Optional()])
-    stops = FieldList(StringField('Stop'), min_entries=1)
+    stops = StringField('Stop', validators=[Optional()])
     reccuring = BooleanField('Recurring')
     recurring_days = SelectMultipleField('Recurring on days:', choices=[
         ('mon', 'Monday'),
@@ -202,8 +202,3 @@ def validate(self):
 
     # all validations passed
     return True
-
-    def __init__(self, is_offer_route, *args, **kwargs):
-        super(RideForm, self).__init__(*args, **kwargs)
-        self.is_offer_route = is_offer_route
-
