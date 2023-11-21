@@ -40,32 +40,41 @@
         <div id="filtersModal" class="modal">
             <div class="modal-content">
                 <span id="closeModalButton">&times;</span>
-                <div id="vehicle-type-field">
-                    {{ form.vehicle_type.label }} {{ form.vehicle_type(id="vehicle_type") }}
-                </div>
-                <div id="duration-field">
-                    {{ form.duration.label }} {{ form.duration(id="duration") }}
-                </div>
-                <div id="reccuring-field">
-                    {{ form.reccuring.label }} {{ form.reccuring(id="reccuring") }}
-                </div>
-                <div id="recurring-days-field">
-                    <label>{{ form.recurring_days.label }}</label>
-                    {% for value, label in form.recurring_days.choices %}
-                        <div>
-                            <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
-                            <label for="recurring_days-{{ loop.index }}">{{ label }}</label>
-                        </div>
-                    {% endfor %}
-                </div>
-                <div id="accessibility-field">
-                    <label>{{ form.accessibility.label }}</label>
-                    {% for value, label in form.accessibility.choices %}
-                        <div>
-                            <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
-                            <label for="accessibility-{{ loop.index }}">{{ label }}</label>
-                        </div>
-                    {% endfor %}
+                <h2>Filters</h2>
+                <div class="filters-fields">
+                    <div id="vehicle-type-field">
+                        {{ form.vehicle_type.label }} {{ form.vehicle_type(id="vehicle_type") }}
+                    </div>
+                    <div id="duration-field">
+                        {{ form.duration.label }} {{ form.duration(id="duration") }}
+                    </div>
+                    <div id="is-offered">
+                        {{ form.is_offered.label }} {{ form.is_offered(id="is_offered") }}
+                    </div>
+                    <div id="is-requested">
+                        {{ form.is_requested.label }} {{ form.is_requested(id="is_requested") }}
+                    </div>
+                    <div id="reccuring-field">
+                        {{ form.reccuring.label }} {{ form.reccuring(id="reccuring") }}
+                    </div>
+                    <div id="recurring-days-field">
+                        <label>{{ form.recurring_days.label }}</label>
+                        {% for value, label in form.recurring_days.choices %}
+                            <div>
+                                <input type="checkbox" value="{{ value }}" id="recurring_days-{{ loop.index }}" name="recurring_days" {% if form.recurring_days.data and value in form.recurring_days.data %} checked {% endif %}>
+                                <label for="recurring_days-{{ loop.index }}">{{ label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div id="accessibility-field">
+                        <label>{{ form.accessibility.label }}</label>
+                        {% for value, label in form.accessibility.choices %}
+                            <div>
+                                <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
+                                <label for="accessibility-{{ loop.index }}">{{ label }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

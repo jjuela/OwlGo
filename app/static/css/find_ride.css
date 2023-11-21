@@ -3,7 +3,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  color: white;
 }
 
 .no-rides {
@@ -36,6 +35,7 @@
   margin-top: 20px;
   text-decoration: none;
   cursor: pointer;
+  padding: 1px 10px 10px 10px;
 }
 
 .start-ride-link:hover {
@@ -69,6 +69,34 @@
   color: black;
 }
 
+.filters-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+#vehicle-type-field label,
+#duration-field label,
+#reccuring-field label,
+#recurring-days-field label,
+#accessibility-field label,
+#is-offered label,
+#is-requested label {
+  flex: 1;
+}
+
+#vehicle-type-field input,
+#duration-field input,
+#reccuring-field input,
+#recurring-days-field input,
+#accessibility-field input,
+#is-offered input,
+#is-requested input {
+  flex: 2;
+}
+
 #closeModalButton {
   position: absolute;
   top: 10px;
@@ -88,22 +116,6 @@
   cursor: pointer;
 }
 
-#reccuring-field input {
-  display: inline-block;
-  width: auto;
-  padding: 0;
-  border: none;
-}
-
-
-#recurring_days-field input[type="checkbox"],
-#accessibility-field input[type="checkbox"] {
-  display: inline-block;
-  width: auto;
-  padding: 0;
-  border: none;
-}
-
 form {
   display: flex;
   justify-content: center;
@@ -111,9 +123,11 @@ form {
   background-color: #535353;
   padding: 20px;
   border-radius: 10px;
+  height: 70px;
   width: 80%;
   gap: 20px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+  color: white;
 }
 
 #departingFrom-field label,
@@ -122,16 +136,6 @@ form {
 #destination-field input,
 #stops-field label,
 #stops-field input,
-#vehicle-type-field label,
-#vehicle-type-field input,
-#duration-field label,
-#duration-field input,
-#reccuring-field label,
-#reccuring-field input,
-#recurring-days-field label,
-#recurring-days-field input,
-#accessibility-field label,
-#accessibility-field input,
 #rideType label,
 #rideType input {
   display: block;
