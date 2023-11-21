@@ -1,14 +1,31 @@
 from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement, Ride_Request
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
-from app import app, db
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm
+from app import app, db, mail
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm
 from flask import request
 from datetime import datetime
+from smtplib import SMTPException
+from sqlalchemy.exc import IntegrityError
+from app.utils import generate_verification_code
 from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import func
 from sqlalchemy import and_
+
+#testing email
+@app.route('/send-mail', methods=['GET', 'POST'])
+def send_mail():
+    mail_form = SendEmail()
+    if mail_form.validate_on_submit():
+        recipient = mail_form.email.data
+        message = mail_form.message.data
+        subject = 'Test Flask email'
+        msg = Message(subject, recipients=[recipient], body=message)
+        mail.send(msg)
+        flash('Email sent successfully!')
+        return redirect(url_for('send_mail'))
+    return render_template('send_mail.html', form=mail_form)
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
@@ -24,14 +41,71 @@ def landing():
             flash('Login failed')
 
     if register_form.validate_on_submit():
+        # Check if email already exists
+        existing_user = User.query.filter_by(email=register_form.email.data).first()
+        if existing_user:
+            flash('An account with this email already exists.')
+            return redirect(url_for('landing'))
+
         user = User(email=register_form.email.data)
         user.set_password(register_form.password.data)
-        db.session.add(user)
-        db.session.commit()
-        flash('Registration successful')
-        return redirect(url_for('create_profile'))
+
+        verification_code = generate_verification_code()
+        user.verification_code = verification_code
+        user.is_verified = False
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+
+            # Send verification email
+            subject = "Your Verification Code"
+            recipient = user.email
+            body = f"Your verification code is: {verification_code}"
+            msg = Message(subject, recipients=[recipient], body=body)
+            
+            try:
+                mail.send(msg)
+            except SMTPException:
+                # Handle email sending failure
+                flash('Failed to send verification email. Please try again.')
+                db.session.delete(user)  # Optionally, remove the user record
+                db.session.commit()
+                return redirect(url_for('landing'))
+
+            flash('Registration successful. Please check your email for the verification code.')
+            return redirect(url_for('verify'))
+
+        except IntegrityError:
+            # Handle database errors, e.g., unique constraint violations
+            db.session.rollback()
+            flash('An error occurred. Please try again.')
+            return redirect(url_for('landing'))
 
     return render_template('landing.html', login_form=login_form, register_form=register_form)
+
+@app.route('/verify', methods=['GET', 'POST'])
+@login_required
+def verify():
+    user = User.query.get(current_user.id)
+    
+    # Check if the user already verified or does not have a verification code
+    if user.is_verified or not user.verification_code:
+        flash('No verification needed or already verified.')
+        return redirect(url_for('landing'))  # Redirect to a suitable page
+
+    form = VerificationForm()
+    if form.validate_on_submit():
+        if user.verification_code == form.verification_code.data:
+            user.is_verified = True
+            user.verification_code = None  # Clear the verification code
+            db.session.commit()
+            flash('Account verified successfully.')
+            return redirect(url_for('create_profile'))
+        else:
+            flash('Invalid verification code. Please try again.')
+
+    return render_template('verify.html', form=form)
 
 @app.route('/home')
 def home():
@@ -39,6 +113,11 @@ def home():
 
 @app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
+        # Check if the current user is verified
+    if not current_user.is_verified:
+        flash('Please verify your account first.')
+        return redirect(url_for('verify'))
+    
     form = ProfileForm()
     if form.validate_on_submit():
         if form.image.data:

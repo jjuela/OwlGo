@@ -21,6 +21,9 @@ class User(UserMixin, db.Model):
     announcements = db.relationship('Announcement', backref='announcer')
     user_profile = db.relationship('Profile', backref='user_profile_backref', uselist=False)
 
+    verification_code = db.Column(db.String(20))  
+    is_verified = db.Column(db.Boolean, default=False)
+
     def set_password(self, password):
         self.password = generate_password_hash(password)
 

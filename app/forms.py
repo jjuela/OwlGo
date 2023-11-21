@@ -18,6 +18,14 @@ class RequiredIf(DataRequired):
         if bool(other_field.data):
             super(RequiredIf, self).__call__(form, field)
 
+class VerificationForm(FlaskForm):
+    verification_code = StringField('Verification Code', validators=[DataRequired()])
+    submit = SubmitField('Verify')
+
+class SendEmail(FlaskForm):
+    email = StringField('Recipient: ', validators=[DataRequired()])
+    message = TextAreaField('Your message:', validators=[DataRequired()])
+    submit = SubmitField('Send')
 class LoginForm(FlaskForm):
      email = StringField('', validators=[DataRequired(), Email()], render_kw={"placeholder": "Email"})
      password = PasswordField('', validators=[DataRequired(), Length(min=8)], render_kw={"placeholder": "Password"})
