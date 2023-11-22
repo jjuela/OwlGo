@@ -345,8 +345,8 @@ def view_announcement(announcement_id):
         return "Announcement not found", 404
     return render_template('view_announcement.html', announcement=announcement)
 
-@app.route('/Find_A_Ride', methods=['GET', 'POST'])
-def find_a_ride():
+@app.route('/find_ride', methods=['GET', 'POST'])
+def find_ride():
     form = SearchForm()
 
     if form.validate_on_submit():
@@ -368,6 +368,10 @@ def find_a_ride():
             rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
+        if form.is_offered.data:
+            rides = rides.filter(Ride.is_offered == form.is_offered.data) # added new filter is_offered, is_requested
+        if form.is_requested.data:
+            rides = rides.filter(Ride.is_offered != form.is_requested.data)
         if form.stops.data:
             rides = rides.filter(Ride.stops.in_(form.stops.data))
         if form.reccuring.data:
@@ -382,7 +386,7 @@ def find_a_ride():
     else:
         rides = []
 
-    return render_template('find_a_ride.html', form=form, rides=rides)
+    return render_template('find_ride.html', form=form, rides=rides)
 
 @app.route('/my_rides')
 def my_rides():
