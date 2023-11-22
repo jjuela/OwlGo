@@ -13,20 +13,6 @@ import os
 from sqlalchemy import func
 from sqlalchemy import and_
 
-#testing email
-@app.route('/send-mail', methods=['GET', 'POST'])
-def send_mail():
-    mail_form = SendEmail()
-    if mail_form.validate_on_submit():
-        recipient = mail_form.email.data
-        message = mail_form.message.data
-        subject = 'Test Flask email'
-        msg = Message(subject, recipients=[recipient], body=message)
-        mail.send(msg)
-        flash('Email sent successfully!')
-        return redirect(url_for('send_mail'))
-    return render_template('send_mail.html', form=mail_form)
-
 @app.route('/', methods=['GET', 'POST'])
 def landing():
     login_form = LoginForm()
@@ -59,7 +45,7 @@ def landing():
             db.session.commit()
 
             # Send verification email
-            subject = "Your Verification Code"
+            subject = "OwlGo Verification Code"
             recipient = user.email
             body = f"Your verification code is: {verification_code}"
             msg = Message(subject, recipients=[recipient], body=body)
@@ -73,8 +59,8 @@ def landing():
                 db.session.commit()
                 return redirect(url_for('landing'))
 
-            flash('Registration successful. Please check your email for the verification code.')
-            return redirect(url_for('verify'))
+            flash('Please check your email for the verification code in order to create a profile.')
+            return redirect(url_for('verify', user_id=user.user_id))  # Pass the user's ID as a parameter
 
         except IntegrityError:
             # Handle database errors, e.g., unique constraint violations
@@ -84,11 +70,10 @@ def landing():
 
     return render_template('landing.html', login_form=login_form, register_form=register_form)
 
-@app.route('/verify', methods=['GET', 'POST'])
-@login_required
-def verify():
-    user = User.query.get(current_user.id)
-    
+@app.route('/verify/<int:user_id>', methods=['GET', 'POST'])  # Add the user_id parameter
+def verify(user_id):  # Add the user_id parameter
+    user = User.query.get(user_id)  # Use the user_id parameter to get the user
+
     # Check if the user already verified or does not have a verification code
     if user.is_verified or not user.verification_code:
         flash('No verification needed or already verified.')
