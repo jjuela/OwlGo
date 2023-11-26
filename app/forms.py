@@ -109,7 +109,7 @@ class SignUpForm(FlaskForm):
     ], validators=[DataRequired()])
 
     # Specific fields for commute ride
-    commute_days = SelectMultipleField('Commute Days', choices=[
+    commute_days = SelectMultipleField('Recurring days', choices=[
         ('mon', 'Monday'),
         ('tue', 'Tuesday'),
         ('wed', 'Wednesday'),
@@ -127,10 +127,10 @@ class SignUpForm(FlaskForm):
         ('quiet', 'Quiet ride'),
         ('step_free', 'Step-free access'),
     ])
-    custom_message = TextAreaField('Message to Driver', validators=[Length(max=500)], render_kw={"placeholder": " Custom dropoff location, etc."})
+    custom_message = TextAreaField('Message to poster', validators=[Length(max=500)], render_kw={"placeholder": " Custom dropoff location, etc."})
     
     # Specific field for errands ride
-    requested_stops = FieldList(StringField('Requested Stop'), min_entries=1)
+    requested_stops = FieldList(StringField('Requested stops'), min_entries=0)
 
     submit = SubmitField('Sign Up')
 

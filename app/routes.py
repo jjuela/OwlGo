@@ -290,7 +290,7 @@ def view_post(ride_id):
         print('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
 
-    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url)
+    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form)
 
 @app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
 @login_required 
