@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+{% block content %}
+<div class="content">
+    <div class="announcements">
+        <h1>Announcements</h1>
+        <div class="announcements-container">
+            {% for announcement in announcements %}
+            <div class="announcement">
+                <h2>Announcement title</h2> 
+                <!-- must add announcement title to models -->
+                <p>{{ announcement.announcement_date.strftime('%Y-%m-%d') }}</p>
+                <p>{{ announcement.announcement_text|truncate(100, True) }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="new-rides">
+        {% for ride in rides %}
+        <div class="ride">
+            <img src="{{ ride.user.user_profile.user_img }}" alt="{{ ride.user.name }}'s profile picture">
+            <h2>{{ ride.user.user_profile.first_name }} {{ ride.user.user_profile.last_name }}</h2>
+            <p>Ride type: {{ ride.ridetype }}</p>
+            {% if ride.ridetype == 'commute' %}
+                <p>Arrival: {{ ride.arrival }}</p>
+                <p>Departing from: {{ ride.departingFrom }}</p>
+                <p>Destination: {{ ride.destination }}</p>
+                <p>Recurring: {{ 'Yes' if ride.reccuring else 'No' }}</p>
+            {% elif ride.ridetype == 'errand' %}
+                <p>Departing at: {{ ride.departingAt }}</p>
+                <p>Departing from: {{ ride.departingFrom }}</p>
+                <p>Stops: {{ ride.stops }}</p>
+            {% elif ride.ridetype == 'leisure' %}
+                <p>Departing at: {{ ride.departingAt }}</p>
+                <p>Departing from: {{ ride.departingFrom }}</p>
+                <p>Destination: {{ ride.destination }}</p>
+                <p>Duration: {{ ride.duration }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

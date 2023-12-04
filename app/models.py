@@ -56,8 +56,6 @@ class Ride(db.Model):
     accessibility = db.Column(db.String(100))
     completed = db.Column(db.Boolean, default=False)
     ride_description = db.Column(db.Text)
-    # start_date = db.Column(db.Date)
-    # end_date = db.Column(db.Date)
     departingAt = db.Column(db.Time)
     arrival = db.Column(db.Time)
     stops = db.Column(db.String(500))

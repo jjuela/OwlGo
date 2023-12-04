@@ -93,7 +93,10 @@ def verify(user_id):  # Add the user_id parameter
 
 @app.route('/home')
 def home():
-    return "home"
+    newest_rides = Ride.query.order_by(Ride.timestamp.desc()).limit(5).all()
+    newest_announcements = Announcement.query.order_by(Announcement.timestamp.desc()).limit(5).all()
+
+    return render_template('home.html', newest_rides=newest_rides, newest_announcements=newest_announcements)
 
 @app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
