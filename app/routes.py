@@ -27,7 +27,6 @@ def landing():
             flash('Login failed')
 
     if register_form.validate_on_submit():
-        # Check if email already exists
         existing_user = User.query.filter_by(email=register_form.email.data).first()
         if existing_user:
             flash('An account with this email already exists.')
@@ -146,6 +145,7 @@ def edit_profile():
 # @app.route('/home_admin')
 
 @app.route('/create_announcement' , methods=['POST'])
+@login_required
 def create_announcement():
     if current_user.admin == False:
         return "You are not an admin!"
@@ -163,6 +163,7 @@ def start_ride():
     return render_template('start_ride.html')
 
 @app.route('/start_ride/offer', methods=['GET', 'POST'])
+@login_required
 def start_ride_offer():
     form = RideForm(is_offer_route=True)
     if form.validate_on_submit():
@@ -196,6 +197,7 @@ def start_ride_offer():
     return render_template('start_ride_offer.html', form=form)
 
 @app.route('/start_ride/request', methods=['GET', 'POST'])
+@login_required
 def start_ride_request():
     form = RideForm(is_offer_route=True)
     if form.validate_on_submit():
@@ -215,12 +217,12 @@ def start_ride_request():
             ridetype=form.ridetype.data,
             departingFrom=form.departingFrom.data,
             destination=form.destination.data,
-            departingAt=departingAt,  # use the converted departingAt
-            arrival=arrival,  # use the converted arrival
+            departingAt=departingAt,
+            arrival=arrival,
             duration=form.duration.data,
-            stops=stops,  # processed stops
+            stops=stops,
             reccuring=form.reccuring.data,
-            recurring_days=','.join(form.recurring_days.data),  # process recurring_days data
+            recurring_days=','.join(form.recurring_days.data),
             accessibility = ','.join(form.accessibility.data),
             ride_description=form.description.data
         )
@@ -228,9 +230,8 @@ def start_ride_request():
         db.session.commit()
     return render_template('start_ride_request.html', form=form)
 
-# @app.route('/find_ride')
-
 @app.route('/view_profile/<int:user_id>', methods=['GET', 'POST'])
+@login_required
 def view_profile(user_id):
     user = User.query.get_or_404(user_id)
     if user is None:
@@ -241,10 +242,9 @@ def view_profile(user_id):
     about = profile.about
 
     completed_rides = len([ride for ride in user.rides if ride.completed])
-    review_count = len(user.received_reviews)  # get the number of received reviews
+    review_count = len(user.received_reviews)
     ratings = user.received_ratings
 
-    # calculate average for each category
     categories = ['communication', 'safety', 'punctuality', 'cleanliness']
     average_ratings = {}
     for category in categories:
@@ -256,7 +256,7 @@ def view_profile(user_id):
                            ratings=average_ratings, home_town=home_town, about=about)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
-#@login_required 
+@login_required 
 def view_post(ride_id):
     post = Ride.query.get_or_404(ride_id)
     if post is None:
@@ -324,6 +324,7 @@ def confirm_ride(ride_id, passenger_id):
     return render_template('confirm_ride.html', ride=ride, passenger=passenger)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
+@login_required
 def view_announcement(announcement_id):
     announcement = Announcement.query.get_or_404(announcement_id)
     if announcement is None:
@@ -331,6 +332,7 @@ def view_announcement(announcement_id):
     return render_template('view_announcement.html', announcement=announcement)
 
 @app.route('/find_ride', methods=['GET', 'POST'])
+@login_required
 def find_ride():
     form = SearchForm()
 
@@ -374,6 +376,7 @@ def find_ride():
     return render_template('find_ride.html', form=form, rides=rides)
 
 @app.route('/my_rides')
+@login_required
 def my_rides():
     return render_template('my_rides.html')
     # after someone signs up for a ride and is accepted, 

@@ -95,11 +95,9 @@ class RideForm(FlaskForm):
         ('service_dog', 'Service dog friendly'),
         ('quiet', 'Quiet ride'),
         ('step_free', 'Step-free access'),
-        # maybe add more?
     ])
     description = TextAreaField('Description', render_kw={"placeholder": "Enter description"}) 
     submit = SubmitField('Post')                        
-    # add start_date, end_date maybe?
 
 class SignUpForm(FlaskForm):
 
