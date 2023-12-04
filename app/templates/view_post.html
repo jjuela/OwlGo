@@ -48,8 +48,60 @@
                 </a>
             </div>
             <h2>Ride {{ "by" if post.is_offered else "for" }} {{ profile.first_name }} {{ profile.last_name }}</h2>
-            <a href="{{ url_for('sign_up_form', ride_id=post.ride_id) }}" class="btn" id="signupButton">Sign up</a>
+            <a href="#" class="btn" id="signupButton">Sign up</a>
         </div>
     </div>
 </div>
+<div id="signupModal" class="signup-modal">
+    <div class="signup-modal-content">
+        <span id='closeSignupModal' class="close-signup">&times;</span>
+        <h2>Sign up for this ride</h2>
+        <form action="{{ url_for('view_post', ride_id=post.ride_id) }}" method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.role.label}} {{ form.role }}
+            {% if post.ridetype == 'commute' and post.reccuring %}
+            <div id="commute_days-field">
+                {{ form.commute_days.label }}
+                {% for value, label in form.commute_days.choices %}
+                    {% if value in post.recurring_days %}
+                        <div>
+                            <input type="checkbox" value="{{ value }}" id="commute_days-{{ loop.index }}" name="commute_days" {% if form.commute_days.data and value in form.commute_days.data %} checked {% endif %}>
+                            <label for="commute_days-{{ loop.index }}">{{ label }}</label>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+            {% if post.ridetype == 'errand' %}
+            <div id="requested_stops-field">
+                {{ form.requested_stops.label }}
+                <div id="stops-container">
+                    {% for stop in form.requested_stops %}
+                        <div class="{{ 'stop-field' if loop.index0 > 0 else '' }}">{{ stop }}</div>
+                    {% endfor %}
+                </div>
+                <button type="button" id="add-stop">Add stop</button>
+            </div>
+        {% endif %}
+            <div id="accessibility-field">
+                {{ form.accessibility.label }}
+                {% for value, label in form.accessibility.choices %}
+                    <div>
+                        <input type="checkbox" value="{{ value }}" id="accessibility-{{ loop.index }}" name="accessibility" {% if form.accessibility.data and value in form.accessibility.data %} checked {% endif %}>
+                        <label for="accessibility-{{ loop.index }}">{{ label }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            {{ form.custom_message.label }} {{ form.custom_message }}
+            {{ form.submit }}
+        </form>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/view_post.js') }}"></script>
 {% endblock %}
+
+<!-- to do:
+nicer css
+convert time to non military time
+display full day names
+display full accessibility names -->

@@ -1,12 +1,9 @@
 window.onload = function() {
-    // hide fields first
     hideAllFields();
 
     document.getElementById('ridetype').addEventListener('change', function() {
-        // hide fields first
         hideAllFields();
 
-        // show on ride type
         if (this.value) {
             if (this.value == 'commute') {
                 showCommuteFields();
@@ -96,7 +93,6 @@ document.getElementById('add-stop').addEventListener('click', function() {
     newStopField.name = 'stops';
     stopsField.appendChild(newStopField);
 
-    // button at the end of the fieldlist
     var button = document.getElementById('add-stop');
     stopsField.appendChild(button);
 });
