@@ -19,9 +19,9 @@
             {% if post.ridetype == 'commute' or post.ridetype == 'leisure' %}
                 <p>Departing from: {{ post.departingFrom }}</p>
                 {% if post.ridetype != 'commute' %}
-                    <p>Departing at: {{ post.departingAt }}</p>
+                    <p>Departing at: {{ post.departingAt.strftime('%l:%M %p').lstrip() }}</p>
                 {% endif %}
-                <p>Arrival: {{ post.arrival }}</p>
+                <p>Arrival: {{ post.arrival.strftime('%l:%M %p').lstrip() }}</p>
                 {% if post.ridetype == 'leisure' %}
                     <p>Duration: {{ post.duration }}</p>
                 {% endif %}
@@ -30,7 +30,7 @@
                 {% endif %}
             {% elif post.ridetype == 'errand' %}
                 <p>Departing from: {{ post.departingFrom }}</p>
-                <p>Departing at: {{ post.departingAt }}</p>
+                <p>Departing at: {{ post.departingAt.strftime('%l:%M %p').lstrip() }}</p>
                 <p>Stops: {{ post.stops }}</p>
             {% endif %}
             {% if post.is_offered %}

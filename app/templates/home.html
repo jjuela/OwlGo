@@ -29,7 +29,7 @@
                     <img class="post-pfp" src="{{ url_for('static', filename='uploads/' + ride.user.user_profile.user_img) }}" alt="{{ ride.user.username }}'s profile picture">
                     <h2 class="ride-title">Ride {{ "by" if ride.is_offered else "for" }} {{ ride.user.user_profile.first_name }} {{ ride.user.user_profile.last_name }}</h2>
                 </div>
-                    <p>Ride type: {{ ride.ridetype }}</p>
+                    <p>Ride type: {{ ride.ridetype.capitalize() }}</p>
                     {% if ride.ridetype == 'commute' %}
                         <p>Arrival: {{ ride.arrival.strftime('%l:%M %p').lstrip() if ride.arrival else None }}</p>
                         <p>Departing from: {{ ride.departingFrom }}</p>
