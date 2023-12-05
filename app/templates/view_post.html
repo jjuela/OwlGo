@@ -26,7 +26,7 @@
                     <p>Duration: {{ post.duration }}</p>
                 {% endif %}
                 {% if post.reccuring %}
-                    <p>Recurring on days: {{ post.recurring_days }}</p>
+                    <p>Recurring on days: {{ get_full_day_names(post.recurring_days) }}</p>
                 {% endif %}
             {% elif post.ridetype == 'errand' %}
                 <p>Departing from: {{ post.departingFrom }}</p>
@@ -38,7 +38,7 @@
                 {% set seats = {'sedan': 4, 'suv': 7, 'pickup': 5, 'hatchback': 5, 'minivan': 8} %}
                 <p>Seats Left: {{ seats[post.vehicle_type] - post.occupants if post.vehicle_type in seats else 'N/A' }}</p>
             {% endif %}
-            <p>Accessibility: {{ post.accessibility }}</p>
+            <p>Accessibility: {{ get_full_accessibility_names(post.accessibility) }}</p>
             <p class="ride_description">Description: {{ post.ride_description }}</p>
         </div>
         <div class="pfp-and-h2">

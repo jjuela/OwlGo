@@ -13,6 +13,25 @@ import os
 from sqlalchemy import func
 from sqlalchemy import and_
 
+@app.context_processor
+def utility_functions():
+    def get_full_day_names(recurring_days):
+        day_names = {'mon': 'Monday', 'tue': 'Tuesday', 'wed': 'Wednesday', 'thu': 'Thursday', 'fri': 'Friday', 'sat': 'Saturday', 'sun': 'Sunday'}
+        return ', '.join(day_names[day] for day in recurring_days.split(','))
+
+    def get_full_accessibility_names(accessibility_keys):
+        accessibility_names = {
+            'wheelchair': 'Wheelchair',
+            'visual': 'Visual impairment',
+            'hearing': 'Hearing impairment',
+            'service_dog': 'Service dog friendly',
+            'quiet': 'Quiet ride',
+            'step_free': 'Step-free access',
+        }
+        return ', '.join(accessibility_names[key] for key in accessibility_keys.split(','))
+
+    return dict(get_full_day_names=get_full_day_names, get_full_accessibility_names=get_full_accessibility_names)
+
 @app.route('/', methods=['GET', 'POST'])
 def landing():
     login_form = LoginForm()
