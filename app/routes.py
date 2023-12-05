@@ -43,7 +43,6 @@ def landing():
             db.session.add(user)
             db.session.commit()
 
-            # Send verification email
             subject = "OwlGo Verification Code"
             recipient = user.email
             body = f"Your verification code is: {verification_code}"
@@ -52,31 +51,28 @@ def landing():
             try:
                 mail.send(msg)
             except SMTPException:
-                # Handle email sending failure
                 flash('Failed to send verification email. Please try again.')
-                db.session.delete(user)  # Optionally, remove the user record
+                db.session.delete(user)
                 db.session.commit()
                 return redirect(url_for('landing'))
 
             flash('Please check your email for the verification code in order to create a profile.')
-            return redirect(url_for('verify', user_id=user.user_id))  # Pass the user's ID as a parameter
+            return redirect(url_for('verify', user_id=user.user_id))
 
         except IntegrityError:
-            # Handle database errors, e.g., unique constraint violations
             db.session.rollback()
             flash('An error occurred. Please try again.')
             return redirect(url_for('landing'))
 
     return render_template('landing.html', login_form=login_form, register_form=register_form)
 
-@app.route('/verify/<int:user_id>', methods=['GET', 'POST'])  # Add the user_id parameter
-def verify(user_id):  # Add the user_id parameter
-    user = User.query.get(user_id)  # Use the user_id parameter to get the user
+@app.route('/verify/<int:user_id>', methods=['GET', 'POST'])
+def verify(user_id):
+    user = User.query.get(user_id)
 
-    # Check if the user already verified or does not have a verification code
     if user.is_verified or not user.verification_code:
         flash('No verification needed or already verified.')
-        return redirect(url_for('landing'))  # Redirect to a suitable page
+        return redirect(url_for('landing'))
 
     form = VerificationForm()
     if form.validate_on_submit():
@@ -100,7 +96,6 @@ def home():
 
 @app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
-        # Check if the current user is verified
     if not current_user.is_verified:
         flash('Please verify your account first.')
         return redirect(url_for('verify'))
@@ -144,8 +139,6 @@ def edit_profile():
         form.hometown.data = profile.home_town
         form.about.data = profile.about
     return render_template('edit_profile.html', form=form)
-        
-# @app.route('/home_admin')
 
 @app.route('/create_announcement' , methods=['POST'])
 @login_required
@@ -186,12 +179,12 @@ def start_ride_offer():
             ridetype=form.ridetype.data,
             departingFrom=form.departingFrom.data,
             destination=form.destination.data,
-            departingAt=departingAt,  # use the converted departingAt
-            arrival=arrival,  # use the converted arrival
+            departingAt=departingAt,
+            arrival=arrival,
             duration=form.duration.data,
-            stops=stops,  # processed stops
+            stops=stops,
             reccuring=form.reccuring.data,
-            recurring_days=','.join(form.recurring_days.data),  # process recurring_days data
+            recurring_days=','.join(form.recurring_days.data),
             accessibility = ','.join(form.accessibility.data),
             ride_description=form.description.data
         )
@@ -240,7 +233,7 @@ def view_profile(user_id):
     if user is None:
         return "User profile unavailable", 404
     
-    profile = user.profile_backref[0]  # get the Profile instance associated with the User. have to do [0] since i don't want to change the backref
+    profile = user.profile_backref[0]
     home_town = profile.home_town
     about = profile.about
 
@@ -359,7 +352,7 @@ def find_ride():
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
         if form.is_offered.data:
-            rides = rides.filter(Ride.is_offered == form.is_offered.data) # added new filter is_offered, is_requested
+            rides = rides.filter(Ride.is_offered == form.is_offered.data)
         if form.is_requested.data:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
         if form.stops.data:
