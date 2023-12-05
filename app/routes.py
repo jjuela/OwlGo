@@ -347,15 +347,17 @@ def view_announcement(announcement_id):
 @login_required
 def find_ride():
     form = SearchForm()
+    rides = Ride.query
 
     if form.validate_on_submit():
-        rides = Ride.query.filter_by(
-            ridetype=form.ridetype.data,
-            departingFrom=form.departingFrom.data,
-            destination=form.destination.data
-        )
+        if form.ridetype.data:
+            rides = rides.filter(Ride.ridetype == form.ridetype.data)
+        if form.departingFrom.data:
+            rides = rides.filter(Ride.departingFrom == form.departingFrom.data)
+        if form.destination.data:
+            rides = rides.filter(Ride.destination == form.destination.data)
 
-        if form.time_start.data and form.time_end.data:
+        if form.time_start.data != "12:00AM" and form.time_end.data != "12:00AM":  # Only apply filter if time_start and time_end are not equal to their default values
             start = datetime.strptime(form.time_start.data, "%I:%M%p")
             end = datetime.strptime(form.time_end.data, "%I:%M%p")
             if form.time_choice.data == 'Departing':
@@ -367,9 +369,9 @@ def find_ride():
             rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
-        if form.is_offered.data:
+        if form.is_offered.data is not None and form.is_offered.data != False:  # Only apply filter if is_offered is not equal to its default value
             rides = rides.filter(Ride.is_offered == form.is_offered.data)
-        if form.is_requested.data:
+        if form.is_requested.data is not None:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
         if form.stops.data:
             rides = rides.filter(Ride.stops.in_(form.stops.data))
@@ -383,7 +385,7 @@ def find_ride():
         rides = rides.all()
 
     else:
-        rides = []
+        rides = rides.all()
 
     return render_template('find_ride.html', form=form, rides=rides)
 
