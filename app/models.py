@@ -56,13 +56,12 @@ class Ride(db.Model):
     accessibility = db.Column(db.String(100))
     completed = db.Column(db.Boolean, default=False)
     ride_description = db.Column(db.Text)
-    # start_date = db.Column(db.Date)
-    # end_date = db.Column(db.Date)
     departingAt = db.Column(db.Time)
     arrival = db.Column(db.Time)
     stops = db.Column(db.String(500))
     duration = db.Column(db.String(50))
     is_offered = db.Column(db.Boolean)
+    ride_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     ratings = db.relationship('Rating', backref='rated_ride')
 
@@ -125,8 +124,9 @@ class Review(db.Model):
 class Announcement(db.Model):
     announcement_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    announcement_title = db.Column(db.String(100))
     announcement_text = db.Column(db.Text)
-    announcement_date = db.Column(db.DateTime)
+    announcement_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref='created_announcements')
 
