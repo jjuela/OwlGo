@@ -13,7 +13,7 @@ import os
 from sqlalchemy import func
 from sqlalchemy import and_
 
-@app.context_processor
+@app.context_processor # this is so templates can use utility functions
 def utility_functions():
     def get_full_day_names(recurring_days):
         day_names = {'mon': 'Monday', 'tue': 'Tuesday', 'wed': 'Wednesday', 'thu': 'Thursday', 'fri': 'Friday', 'sat': 'Saturday', 'sun': 'Sunday'}

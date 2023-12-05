@@ -93,15 +93,9 @@
                 {% endfor %}
             </div>
             {{ form.custom_message.label }} {{ form.custom_message }}
-            {{ form.submit }}
+            {{ form.submit(class="submit-button") }}
         </form>
     </div>
 </div>
 <script src="{{ url_for('static', filename='js/view_post.js') }}"></script>
 {% endblock %}
-
-<!-- to do:
-nicer css
-convert time to non military time
-display full day names
-display full accessibility names -->

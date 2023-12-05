@@ -108,6 +108,7 @@ p {
     border-radius: 10px;
     position: relative;
     color: black;
+    gap: 10px;
 }
 
 .close-signup {
@@ -134,4 +135,28 @@ p {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    gap: 10px;
+}
+
+.signup-modal h2 {
+    color: black;
+}
+
+.submit-button {
+    border-radius: 5px;
+    background-color: #d9d9d9;
+    color: black;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
+    align-self: center;
+}
+
+.submit-button:hover {
+    background-color: #bfbfbf;
 }
