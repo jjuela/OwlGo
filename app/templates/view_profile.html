@@ -18,6 +18,10 @@
                     </button>
                     <button class="more-button">
                         <img src="{{ url_for('static', filename='img/more.png') }}" alt="More">
+                        <div class="dropdown-menu">
+                            <a href="#">Rate</a>
+                            <a href="#">Report</a>
+                        </div>
                     </button>
                 </div>
             </div>
@@ -30,7 +34,7 @@
     <div class="profile-statistics">
         <div class="star"></div>
         <div class="average">
-            <p>0</p> <!--pull from ratings later-->
+            <p>{{ average_rating }}</p>
         </div>
         <div class="vertical-line-s"></div>
         <div class="completed-rides">

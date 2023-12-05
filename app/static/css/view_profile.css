@@ -61,6 +61,40 @@
     background-color: #bfbfbf;
 }
 
+.more-button {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #d9d9d9;
+    min-width: 80px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.dropdown-menu a {
+    color: black;
+    padding: 5px;
+    text-decoration: none;
+    display: block;
+    background-color: #c1c0c0;
+    margin: 10px;
+    border-radius: 10px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.dropdown-menu a:hover {
+    background-color: #a4a2a2;
+}
+
+.more-button:hover .dropdown-menu {
+    display: block;
+}
+
 .home-about {
     width: 200px;
     text-align: center;
@@ -80,14 +114,14 @@
 
 .vertical-line-s {
     height: 30px;
-    border-left: 3px solid white;
     margin: 0 5px;
     border-radius: 10px;
+    background-color: white;
 }
 
 .star {
-    width: .94em;
-    height: .9em;
+    width: 1em;
+    height: 1.2em;
     background-image: url('/static/img/star.png');
     background-size: cover;
     margin-bottom: 3px;

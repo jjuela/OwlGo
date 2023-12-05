@@ -66,6 +66,12 @@ def landing():
 
     return render_template('landing.html', login_form=login_form, register_form=register_form)
 
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('landing'))
+
 @app.route('/verify/<int:user_id>', methods=['GET', 'POST'])
 def verify(user_id):
     user = User.query.get(user_id)
@@ -247,9 +253,19 @@ def view_profile(user_id):
         category_ratings = [getattr(rating, category) for rating in ratings]
         average_ratings[category] = sum(category_ratings) / len(category_ratings) if category_ratings else 0
 
+    total_ratings = 0
+    total_count = 0
+    for category in categories:
+        category_ratings = [getattr(rating, category) for rating in ratings]
+        if category_ratings:
+            total_ratings += sum(category_ratings)
+            total_count += len(category_ratings)
+
+    average_rating = total_ratings / total_count if total_count else 0
+
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, home_town=home_town, about=about)
+                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
 @login_required 
