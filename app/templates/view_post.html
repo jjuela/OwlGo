@@ -98,13 +98,14 @@
         </form>
     </div>
 </div>
-<div id="reportModal" class="report-modal">
+<div id="reportModal" class="report-modal" style="display: none;">
     <div class="report-modal-content">
         <span class="close-report">&times;</span>
+        <h2>Report this post</h2>
         <form method="POST">
-            {{ form.hidden_tag() }}
-            {{ form.report_text.label }} {{ form.report_text() }}
-            {{ form.submit() }}
+            {{ report_form.hidden_tag() }}
+            {{ report_form.report_text.label }} {{ report_form.report_text() }}
+            {{ report_form.submit() }}
         </form>
     </div>
 </div>

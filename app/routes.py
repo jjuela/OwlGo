@@ -1,4 +1,4 @@
-from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement, Ride_Request, Ride_Report, User_Report
+from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, mail
@@ -176,7 +176,7 @@ def create_announcement():
             announcement = Announcement(announcement_text=form.announcetext.data, announcement_date=form.announcedate.data)
             db.session.add(announcement)
             db.session.commit()
-            return "Announcement created!"
+            return redirect(url_for('view_announcement', announcement_id=announcement.announcement_id))
     return render_template('create_announcement.html', form=form)
 
 @app.route('/start_ride/')
@@ -286,7 +286,7 @@ def view_profile(user_id):
 
     form = ReportForm()
     if form.validate_on_submit():
-        report = User_Report(reporter_id=current_user.id, reported_user_id=user.id, report_text=form.report_text.data)
+        report = UserReport(reporter_id=current_user.id, reported_user_id=user.id, report_text=form.report_text.data)
         db.session.add(report)
         db.session.commit()
         flash('Your report has been submitted.', 'success')
@@ -308,7 +308,7 @@ def view_post(ride_id):
     report_form = ReportForm()
 
     if report_form.validate_on_submit():
-        report = Ride_Report(user_id=current_user.id, ride_id=ride_id, report_text=report_form.report_text.data)
+        report = RideReport(user_id=current_user.id, ride_id=ride_id, report_text=report_form.report_text.data)
         db.session.add(report)
         db.session.commit()
         flash('Your report has been submitted.', 'success')
@@ -320,7 +320,7 @@ def view_post(ride_id):
             print('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
         
-        new_request = Ride_Request(
+        new_request = RideRequest(
             ride_id=ride_id,
             passenger_id=current_user.user_id,
             role=form.role.data,
@@ -353,9 +353,9 @@ def confirm_ride(ride_id, passenger_id):
             print('You are not authorized to confirm this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-        ride_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
+        ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
         if ride_request:
-            ride_passenger = Ride_Passenger(
+            ride_passenger = RidePassenger(
                 ride_id=ride_id,
                 passenger_id=passenger_id,
                 role=ride_request.role,
