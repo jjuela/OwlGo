@@ -195,6 +195,7 @@ form {
   border-radius: 10px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
   transition: background-color 0.3s ease-in-out;
+  height: 270px;
 }
 
 .ride:hover {
