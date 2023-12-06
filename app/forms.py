@@ -181,6 +181,10 @@ class SearchForm(FlaskForm):
 
     submit = SubmitField('Search')
 
+class ReportForm(FlaskForm):
+    report_text = TextAreaField('Report Text', validators=[DataRequired()])
+    submit = SubmitField('Report')
+
 def validate(self):
     # original validate fn
     initial_validation = super(RideForm, self).validate()

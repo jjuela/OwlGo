@@ -1,8 +1,8 @@
-from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement, Ride_Request
+from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement, Ride_Request, Ride_Report, User_Report
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, mail
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, ReportForm
 from flask import request
 from datetime import datetime
 from smtplib import SMTPException
@@ -282,9 +282,17 @@ def view_profile(user_id):
 
     average_rating = total_ratings / total_count if total_count else 0
 
+    form = ReportForm()
+    if form.validate_on_submit():
+        report = User_Report(reporter_id=current_user.id, reported_user_id=user.id, report_text=form.report_text.data)
+        db.session.add(report)
+        db.session.commit()
+        flash('Your report has been submitted.', 'success')
+        return redirect(url_for('view_profile', user_id=user.id))
+
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating)
+                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
 @login_required 
@@ -295,6 +303,15 @@ def view_post(ride_id):
     profile = post.user.user_profile
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
     form = SignUpForm()
+    report_form = ReportForm()
+
+    if report_form.validate_on_submit():
+        report = Ride_Report(user_id=current_user.id, ride_id=ride_id, report_text=report_form.report_text.data)
+        db.session.add(report)
+        db.session.commit()
+        flash('Your report has been submitted.', 'success')
+        return redirect(url_for('view_post', ride_id=ride_id))
+    
     if form.validate_on_submit():
         existing_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
         if existing_request:
@@ -321,7 +338,7 @@ def view_post(ride_id):
         print('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
 
-    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form)
+    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form, report_form=report_form)
 
 @app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
 @login_required 
@@ -376,7 +393,7 @@ def find_ride():
         if form.destination.data:
             rides = rides.filter(Ride.destination == form.destination.data)
 
-        if form.time_start.data != "12:00AM" and form.time_end.data != "12:00AM":  # Only apply filter if time_start and time_end are not equal to their default values
+        if form.time_start.data != "12:00AM" and form.time_end.data != "12:00AM":  # only apply filter if time_start and time_end are not equal to their default values
             start = datetime.strptime(form.time_start.data, "%I:%M%p")
             end = datetime.strptime(form.time_end.data, "%I:%M%p")
             if form.time_choice.data == 'Departing':
@@ -388,7 +405,7 @@ def find_ride():
             rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
-        if form.is_offered.data is not None and form.is_offered.data != False:  # Only apply filter if is_offered is not equal to its default value
+        if form.is_offered.data is not None and form.is_offered.data != False:  # only apply filter if is_offered is not equal to its default value
             rides = rides.filter(Ride.is_offered == form.is_offered.data)
         if form.is_requested.data is not None:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
@@ -416,4 +433,3 @@ def my_rides():
     # they should be able to see it here
     # this should have active rides and history of rides
     # this should also have an option to cancel a ride
-

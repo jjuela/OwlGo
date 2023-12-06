@@ -37,4 +37,21 @@ document.getElementById('add-stop').addEventListener('click', function() {
   stopsField.appendChild(button);
 });
 
-// hide fields based on ride type
+var reportModal = document.getElementById("reportModal");
+var reportSpan = document.getElementsByClassName("close-report")[0];
+
+function openReportModal() {
+    reportModal.style.display = "block";
+}
+
+reportSpan.onclick = function() {
+    modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+    if (event.target == reportModal) {
+        reportModal.style.display = "none";
+    }
+}
+
+

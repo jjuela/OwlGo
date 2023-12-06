@@ -193,3 +193,44 @@
     flex-direction: column;
     align-items: center;
 }
+
+.report-modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    height: 70%;
+    border-radius: 10px;
+    position: relative;
+}
+
+.report-modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.close-report {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 2px;
+    transition: color 0.3s ease-in-out;
+}
+
+.close-report:hover,
+.close-report:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
