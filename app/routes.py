@@ -433,3 +433,78 @@ def my_rides():
     # they should be able to see it here
     # this should have active rides and history of rides
     # this should also have an option to cancel a ride
+
+@app.route('/admin_hub', methods=['GET', 'POST'])
+@login_required
+def admin_hub():
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        return render_template('admin_hub.html')
+
+@app.route('/admin_hub/view_reports', methods=['GET', 'POST'])
+@login_required
+def view_reports():
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        user_reports = User_Report.query.all()
+        ride_reports = Ride_Report.query.all()
+        return render_template('view_reports.html, user_reports=user_reports, ride_reports=ride_reports')
+
+@app.route('/admin_hub/view_reports/user/<int:report_id>', methods=['GET', 'POST'])
+@login_required
+def view_user_report(report_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        report = User_Report.query.get_or_404(report_id)
+        if report is None:
+            return "Report not found", 404
+        return render_template('view_user_report.html', report=report)
+
+@app.route('/admin_hub/view_reports/ride/<int:report_id>', methods=['GET', 'POST'])
+@login_required
+def view_ride_report(report_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        report = Ride_Report.query.get_or_404(report_id)
+        if report is None:
+            return "Report not found", 404
+        return render_template('view_ride_report.html', report=report)
+
+@app.route('/admin_hub/ban_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def ban_user(user_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        user = User.query.get_or_404(user_id)
+        if user is None:
+            return "User not found", 404
+        user.banned = True
+        db.session.commit()
+        return "User has been banned"
+
+@app.route('/admin_hub/delete_post/<int:ride_id>', methods=['GET', 'POST'])
+@login_required
+def delete_post(ride_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        ride = Ride.query.get_or_404(ride_id)
+        if ride is None:
+            return "Ride not found", 404
+        db.session.delete(ride)
+        db.session.commit()
+        return "Ride has been deleted"
+
+@app.route('/admin_hub/view_usage', methods=['GET', 'POST']) # where usage statistics will go
+@login_required
+def view_usage():
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        return render_template('view_usage.html')
+    
