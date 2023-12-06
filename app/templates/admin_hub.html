@@ -4,15 +4,28 @@
 {% endblock %}
 {% block content %}
 <div class="content">
+    <h1>Admin Hub</h1>
     <div class="button-group">
         <div class="announcement">
-            <a href="{{ url_for('create_announcement') }}">Create announcement</a>
+            <h2>Create announcement</h2>
+            <div class="announcement-icon">
+                <img src="{{ url_for('static', filename='img/announcement.png') }}" alt="Announcement">
+            </div>
+            <a href="{{ url_for('create_announcement') }}"></a>
         </div>
         <div class="reports">
-            <a href="{{ url_for('view_reports') }}">View reports</a>
+            <h2>View reports</h2>
+            <div class ="reports-icon">
+                <img src="{{ url_for('static', filename='img/reports.png') }}" alt="Reports">
+            </div>
+            <a href="{{ url_for('view_reports') }}"></a>
         </div>
         <div class="stats">
-            <a href="{{ url_for('view_usage') }}">View stats</a>
+            <h2>View stats</h2>
+            <div class="stats-icon">
+                <img src="{{ url_for('static', filename='img/stats.png') }}" alt="Stats">
+            </div>
+            <a href="{{ url_for('view_usage') }}"></a>
         </div>
     </div>
 </div>
