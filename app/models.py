@@ -2,6 +2,8 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
+from itsdangerous.signer import TimedJSONWebSignatureSerializer as Serializer
+from flask import current_app
 
 class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -26,6 +28,19 @@ class User(UserMixin, db.Model):
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
+
+    def get_reset_password_token(self, expires_in=600):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
+        return s.dumps({'reset_password': self.user_id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['reset_password'])
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
