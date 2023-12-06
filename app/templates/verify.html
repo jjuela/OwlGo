@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Verify Your Account</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.verification_code.label }}<br>
+            {{ form.verification_code(size=32) }}<br>
+            {% for error in form.verification_code.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p><input type="submit" value="Verify"></p>
+    </form>
+{% endblock %}
