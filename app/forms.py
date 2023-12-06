@@ -54,8 +54,9 @@ class ProfileForm(FlaskForm):
 
 
 class AnnouncementForm(FlaskForm):
-    announcetext = TextAreaField('Announcement', validators=[DataRequired()])
-    announcedate = DateField('Date', validators=[DataRequired()])
+    announcement_title = StringField('Title', validators=[DataRequired(), Length(max=100)])
+    announcement_text = TextAreaField('Announcement', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 class RideForm(FlaskForm):
     ridetype = SelectField('Ride Type', choices=[
@@ -180,6 +181,10 @@ class SearchForm(FlaskForm):
     ], validators=[Optional()])
 
     submit = SubmitField('Search')
+
+class ReportForm(FlaskForm):
+    report_text = TextAreaField('Write your report', validators=[DataRequired()])
+    submit = SubmitField('Report')
 
 def validate(self):
     # original validate fn

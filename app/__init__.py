@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_moment import Moment
 import os
+from flask_migrate import Migrate
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -13,6 +14,8 @@ app = Flask(__name__)
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:beholders_db08@35.185.60.149/beholdersDB'
 db = SQLAlchemy(app)
+
+migrate = Migrate(app, db)
 
 # CSRF Protection
 csrf = CSRFProtect(app)

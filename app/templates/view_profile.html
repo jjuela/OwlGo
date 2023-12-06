@@ -20,7 +20,7 @@
                         <img src="{{ url_for('static', filename='img/more.png') }}" alt="More">
                         <div class="dropdown-menu">
                             <a href="#">Rate</a>
-                            <a href="#">Report</a>
+                            <a href="#" onclick="openReportModal()">Report</a>
                         </div>
                     </button>
                 </div>
@@ -71,4 +71,16 @@
         </div>
     </div>
 </div>
+<div id="reportModal" class="report-modal">
+    <div class="report-modal-content">
+        <h2>Report {{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h2>
+        <span class="close-report">&times;</span>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.report_text.label }} {{ form.report_text() }}
+            {{ form.submit() }}
+        </form>
+    </div>
+</div>
+    <script src="{{ url_for('static', filename='js/view_profile.js') }}"></script>
 {% endblock %}

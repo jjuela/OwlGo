@@ -65,7 +65,7 @@ class Ride(db.Model):
 
     ratings = db.relationship('Rating', backref='rated_ride')
 
-class Ride_Passenger(db.Model):
+class RidePassenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
     confirmed = db.Column(db.Boolean, default=False)  # Add this line
@@ -73,7 +73,7 @@ class Ride_Passenger(db.Model):
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')
 
-class Ride_Request(db.Model):
+class RideRequest(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
     ride = db.relationship('Ride', backref='requests')
@@ -129,6 +129,26 @@ class Announcement(db.Model):
     announcement_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
     user = db.relationship('User', backref='created_announcements')
+
+class RideReport(db.Model):
+    report_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), nullable=False)
+    report_text = db.Column(db.Text)
+    report_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='created_ride_reports')
+    ride = db.relationship('Ride', backref='ride_reports')
+
+class UserReport(db.Model):
+    report_id = db.Column(db.Integer, primary_key=True)
+    reporter_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    reported_user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    report_text = db.Column(db.Text)
+    report_timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    reporter = db.relationship('User', foreign_keys=[reporter_id], backref='created_user_reports')
+    reported_user = db.relationship('User', foreign_keys=[reported_user_id], backref='user_reports')
 
 @login.user_loader
 def load_user(id):
