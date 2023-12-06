@@ -58,13 +58,12 @@ h1 {
     width: auto;
 }
 
-.announcement a, .reports a, .stats a {
-    color: white;
+.button-group a {
     text-decoration: none;
 }
 
 .announcement:hover, .reports:hover, .stats:hover {
-    background: #333333;
+    background: #808080;
 }
 
 .announcement:hover .announcement-icon, .reports:hover .reports-icon, .stats:hover .stats-icon {

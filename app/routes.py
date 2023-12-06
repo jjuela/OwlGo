@@ -12,6 +12,15 @@ from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import func
 from sqlalchemy import and_
+from pytz import timezone, utc
+
+@app.template_filter('datetimefilter')
+def datetimefilter(value, format='%B %d, %Y %I:%M %p'):
+    if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+        value = utc.localize(value)
+    eastern = timezone('US/Eastern')
+    value = value.astimezone(eastern)
+    return value.strftime(format)
 
 @app.context_processor # this is so templates can use utility functions
 def utility_functions():
@@ -165,18 +174,18 @@ def edit_profile():
         form.about.data = profile.about
     return render_template('edit_profile.html', form=form)
 
-@app.route('/create_announcement' , methods=['POST'])
+@app.route('/create_announcement' , methods=['GET', 'POST'])
 @login_required
 def create_announcement():
     if current_user.admin == False:
         return "You are not an admin!"
     else:
         form = AnnouncementForm()
-        if form.validate_on_submit():
-            announcement = Announcement(announcement_text=form.announcetext.data, announcement_date=form.announcedate.data)
-            db.session.add(announcement)
-            db.session.commit()
-            return redirect(url_for('view_announcement', announcement_id=announcement.announcement_id))
+    if form.validate_on_submit():
+        announcement = Announcement(user_id=current_user.user_id, announcement_title=form.announcement_title.data, announcement_text=form.announcement_text.data)
+        db.session.add(announcement)
+        db.session.commit()
+        return redirect(url_for('view_announcement', announcement_id=announcement.announcement_id))
     return render_template('create_announcement.html', form=form)
 
 @app.route('/start_ride/')
@@ -450,9 +459,9 @@ def view_reports():
     if current_user.admin == False:
         return "You are not an admin!"
     else:
-        user_reports = User_Report.query.all()
-        ride_reports = Ride_Report.query.all()
-        return render_template('view_reports.html, user_reports=user_reports, ride_reports=ride_reports')
+        user_reports = UserReport.query.all()
+        ride_reports = RideReport.query.all()
+        return render_template('view_reports.html', user_reports=user_reports, ride_reports=ride_reports)
 
 @app.route('/admin_hub/view_reports/user/<int:report_id>', methods=['GET', 'POST'])
 @login_required
@@ -460,7 +469,7 @@ def view_user_report(report_id):
     if current_user.admin == False:
         return "You are not an admin!"
     else:
-        report = User_Report.query.get_or_404(report_id)
+        report = UserReport.query.get_or_404(report_id)
         if report is None:
             return "Report not found", 404
         return render_template('view_user_report.html', report=report)
@@ -471,7 +480,7 @@ def view_ride_report(report_id):
     if current_user.admin == False:
         return "You are not an admin!"
     else:
-        report = Ride_Report.query.get_or_404(report_id)
+        report = RideReport.query.get_or_404(report_id)
         if report is None:
             return "Report not found", 404
         return render_template('view_ride_report.html', report=report)

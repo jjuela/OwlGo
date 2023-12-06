@@ -2,6 +2,7 @@
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/view_announcement.css') }}">
 {% endblock %}
+{% block content %}
 <div class="content">
     <div class="announcement">
         <div class="announcement-header">
@@ -9,9 +10,9 @@
                 <img src="{{ url_for('static', filename='img/announcement.png') }}" alt="Announcement">
             </div>
             <h1>{{ announcement.announcement_title }}</h1>
-            <p>{{ announcement.announcement_date }}</p>
+            <p>{{ announcement.announcement_timestamp|datetimefilter }}</p>
         </div>
-        <p>{{ announcement.announcement_content }}</p>
+        <p>{{ announcement.announcement_text }}</p>
     </div>
 </div>
-{% block content %}
+{% endblock %}

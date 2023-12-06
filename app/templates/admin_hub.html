@@ -6,27 +6,30 @@
 <div class="content">
     <h1>Admin Hub</h1>
     <div class="button-group">
-        <div class="announcement">
-            <h2>Create announcement</h2>
-            <div class="announcement-icon">
-                <img src="{{ url_for('static', filename='img/announcement.png') }}" alt="Announcement">
+        <a href="{{ url_for('create_announcement') }}">
+            <div class="announcement">
+                <h2>Create announcement</h2>
+                <div class="announcement-icon">
+                    <img src="{{ url_for('static', filename='img/announcement.png') }}" alt="Announcement">
+                </div>
             </div>
-            <a href="{{ url_for('create_announcement') }}"></a>
-        </div>
-        <div class="reports">
-            <h2>View reports</h2>
-            <div class ="reports-icon">
-                <img src="{{ url_for('static', filename='img/reports.png') }}" alt="Reports">
+        </a>
+        <a href="{{ url_for('view_reports') }}">
+            <div class="reports">
+                <h2>View reports</h2>
+                <div class ="reports-icon">
+                    <img src="{{ url_for('static', filename='img/reports.png') }}" alt="Reports">
+                </div>
             </div>
-            <a href="{{ url_for('view_reports') }}"></a>
-        </div>
-        <div class="stats">
-            <h2>View stats</h2>
-            <div class="stats-icon">
-                <img src="{{ url_for('static', filename='img/stats.png') }}" alt="Stats">
+        </a>
+        <a href="{{ url_for('view_usage') }}">
+            <div class="stats">
+                <h2>View stats</h2>
+                <div class="stats-icon">
+                    <img src="{{ url_for('static', filename='img/stats.png') }}" alt="Stats">
+                </div>
             </div>
-            <a href="{{ url_for('view_usage') }}"></a>
-        </div>
+        </a>
     </div>
 </div>
 {% endblock %}

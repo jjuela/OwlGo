@@ -54,8 +54,9 @@ class ProfileForm(FlaskForm):
 
 
 class AnnouncementForm(FlaskForm):
-    announcetext = TextAreaField('Announcement', validators=[DataRequired()])
-    announcedate = DateField('Date', validators=[DataRequired()])
+    announcement_title = StringField('Title', validators=[DataRequired(), Length(max=100)])
+    announcement_text = TextAreaField('Announcement', validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
 class RideForm(FlaskForm):
     ridetype = SelectField('Ride Type', choices=[

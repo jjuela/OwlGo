@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/create_announcement.css') }}">
+{% endblock %}
+{% block content %}
+<div class="content">
+    <h1>Create Announcement</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div>
+            {{ form.announcement_title.label }}<br>
+            {{ form.announcement_title(size=32) }}
+        </div>
+        <div>
+            {{ form.announcement_text.label }}<br>
+            {{ form.announcement_text(rows=5) }}
+        </div>
+        <div>
+            {{ form.submit() }}
+        </div>
+    </form>
+</div>
+{% endblock %}

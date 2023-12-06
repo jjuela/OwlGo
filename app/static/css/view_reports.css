@@ -1,0 +1,45 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    color: black;
+    font-weight: 700;
+    margin-bottom: 50px;
+    font-size: 50px;
+}
+
+.reports {
+    display: flex;
+    justify-content: space-evenly;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.report {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    border-radius: 10px;
+    background: #535353;
+    color: white;
+    transition: background 0.3s ease-in-out;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.user-reports, .ride-reports {
+    width: 45%;
+}
+
+.user-reports h2, .ride-reports h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: black;
+    text-align: center;
+    margin-top: 10px;
+}
