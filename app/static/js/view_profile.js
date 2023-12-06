@@ -1,16 +1,13 @@
-var modal = document.getElementById("reportModal");
-var span = document.getElementsByClassName("close-report")[0];
-
-function openModal() {
-    modal.style.display = "block";
+function openReportModal() {
+  var reportModal = document.getElementById("reportModal");
+  reportModal.style.display = "block";
 }
 
-span.onclick = function() {
-    modal.style.display = "none";
-}
+window.onload = function() {
+  var reportModal = document.getElementById("reportModal");
+  var reportSpan = document.getElementsByClassName("close-report")[0];
 
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
+  reportSpan.onclick = function() {
+    reportModal.style.display = "none";
+  }
 }

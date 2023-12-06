@@ -73,6 +73,7 @@
 </div>
 <div id="reportModal" class="report-modal">
     <div class="report-modal-content">
+        <h2>Report {{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h2>
         <span class="close-report">&times;</span>
         <form method="POST">
             {{ form.hidden_tag() }}

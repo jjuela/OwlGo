@@ -182,7 +182,7 @@ class SearchForm(FlaskForm):
     submit = SubmitField('Search')
 
 class ReportForm(FlaskForm):
-    report_text = TextAreaField('Report Text', validators=[DataRequired()])
+    report_text = TextAreaField('Write your report', validators=[DataRequired()])
     submit = SubmitField('Report')
 
 def validate(self):
