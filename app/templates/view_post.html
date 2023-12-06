@@ -19,18 +19,18 @@
             {% if post.ridetype == 'commute' or post.ridetype == 'leisure' %}
                 <p>Departing from: {{ post.departingFrom }}</p>
                 {% if post.ridetype != 'commute' %}
-                    <p>Departing at: {{ post.departingAt }}</p>
+                    <p>Departing at: {{ post.departingAt.strftime('%l:%M %p').lstrip() }}</p>
                 {% endif %}
-                <p>Arrival: {{ post.arrival }}</p>
+                <p>Arrival: {{ post.arrival.strftime('%l:%M %p').lstrip() }}</p>
                 {% if post.ridetype == 'leisure' %}
                     <p>Duration: {{ post.duration }}</p>
                 {% endif %}
                 {% if post.reccuring %}
-                    <p>Recurring on days: {{ post.recurring_days }}</p>
+                    <p>Recurring on days: {{ get_full_day_names(post.recurring_days) }}</p>
                 {% endif %}
             {% elif post.ridetype == 'errand' %}
                 <p>Departing from: {{ post.departingFrom }}</p>
-                <p>Departing at: {{ post.departingAt }}</p>
+                <p>Departing at: {{ post.departingAt.strftime('%l:%M %p').lstrip() }}</p>
                 <p>Stops: {{ post.stops }}</p>
             {% endif %}
             {% if post.is_offered %}
@@ -38,7 +38,7 @@
                 {% set seats = {'sedan': 4, 'suv': 7, 'pickup': 5, 'hatchback': 5, 'minivan': 8} %}
                 <p>Seats Left: {{ seats[post.vehicle_type] - post.occupants if post.vehicle_type in seats else 'N/A' }}</p>
             {% endif %}
-            <p>Accessibility: {{ post.accessibility }}</p>
+            <p>Accessibility: {{ get_full_accessibility_names(post.accessibility) }}</p>
             <p class="ride_description">Description: {{ post.ride_description }}</p>
         </div>
         <div class="pfp-and-h2">
@@ -51,6 +51,7 @@
             <a href="#" class="btn" id="signupButton">Sign up</a>
         </div>
     </div>
+    <button id="reportButton">Report</button>
 </div>
 <div id="signupModal" class="signup-modal">
     <div class="signup-modal-content">
@@ -93,15 +94,20 @@
                 {% endfor %}
             </div>
             {{ form.custom_message.label }} {{ form.custom_message }}
-            {{ form.submit }}
+            {{ form.submit(class="submit-button") }}
+        </form>
+    </div>
+</div>
+<div id="reportModal" class="report-modal" style="display: none;">
+    <div class="report-modal-content">
+        <span class="close-report">&times;</span>
+        <h2>Report this post</h2>
+        <form method="POST">
+            {{ report_form.hidden_tag() }}
+            {{ report_form.report_text.label }} {{ report_form.report_text() }}
+            {{ report_form.submit() }}
         </form>
     </div>
 </div>
 <script src="{{ url_for('static', filename='js/view_post.js') }}"></script>
 {% endblock %}
-
-<!-- to do:
-nicer css
-convert time to non military time
-display full day names
-display full accessibility names -->

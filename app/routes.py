@@ -1,8 +1,8 @@
-from app.models import User, Profile, Ride, Ride_Passenger, Message, Rating, Review, Announcement, Ride_Request
+from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, mail
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm
 from flask import request
 from datetime import datetime
 from smtplib import SMTPException
@@ -13,6 +13,34 @@ import os
 from sqlalchemy import func
 from sqlalchemy import and_
 from flask_mail import Message
+from pytz import timezone, utc
+
+@app.template_filter('datetimefilter')
+def datetimefilter(value, format='%B %d, %Y %I:%M %p'):
+    if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
+        value = utc.localize(value)
+    eastern = timezone('US/Eastern')
+    value = value.astimezone(eastern)
+    return value.strftime(format)
+
+@app.context_processor # this is so templates can use utility functions
+def utility_functions():
+    def get_full_day_names(recurring_days):
+        day_names = {'mon': 'Monday', 'tue': 'Tuesday', 'wed': 'Wednesday', 'thu': 'Thursday', 'fri': 'Friday', 'sat': 'Saturday', 'sun': 'Sunday'}
+        return ', '.join(day_names[day] for day in recurring_days.split(','))
+
+    def get_full_accessibility_names(accessibility_keys):
+        accessibility_names = {
+            'wheelchair': 'Wheelchair',
+            'visual': 'Visual impairment',
+            'hearing': 'Hearing impairment',
+            'service_dog': 'Service dog friendly',
+            'quiet': 'Quiet ride',
+            'step_free': 'Step-free access',
+        }
+        return ', '.join(accessibility_names[key] for key in accessibility_keys.split(','))
+
+    return dict(get_full_day_names=get_full_day_names, get_full_accessibility_names=get_full_accessibility_names)
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
@@ -138,7 +166,7 @@ def verify(user_id):
 @app.route('/home')
 def home():
     newest_rides = Ride.query.order_by(Ride.ride_timestamp.desc()).limit(3).all()
-    newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(3).all()
+    newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(5).all()
 
     return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements)
 
@@ -189,18 +217,18 @@ def edit_profile():
         form.about.data = profile.about
     return render_template('edit_profile.html', form=form)
 
-@app.route('/create_announcement' , methods=['POST'])
+@app.route('/create_announcement' , methods=['GET', 'POST'])
 @login_required
 def create_announcement():
     if current_user.admin == False:
         return "You are not an admin!"
     else:
         form = AnnouncementForm()
-        if form.validate_on_submit():
-            announcement = Announcement(announcement_text=form.announcetext.data, announcement_date=form.announcedate.data)
-            db.session.add(announcement)
-            db.session.commit()
-            return "Announcement created!"
+    if form.validate_on_submit():
+        announcement = Announcement(user_id=current_user.user_id, announcement_title=form.announcement_title.data, announcement_text=form.announcement_text.data)
+        db.session.add(announcement)
+        db.session.commit()
+        return redirect(url_for('view_announcement', announcement_id=announcement.announcement_id))
     return render_template('create_announcement.html', form=form)
 
 @app.route('/start_ride/')
@@ -239,6 +267,7 @@ def start_ride_offer():
         )
         db.session.add(ride)
         db.session.commit()
+        return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_offer.html', form=form)
 
 @app.route('/start_ride/request', methods=['GET', 'POST'])
@@ -273,6 +302,7 @@ def start_ride_request():
         )
         db.session.add(ride)
         db.session.commit()
+        return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_request.html', form=form)
 
 @app.route('/view_profile/<int:user_id>', methods=['GET', 'POST'])
@@ -306,9 +336,17 @@ def view_profile(user_id):
 
     average_rating = total_ratings / total_count if total_count else 0
 
+    form = ReportForm()
+    if form.validate_on_submit():
+        report = UserReport(reporter_id=current_user.user_id, reported_user_id=user.user_id, report_text=form.report_text.data)
+        db.session.add(report)
+        db.session.commit()
+        flash('Your report has been submitted.', 'success')
+        return redirect(url_for('view_profile', user_id=user.user_id))
+
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating)
+                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
 @login_required 
@@ -319,13 +357,22 @@ def view_post(ride_id):
     profile = post.user.user_profile
     user_img_url = url_for('static', filename='uploads/' + profile.user_img)
     form = SignUpForm()
+    report_form = ReportForm()
+
+    if report_form.validate_on_submit():
+        report = RideReport(user_id=current_user.user_id, ride_id=ride_id, report_text=report_form.report_text.data)
+        db.session.add(report)
+        db.session.commit()
+        flash('Your report has been submitted.', 'success')
+        return redirect(url_for('view_post', ride_id=ride_id))
+    
     if form.validate_on_submit():
-        existing_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+        existing_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
         if existing_request:
             print('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
         
-        new_request = Ride_Request(
+        new_request = RideRequest(
             ride_id=ride_id,
             passenger_id=current_user.user_id,
             role=form.role.data,
@@ -345,7 +392,7 @@ def view_post(ride_id):
         print('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
 
-    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form)
+    return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form, report_form=report_form)
 
 @app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
 @login_required 
@@ -358,9 +405,9 @@ def confirm_ride(ride_id, passenger_id):
             print('You are not authorized to confirm this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-        ride_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
+        ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
         if ride_request:
-            ride_passenger = Ride_Passenger(
+            ride_passenger = RidePassenger(
                 ride_id=ride_id,
                 passenger_id=passenger_id,
                 role=ride_request.role,
@@ -390,15 +437,17 @@ def view_announcement(announcement_id):
 @login_required
 def find_ride():
     form = SearchForm()
+    rides = Ride.query
 
     if form.validate_on_submit():
-        rides = Ride.query.filter_by(
-            ridetype=form.ridetype.data,
-            departingFrom=form.departingFrom.data,
-            destination=form.destination.data
-        )
+        if form.ridetype.data:
+            rides = rides.filter(Ride.ridetype == form.ridetype.data)
+        if form.departingFrom.data:
+            rides = rides.filter(Ride.departingFrom == form.departingFrom.data)
+        if form.destination.data:
+            rides = rides.filter(Ride.destination == form.destination.data)
 
-        if form.time_start.data and form.time_end.data:
+        if form.time_start.data != "12:00AM" and form.time_end.data != "12:00AM":  # only apply filter if time_start and time_end are not equal to their default values
             start = datetime.strptime(form.time_start.data, "%I:%M%p")
             end = datetime.strptime(form.time_end.data, "%I:%M%p")
             if form.time_choice.data == 'Departing':
@@ -410,9 +459,9 @@ def find_ride():
             rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
-        if form.is_offered.data:
+        if form.is_offered.data is not None and form.is_offered.data != False:  # only apply filter if is_offered is not equal to its default value
             rides = rides.filter(Ride.is_offered == form.is_offered.data)
-        if form.is_requested.data:
+        if form.is_requested.data is not None:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
         if form.stops.data:
             rides = rides.filter(Ride.stops.in_(form.stops.data))
@@ -426,7 +475,7 @@ def find_ride():
         rides = rides.all()
 
     else:
-        rides = []
+        rides = rides.all()
 
     return render_template('find_ride.html', form=form, rides=rides)
 
@@ -439,3 +488,77 @@ def my_rides():
     # this should have active rides and history of rides
     # this should also have an option to cancel a ride
 
+@app.route('/admin_hub', methods=['GET', 'POST'])
+@login_required
+def admin_hub():
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        return render_template('admin_hub.html')
+
+@app.route('/admin_hub/view_reports', methods=['GET', 'POST'])
+@login_required
+def view_reports():
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        user_reports = UserReport.query.all()
+        ride_reports = RideReport.query.all()
+        return render_template('view_reports.html', user_reports=user_reports, ride_reports=ride_reports)
+
+@app.route('/admin_hub/view_reports/user/<int:report_id>', methods=['GET', 'POST'])
+@login_required
+def view_user_report(report_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        report = UserReport.query.get_or_404(report_id)
+        if report is None:
+            return "Report not found", 404
+        return render_template('view_user_report.html', report=report)
+
+@app.route('/admin_hub/view_reports/ride/<int:report_id>', methods=['GET', 'POST'])
+@login_required
+def view_ride_report(report_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        report = RideReport.query.get_or_404(report_id)
+        if report is None:
+            return "Report not found", 404
+        return render_template('view_ride_report.html', report=report)
+
+@app.route('/admin_hub/ban_user/<int:user_id>', methods=['GET', 'POST'])
+@login_required
+def ban_user(user_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        user = User.query.get_or_404(user_id)
+        if user is None:
+            return "User not found", 404
+        user.banned = True
+        db.session.commit()
+        return "User has been banned"
+
+@app.route('/admin_hub/delete_post/<int:ride_id>', methods=['GET', 'POST'])
+@login_required
+def delete_post(ride_id):
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        ride = Ride.query.get_or_404(ride_id)
+        if ride is None:
+            return "Ride not found", 404
+        db.session.delete(ride)
+        db.session.commit()
+        return "Ride has been deleted"
+
+@app.route('/admin_hub/view_usage', methods=['GET', 'POST']) # where usage statistics will go
+@login_required
+def view_usage():
+    if current_user.admin == False:
+        return "You are not an admin!"
+    else:
+        return render_template('view_usage.html')
+    

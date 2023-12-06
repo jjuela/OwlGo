@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/view_reports.css') }}">
+{% endblock %}
+{% block content %}
+<div class="content">
+    <h1>Reports</h1>
+    <div class="reports">
+        <div class="user-reports">
+            <h2>User Reports</h2>
+            {% for report in user_reports %}
+            <div class="report">
+                <div class="report-header">
+                    <h3>{{ report.report_title }}</h3>
+                    <p>{{ report.report_timestamp|datetimefilter }}</p>
+                </div>
+                <p>{{ report.report_text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="ride-reports">
+            <h2>Ride Reports</h2>
+            {% for report in ride_reports %}
+            <div class="report">
+                <div class="report-header">
+                    <h3>{{ report.report_title }}</h3>
+                    <p>{{ report.report_timestamp|datetimefilter }}</p>
+                </div>
+                <p>{{ report.report_text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

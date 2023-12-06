@@ -84,16 +84,34 @@
         </button>
     </form>
     {% if rides %}
-    <ul>
+    <div class="ride-results">
         {% for ride in rides %}
-        <li>
-            <h3>{{ ride.ridetype }}</h3>
-            <p>Departing from: {{ ride.departingFrom }}</p>
-            <p>Destination: {{ ride.destination }}</p>
-            <!-- more -->
-        </li>
+        <a href="{{ url_for('view_post', ride_id=ride.ride_id) }}" class="ride-link">
+            <div class="ride">
+                <div class="ride_header">
+                    <img class="post-pfp" src="{{ url_for('static', filename='uploads/' + ride.user.user_profile.user_img) }}" alt="{{ ride.user.username }}'s profile picture">
+                    <h2 class="ride-title">Ride {{ "by" if ride.is_offered else "for" }} {{ ride.user.user_profile.first_name }} {{ ride.user.user_profile.last_name }}</h2>
+                </div>
+                    <p>Ride type: {{ ride.ridetype.capitalize() }}</p>
+                    {% if ride.ridetype == 'commute' %}
+                        <p>Arrival: {{ ride.arrival.strftime('%l:%M %p').lstrip() if ride.arrival else None }}</p>
+                        <p>Departing from: {{ ride.departingFrom }}</p>
+                        <p>Destination: {{ ride.destination }}</p>
+                        <p>Recurring: {{ 'Yes' if ride.reccuring else 'No' }}</p>
+                    {% elif ride.ridetype == 'errand' %}
+                        <p>Departing at: {{ ride.departingAt.strftime('%l:%M %p').lstrip() if ride.departingAt else None }}</p>
+                        <p>Departing from: {{ ride.departingFrom }}</p>
+                        <p>Stops: {{ ride.stops }}</p>
+                    {% elif ride.ridetype == 'leisure' %}
+                        <p>Departing at: {{ ride.departingAt.strftime('%l:%M %p').lstrip() if ride.departingAt else None }}</p>
+                        <p>Departing from: {{ ride.departingFrom }}</p>
+                        <p>Destination: {{ ride.destination }}</p>
+                        <p>Duration: {{ ride.duration }}</p>
+                {% endif %}
+            </div>
+        </a>
         {% endfor %}
-    </ul>
+    </div>
     {% else %}
     <div class="no-rides">
         <p>No rides found</p>

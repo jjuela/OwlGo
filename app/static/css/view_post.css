@@ -7,6 +7,8 @@
     padding: 50px;
     padding-top: 20px;
     margin-top: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+    position: relative;
 }
 
 .post-header {
@@ -35,6 +37,7 @@ h1 {
     height: 100px;
     border-radius: 50%;
     overflow: hidden;
+    border: 2px solid white;
 }
 
 .pfp {
@@ -66,6 +69,7 @@ p {
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
 }
 
 #signupButton:hover {
@@ -98,12 +102,13 @@ p {
     align-items: center;
     background-color: #fefefe;
     margin: 5% auto;
-    padding: 20px;
+    padding: 30px;
     border: 1px solid #888;
     width: 30%;
     border-radius: 10px;
     position: relative;
     color: black;
+    gap: 10px;
 }
 
 .close-signup {
@@ -130,4 +135,114 @@ p {
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
+    gap: 10px;
+}
+
+.signup-modal h2 {
+    color: black;
+}
+
+.submit-button {
+    border-radius: 5px;
+    background-color: #d9d9d9;
+    color: black;
+    font-weight: 600;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
+    align-self: center;
+}
+
+.submit-button:hover {
+    background-color: #bfbfbf;
+}
+
+#reportButton {
+    border-radius: 10px;
+    background-color: #d9d9d9;
+    color: black;
+    font-weight: 700;
+    font-size: 12px;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out;
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 5px 10px;
+}
+
+#reportButton:hover {
+    background-color: #bfbfbf;
+}
+
+.report-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.report-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 30%;
+    height: 70%;
+    border-radius: 10px;
+    position: relative;
+}
+
+.report-modal h2 {
+    margin-top: 50px;
+    margin-bottom: 50px;
+    color: black;
+}
+
+.report-modal-content form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+
+}
+
+.close-report {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 2px;
+    transition: color 0.3s ease-in-out;
+}
+
+.close-report:hover,
+.close-report:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }

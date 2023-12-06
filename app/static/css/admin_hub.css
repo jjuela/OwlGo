@@ -1,0 +1,71 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+h1 {
+    color: black;
+    font-weight: 700;
+    margin-bottom: 50px;
+    font-size: 50px;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 80px;
+}
+
+.announcement, .reports, .stats {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    border-radius: 10px;
+    background: #535353;
+    color: white;
+    height: 350px;
+    width: 250px;
+    transition: background 0.3s ease-in-out;
+    cursor: pointer;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.announcement h2, .reports h2, .stats h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: white;
+    text-align: left;
+    margin-top: 10px;
+}
+
+.announcement-icon, .reports-icon, .stats-icon {
+    margin-top: 20px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 10px 20px;
+    transition: filter 0.3s ease-in-out;
+}
+
+.announcement-icon img, .reports-icon img, .stats-icon img {
+    height: 100px;
+    width: auto;
+}
+
+.button-group a {
+    text-decoration: none;
+}
+
+.announcement:hover, .reports:hover, .stats:hover {
+    background: #808080;
+}
+
+.announcement:hover .announcement-icon, .reports:hover .reports-icon, .stats:hover .stats-icon {
+    filter: invert(.25);
+}
