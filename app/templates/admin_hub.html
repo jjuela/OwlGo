@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/admin_hub.css') }}">
+{% endblock %}
+{% block content %}
+<div class="content">
+    <div class="button-group">
+        <div class="announcement">
+            <a href="{{ url_for('create_announcement') }}">Create announcement</a>
+        </div>
+        <div class="reports">
+            <a href="{{ url_for('view_reports') }}">View reports</a>
+        </div>
+        <div class="stats">
+            <a href="{{ url_for('view_usage') }}">View stats</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

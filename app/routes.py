@@ -215,6 +215,7 @@ def start_ride_offer():
         )
         db.session.add(ride)
         db.session.commit()
+        return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_offer.html', form=form)
 
 @app.route('/start_ride/request', methods=['GET', 'POST'])
@@ -249,6 +250,7 @@ def start_ride_request():
         )
         db.session.add(ride)
         db.session.commit()
+        return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_request.html', form=form)
 
 @app.route('/view_profile/<int:user_id>', methods=['GET', 'POST'])
