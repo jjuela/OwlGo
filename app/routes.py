@@ -124,7 +124,7 @@ def verify(user_id):
 @app.route('/home')
 def home():
     newest_rides = Ride.query.order_by(Ride.ride_timestamp.desc()).limit(3).all()
-    newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(3).all()
+    newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(5).all()
 
     return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements)
 
@@ -295,11 +295,11 @@ def view_profile(user_id):
 
     form = ReportForm()
     if form.validate_on_submit():
-        report = UserReport(reporter_id=current_user.id, reported_user_id=user.id, report_text=form.report_text.data)
+        report = UserReport(reporter_id=current_user.user_id, reported_user_id=user.user_id, report_text=form.report_text.data)
         db.session.add(report)
         db.session.commit()
         flash('Your report has been submitted.', 'success')
-        return redirect(url_for('view_profile', user_id=user.id))
+        return redirect(url_for('view_profile', user_id=user.user_id))
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
@@ -317,14 +317,14 @@ def view_post(ride_id):
     report_form = ReportForm()
 
     if report_form.validate_on_submit():
-        report = RideReport(user_id=current_user.id, ride_id=ride_id, report_text=report_form.report_text.data)
+        report = RideReport(user_id=current_user.user_id, ride_id=ride_id, report_text=report_form.report_text.data)
         db.session.add(report)
         db.session.commit()
         flash('Your report has been submitted.', 'success')
         return redirect(url_for('view_post', ride_id=ride_id))
     
     if form.validate_on_submit():
-        existing_request = Ride_Request.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+        existing_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
         if existing_request:
             print('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
