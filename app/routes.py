@@ -12,6 +12,7 @@ from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import func
 from sqlalchemy import and_
+from flask_mail import Message
 from pytz import timezone, utc
 
 @app.template_filter('datetimefilter')
@@ -74,7 +75,7 @@ def landing():
             subject = "OwlGo Verification Code"
             recipient = user.email
             body = f"Your verification code is: {verification_code}"
-            msg = Message(subject, recipients=[recipient], body=body)
+            msg = Message(subject=subject, recipients=[recipient], body=body)  # Corrected line
             
             try:
                 mail.send(msg)
@@ -114,7 +115,8 @@ def verify(user_id):
             user.is_verified = True
             user.verification_code = None  # Clear the verification code
             db.session.commit()
-            flash('Account verified successfully.')
+            login_user(user)  # Log in the user
+            flash('Account verified and logged in successfully.')
             return redirect(url_for('create_profile'))
         else:
             flash('Invalid verification code. Please try again.')
@@ -130,23 +132,24 @@ def home():
 
 @app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
-    if not current_user.is_verified:
+    if current_user.is_authenticated and not current_user.is_verified:
         flash('Please verify your account first.')
         return redirect(url_for('verify'))
     
     form = ProfileForm()
     if form.validate_on_submit():
-        if form.image.data:
-            filename = secure_filename(form.image.data.filename)
-            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
-            form.image.data.save(upload_path)
-            profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data, user_img=filename)
-        else:
-            profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data)
-        db.session.add(profile)
-        db.session.commit()
-        return "Profile created!"
+        if current_user.is_authenticated:
+            if form.image.data:
+                filename = secure_filename(form.image.data.filename)
+                upload_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+                form.image.data.save(upload_path)
+                profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data, user_img=filename)
+            else:
+                profile = Profile(user_id=current_user.user_id, first_name=form.firstname.data, last_name=form.lastname.data, home_town=form.hometown.data, about=form.about.data)
+            db.session.add(profile)
+            db.session.commit()
+            return redirect(url_for('home'))  # Redirect to home page after profile creation
     return render_template('create_profile.html', form=form)
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
