@@ -21,7 +21,14 @@ class RequiredIf(DataRequired):
 class VerificationForm(FlaskForm):
     verification_code = StringField('Verification Code', validators=[DataRequired()])
     submit = SubmitField('Verify')
+class PasswordResetRequestForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
 
+class PasswordResetForm(FlaskForm):
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Reset Password')
 class SendEmail(FlaskForm):
     email = StringField('Recipient: ', validators=[DataRequired()])
     message = TextAreaField('Your message:', validators=[DataRequired()])

@@ -2,12 +2,12 @@ from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Revi
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, mail
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, ReportForm
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm
 from flask import request
 from datetime import datetime
 from smtplib import SMTPException
 from sqlalchemy.exc import IntegrityError
-from app.utils import generate_verification_code
+from app.utils import generate_verification_code, send_password_reset_email
 from werkzeug.utils import secure_filename
 import os
 from sqlalchemy import func
@@ -41,6 +41,46 @@ def utility_functions():
         return ', '.join(accessibility_names[key] for key in accessibility_keys.split(','))
 
     return dict(get_full_day_names=get_full_day_names, get_full_accessibility_names=get_full_accessibility_names)
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        # Check if the email domain is 'southernct.edu'
+        if '@southernct.edu' not in email:
+            flash('Sorry, only southern emails are allowed.')
+            return render_template('reset_password_request.html', form=form)
+        user = User.query.filter_by(email=email).first()
+        # Check if the user exists
+        if user:
+            token = user.get_reset_password_token()
+            send_password_reset_email(user, token)
+            # Return the full URL with the token in the response along with instructions
+            return f'<p>Copy this link and paste it in your browser to change your password:</p><p>104.198.140.100:8080/reset_password/{token}</p>'
+        else:
+            flash('No account with this email exists. Please click the sign up button to create an account.')
+            return render_template('reset_password_request.html', form=form)
+    return render_template('reset_password_request.html', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    # Verify the token
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('home'))
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        # Set the new password
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('landing'))
+    return render_template('reset_password.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
