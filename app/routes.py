@@ -1,5 +1,5 @@
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from flask import render_template, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, session 
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, mail
 from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm
@@ -68,22 +68,24 @@ def reset_password_request():
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('landing'))  # redirect to landing page if user is authenticated
     # Verify the token
     user = User.verify_reset_password_token(token)
     if not user:
-        return redirect(url_for('home'))
+        return redirect(url_for('landing'))  # redirect to landing page if token is invalid
     form = PasswordResetForm()
     if form.validate_on_submit():
         # Set the new password
         user.set_password(form.password.data)
         db.session.commit()
+        session.pop('_flashes', None)  # clear all flash messages
         flash('Your password has been reset.')
-        return redirect(url_for('landing'))
+        return redirect(url_for('landing'))  # redirect to landing page after resetting password
     return render_template('reset_password.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
+    logout_user()
     login_form = LoginForm()
     register_form = RegistrationForm()
 
