@@ -1,19 +1,24 @@
-from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from flask import render_template, redirect, url_for, flash, session 
+# flask imports
+from flask import render_template, redirect, url_for, flash, session, request
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message as MailMessage, Mail
+
+# sqlalchemy imports
+from sqlalchemy import func, and_
+from sqlalchemy.exc import IntegrityError
+
+# app imports
 from app import app, db, mail
+from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
 from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm
-from flask import request
+from app.utils import generate_verification_code, send_password_reset_email
+
+# other imports
 from datetime import datetime
 from smtplib import SMTPException
-from sqlalchemy.exc import IntegrityError
-from app.utils import generate_verification_code, send_password_reset_email
 from werkzeug.utils import secure_filename
-import os
-from sqlalchemy import func
-from sqlalchemy import and_
-from flask_mail import Message
 from pytz import timezone, utc
+import os
 
 @app.template_filter('datetimefilter')
 def datetimefilter(value, format='%B %d, %Y %I:%M %p'):
@@ -114,19 +119,12 @@ def landing():
             db.session.add(user)
             db.session.commit()
 
-            subject = "OwlGo Verification Code"
-            recipient = user.email
-            body = f"Your verification code is: {verification_code}"
-            msg = Message(subject=subject, recipients=[recipient], body=body)  # Corrected line
-            
-            try:
-                mail.send(msg)
-            except SMTPException:
-                flash('Failed to send verification email. Please try again.')
-                db.session.delete(user)
-                db.session.commit()
-                return redirect(url_for('landing'))
+            subject = "Sign up verification code"
+            recipient = [user.email]
+            body = "Your verification code is: " + verification_code + "\n\n" + "Please enter this code on the verification page to create your profile."
 
+            msg = MailMessage(subject=subject, recipients=recipient, body=body)
+            # ...
             flash('Please check your email for the verification code in order to create a profile.')
             return redirect(url_for('verify', user_id=user.user_id))
 
@@ -404,7 +402,7 @@ def confirm_ride(ride_id, passenger_id):
 
     if request.method == 'POST':
         if current_user.user_id != ride.user_id:
-            print('You are not authorized to confirm this ride.')
+            flash('You are not authorized to confirm this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
         ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
@@ -422,7 +420,7 @@ def confirm_ride(ride_id, passenger_id):
             db.session.delete(ride_request)
             db.session.commit()
 
-            print('The ride has been confirmed.')
+            flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
     return render_template('confirm_ride.html', ride=ride, passenger=passenger)

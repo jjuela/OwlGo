@@ -1,5 +1,5 @@
 from flask import url_for, current_app
-from flask_mail import Message
+from flask_mail import Message as MailMessage
 from app import mail
 import random
 import string
@@ -12,9 +12,7 @@ def generate_verification_code(length=6):
 
 def send_password_reset_email(user, token):
     sender = app.config['ADMINS'][0]
-    msg = Message('Reset Your Password',
-                  sender=sender,
-                  recipients=[user.email])
+    msg = MailMessage('Reset Your Password', sender=sender, recipients=[user.email])
     msg.body = f'''To reset your password, visit the following link:
 {url_for('reset_password', token=token, _external=True)}
 
