@@ -22,7 +22,7 @@ csrf = CSRFProtect(app)
 
 # Login Configuration
 login = LoginManager(app)
-login.login_view = 'login'
+login.login_view = 'landing'
 
 # Secret Key Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')

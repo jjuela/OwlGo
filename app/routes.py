@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 # app imports
 from app import app, db, mail
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm
 from app.utils import generate_verification_code, send_password_reset_email
 
 # other imports
@@ -88,6 +88,7 @@ def reset_password(token):
         return redirect(url_for('landing'))  # redirect to landing page after resetting password
     return render_template('reset_password.html', form=form)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def landing():
     logout_user()
@@ -163,12 +164,30 @@ def verify(user_id):
 
     return render_template('verify.html', form=form)
 
+@app.route('/pending_requests_page', methods=['GET'])
+@login_required
+def pending_requests_page():
+    # Fetch unconfirmed ride requests made to the current user's rides
+    user_ride_ids = [ride.ride_id for ride in current_user.rides]
+    ride_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids), RideRequest.confirmed == False).order_by(RideRequest.timestamp).all()
+
+    return render_template('pending_requests.html', ride_requests=ride_requests)
+
 @app.route('/home')
 def home():
     newest_rides = Ride.query.order_by(Ride.ride_timestamp.desc()).limit(3).all()
     newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(5).all()
 
-    return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements)
+    # Calculate has_pending_requests
+    user_ride_ids = [ride.ride_id for ride in current_user.rides]
+    has_pending_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids)).count() > 0
+
+    return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements, has_pending_requests=has_pending_requests)
+
+@app.route('/view_more_requests')
+def view_more_requests():
+    # Your code here
+    return render_template('view_more_requests.html')
 
 @app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
@@ -395,17 +414,18 @@ def view_post(ride_id):
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form, report_form=report_form)
 
 @app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
-@login_required 
+@login_required
 def confirm_ride(ride_id, passenger_id):
     ride = Ride.query.get_or_404(ride_id)
     passenger = User.query.get_or_404(passenger_id)
+    form = ConfirmRideForm()
 
-    if request.method == 'POST':
-        if current_user.user_id != ride.user_id:
-            flash('You are not authorized to confirm this ride.')
-            return redirect(url_for('view_post', ride_id=ride_id))
+    if current_user.user_id != ride.user_id:
+        flash('You are not authorized to confirm this ride.')
+        return redirect(url_for('index'))
 
-        ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
+    if form.validate_on_submit():
+        ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
         if ride_request:
             ride_passenger = RidePassenger(
                 ride_id=ride_id,
@@ -414,16 +434,18 @@ def confirm_ride(ride_id, passenger_id):
                 commute_days=ride_request.commute_days,
                 accessibility=ride_request.accessibility,
                 custom_message=ride_request.custom_message,
-                requested_stops=ride_request.requested_stops
+                requested_stops=ride_request.requested_stops,
+                confirmed=True 
             )
             db.session.add(ride_passenger)
+            ride.occupants += 1  # increment the occupants field
             db.session.delete(ride_request)
             db.session.commit()
 
             flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-    return render_template('confirm_ride.html', ride=ride, passenger=passenger)
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger, form=form)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 @login_required
