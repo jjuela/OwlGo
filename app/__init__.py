@@ -11,6 +11,12 @@ from flask_migrate import Migrate
 # Initialize Flask app
 app = Flask(__name__)
 
+from .common import datetimefilter, utility_functions  # Move this line here
+
+# Register datetimefilter and utility_functions with app
+app.template_filter('datetimefilter')(datetimefilter)
+app.context_processor(utility_functions)
+
 # Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:beholders_db08@35.185.60.149/beholdersDB'
 db = SQLAlchemy(app)
@@ -22,7 +28,7 @@ csrf = CSRFProtect(app)
 
 # Login Configuration
 login = LoginManager(app)
-login.login_view = 'login'
+login.login_view = 'landing'
 
 # Secret Key Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')

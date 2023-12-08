@@ -1,46 +1,25 @@
-from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from flask import render_template, redirect, url_for, flash, session 
+# flask imports
+from flask import render_template, redirect, url_for, flash, session, request
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message as MailMessage, Mail
+
+# sqlalchemy imports
+from sqlalchemy import func, and_
+from sqlalchemy.exc import IntegrityError
+
+# app imports
 from app import app, db, mail
-from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm
-from flask import request
+from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm
+from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email
+
+# other imports
 from datetime import datetime
 from smtplib import SMTPException
-from sqlalchemy.exc import IntegrityError
-from app.utils import generate_verification_code, send_password_reset_email
 from werkzeug.utils import secure_filename
-import os
-from sqlalchemy import func
-from sqlalchemy import and_
-from flask_mail import Message
 from pytz import timezone, utc
 
-@app.template_filter('datetimefilter')
-def datetimefilter(value, format='%B %d, %Y %I:%M %p'):
-    if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
-        value = utc.localize(value)
-    eastern = timezone('US/Eastern')
-    value = value.astimezone(eastern)
-    return value.strftime(format)
-
-@app.context_processor # this is so templates can use utility functions
-def utility_functions():
-    def get_full_day_names(recurring_days):
-        day_names = {'mon': 'Monday', 'tue': 'Tuesday', 'wed': 'Wednesday', 'thu': 'Thursday', 'fri': 'Friday', 'sat': 'Saturday', 'sun': 'Sunday'}
-        return ', '.join(day_names[day] for day in recurring_days.split(','))
-
-    def get_full_accessibility_names(accessibility_keys):
-        accessibility_names = {
-            'wheelchair': 'Wheelchair',
-            'visual': 'Visual impairment',
-            'hearing': 'Hearing impairment',
-            'service_dog': 'Service dog friendly',
-            'quiet': 'Quiet ride',
-            'step_free': 'Step-free access',
-        }
-        return ', '.join(accessibility_names[key] for key in accessibility_keys.split(','))
-
-    return dict(get_full_day_names=get_full_day_names, get_full_accessibility_names=get_full_accessibility_names)
+import os
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
@@ -83,6 +62,7 @@ def reset_password(token):
         return redirect(url_for('landing'))  # redirect to landing page after resetting password
     return render_template('reset_password.html', form=form)
 
+
 @app.route('/', methods=['GET', 'POST'])
 def landing():
     logout_user()
@@ -114,19 +94,12 @@ def landing():
             db.session.add(user)
             db.session.commit()
 
-            subject = "OwlGo Verification Code"
-            recipient = user.email
-            body = f"Your verification code is: {verification_code}"
-            msg = Message(subject=subject, recipients=[recipient], body=body)  # Corrected line
-            
-            try:
-                mail.send(msg)
-            except SMTPException:
-                flash('Failed to send verification email. Please try again.')
-                db.session.delete(user)
-                db.session.commit()
-                return redirect(url_for('landing'))
+            subject = "Sign up verification code"
+            recipient = [user.email]
+            body = "Your verification code is: " + verification_code + "\n\n" + "Please enter this code on the verification page to create your profile."
 
+            msg = MailMessage(subject=subject, recipients=recipient, body=body)
+            # ...
             flash('Please check your email for the verification code in order to create a profile.')
             return redirect(url_for('verify', user_id=user.user_id))
 
@@ -165,12 +138,30 @@ def verify(user_id):
 
     return render_template('verify.html', form=form)
 
+@app.route('/pending_requests_page', methods=['GET'])
+@login_required
+def pending_requests_page():
+    # Fetch unconfirmed ride requests made to the current user's rides
+    user_ride_ids = [ride.ride_id for ride in current_user.rides]
+    ride_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids), RideRequest.confirmed == False).order_by(RideRequest.timestamp).all()
+
+    return render_template('pending_requests.html', ride_requests=ride_requests)
+
 @app.route('/home')
 def home():
     newest_rides = Ride.query.order_by(Ride.ride_timestamp.desc()).limit(3).all()
     newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(5).all()
 
-    return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements)
+    # Calculate has_pending_requests
+    user_ride_ids = [ride.ride_id for ride in current_user.rides]
+    has_pending_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids)).count() > 0
+
+    return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements, has_pending_requests=has_pending_requests)
+
+@app.route('/view_more_requests')
+def view_more_requests():
+    # Your code here
+    return render_template('view_more_requests.html')
 
 @app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
@@ -371,7 +362,7 @@ def view_post(ride_id):
     if form.validate_on_submit():
         existing_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
         if existing_request:
-            print('You are already signed up for this ride.')
+            flash('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
         
         new_request = RideRequest(
@@ -386,28 +377,35 @@ def view_post(ride_id):
         db.session.add(new_request)
         db.session.commit()
 
+        send_ride_driver_email(post.user, current_user, post, new_request)
+        send_ride_passenger_email(current_user, post, new_request)
+
         custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
         message = Message(user_id=current_user.user_id, recipient_id=post.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
         db.session.add(message)
         db.session.commit()
 
-        print('Your request to join the ride has been sent.')
+        flash('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
 
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form, report_form=report_form)
 
 @app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
-@login_required 
+@login_required
 def confirm_ride(ride_id, passenger_id):
     ride = Ride.query.get_or_404(ride_id)
     passenger = User.query.get_or_404(passenger_id)
+    form = ConfirmRideForm()
+    ride_passenger = None
 
-    if request.method == 'POST':
-        if current_user.user_id != ride.user_id:
-            print('You are not authorized to confirm this ride.')
-            return redirect(url_for('view_post', ride_id=ride_id))
+    # Fetch the ride_request
+    ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
 
-        ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
+    if current_user.user_id != ride.user_id:
+        flash('You are not authorized to confirm this ride.')
+        return redirect(url_for('index'))
+
+    if form.validate_on_submit():
         if ride_request:
             ride_passenger = RidePassenger(
                 ride_id=ride_id,
@@ -416,16 +414,21 @@ def confirm_ride(ride_id, passenger_id):
                 commute_days=ride_request.commute_days,
                 accessibility=ride_request.accessibility,
                 custom_message=ride_request.custom_message,
-                requested_stops=ride_request.requested_stops
+                requested_stops=ride_request.requested_stops,
+                confirmed=True 
             )
             db.session.add(ride_passenger)
+            ride.occupants += 1  # increment the occupants field
             db.session.delete(ride_request)
             db.session.commit()
+            send_ride_confirmation_email(ride.user, ride, ride_passenger)  # send email to the driver
+            send_ride_confirmation_email(passenger, ride, ride_passenger)  # send email to the passenger
 
-            print('The ride has been confirmed.')
+            flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-    return render_template('confirm_ride.html', ride=ride, passenger=passenger)
+    # Pass the ride_request to the template
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, ride_request=ride_request)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 @login_required

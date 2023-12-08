@@ -83,8 +83,13 @@ class Ride(db.Model):
 class RidePassenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
-    confirmed = db.Column(db.Boolean, default=False)  # Add this line
+    confirmed = db.Column(db.Boolean, default=False)
     is_driver = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(255))
+    commute_days = db.Column(db.String(255))
+    accessibility = db.Column(db.String(255))
+    custom_message = db.Column(db.String(255))
+    requested_stops = db.Column(db.String(255))  # Add this line
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')
 
@@ -99,6 +104,7 @@ class RideRequest(db.Model):
     accessibility = db.Column(db.String(100))
     custom_message = db.Column(db.String(500))
     requested_stops = db.Column(db.String(100))
+    confirmed = db.Column(db.Boolean, default=False)
 
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

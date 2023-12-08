@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pending_requests.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="profile-box">
+            <h1>Pending Requests</h1>
+            {% for request in ride_requests[:4] %}
+                <div class="request">
+                    <h2>{{ request.passenger.user_profile.first_name }}</h2>
+                    <p>{{ request.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                    <p>Role: {{ request.role }}</p>
+                    <a href="{{ url_for('confirm_ride', ride_id=request.ride_id, passenger_id=request.passenger_id) }}" class="btn" id="confirmButton">Confirm Ride</a>
+                </div>
+            {% endfor %}
+            <!-- View More button -->
+            <a href="{{ url_for('my_rides') }}" class="btn" id="viewMoreButton">View More</a>
+        </div>
+    </div>
+{% endblock %}

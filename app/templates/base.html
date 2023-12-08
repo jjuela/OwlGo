@@ -16,7 +16,11 @@
             {% endif %}
             <a href="{{ url_for('start_ride')}}"><img src="{{ url_for('static', filename='img/create.png') }}" alt="Start Ride"></a> <!-- link here later -->
             <a href="{{ url_for('find_ride') }}"><img src="{{ url_for('static', filename='img/search.png') }}" alt="Find Ride"></a> <!-- link here later -->
-            <img src="{{ url_for('static', filename='img/bell.png') }}" alt="Notifications"> <!-- link here later -->
+            {% if has_pending_requests %}
+                <a href="{{ url_for('pending_requests_page') }}"><img class="notification-icon active" src="{{ url_for('static', filename='img/bell.png') }}" alt="Notifications"></a>
+            {% else %}
+                <a href="{{ url_for('pending_requests_page') }}"><img class="notification-icon" src="{{ url_for('static', filename='img/bell.png') }}" alt="Notifications"></a>
+            {% endif %}
             <div class="profile-pic">
                 {% if current_user.is_authenticated %}
                     <img src="{{ url_for('static', filename='uploads/' + current_user.user_profile.user_img) }}" alt="Profile Picture">
@@ -50,7 +54,7 @@
             </div>
         </div>
     </header>
-
+    
     {% block content %}
     {% endblock %}
 
