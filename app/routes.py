@@ -11,41 +11,15 @@ from sqlalchemy.exc import IntegrityError
 from app import app, db, mail
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
 from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm
-from app.utils import generate_verification_code, send_password_reset_email
+from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email
 
 # other imports
 from datetime import datetime
 from smtplib import SMTPException
 from werkzeug.utils import secure_filename
 from pytz import timezone, utc
+
 import os
-
-@app.template_filter('datetimefilter')
-def datetimefilter(value, format='%B %d, %Y %I:%M %p'):
-    if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
-        value = utc.localize(value)
-    eastern = timezone('US/Eastern')
-    value = value.astimezone(eastern)
-    return value.strftime(format)
-
-@app.context_processor # this is so templates can use utility functions
-def utility_functions():
-    def get_full_day_names(recurring_days):
-        day_names = {'mon': 'Monday', 'tue': 'Tuesday', 'wed': 'Wednesday', 'thu': 'Thursday', 'fri': 'Friday', 'sat': 'Saturday', 'sun': 'Sunday'}
-        return ', '.join(day_names[day] for day in recurring_days.split(','))
-
-    def get_full_accessibility_names(accessibility_keys):
-        accessibility_names = {
-            'wheelchair': 'Wheelchair',
-            'visual': 'Visual impairment',
-            'hearing': 'Hearing impairment',
-            'service_dog': 'Service dog friendly',
-            'quiet': 'Quiet ride',
-            'step_free': 'Step-free access',
-        }
-        return ', '.join(accessibility_names[key] for key in accessibility_keys.split(','))
-
-    return dict(get_full_day_names=get_full_day_names, get_full_accessibility_names=get_full_accessibility_names)
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
@@ -388,7 +362,7 @@ def view_post(ride_id):
     if form.validate_on_submit():
         existing_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
         if existing_request:
-            print('You are already signed up for this ride.')
+            flash('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
         
         new_request = RideRequest(
@@ -403,12 +377,15 @@ def view_post(ride_id):
         db.session.add(new_request)
         db.session.commit()
 
+        send_ride_driver_email(post.user, current_user, post, new_request)
+        send_ride_passenger_email(current_user, post, new_request)
+
         custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
         message = Message(user_id=current_user.user_id, recipient_id=post.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
         db.session.add(message)
         db.session.commit()
 
-        print('Your request to join the ride has been sent.')
+        flash('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
 
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form, report_form=report_form)
@@ -441,6 +418,9 @@ def confirm_ride(ride_id, passenger_id):
             ride.occupants += 1  # increment the occupants field
             db.session.delete(ride_request)
             db.session.commit()
+            send_ride_confirmation_email(ride.user, ride, ride_passenger)  # send email to the driver
+            send_ride_confirmation_email(passenger, ride, ride_passenger)  # send email to the passenger
+
 
             flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
