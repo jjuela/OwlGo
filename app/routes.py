@@ -396,13 +396,16 @@ def confirm_ride(ride_id, passenger_id):
     ride = Ride.query.get_or_404(ride_id)
     passenger = User.query.get_or_404(passenger_id)
     form = ConfirmRideForm()
+    ride_passenger = None
+
+    # Fetch the ride_request
+    ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
 
     if current_user.user_id != ride.user_id:
         flash('You are not authorized to confirm this ride.')
         return redirect(url_for('index'))
 
     if form.validate_on_submit():
-        ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
         if ride_request:
             ride_passenger = RidePassenger(
                 ride_id=ride_id,
@@ -421,11 +424,11 @@ def confirm_ride(ride_id, passenger_id):
             send_ride_confirmation_email(ride.user, ride, ride_passenger)  # send email to the driver
             send_ride_confirmation_email(passenger, ride, ride_passenger)  # send email to the passenger
 
-
             flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-    return render_template('confirm_ride.html', ride=ride, passenger=passenger, form=form)
+    # Pass the ride_request to the template
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, ride_request=ride_request)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 @login_required

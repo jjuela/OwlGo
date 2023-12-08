@@ -1,70 +1,24 @@
-
-.pending-rides-container {
+.container {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    margin-top: 30px;
-    gap: 20px;
+    justify-content: space-between;
 }
 
-.pending-ride {
-    position: relative;
-    background-color: #818181;
-    padding: 20px;
-    color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
-    transition: background-color 0.3s ease-in-out;
-    height: 230px;
+.profile-box {
+    width: 45%;
 }
 
-.pending-ride:hover {
-    background-color: #5f5f5f;
+.request {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
-.profile-picture {
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-}
-
-.ride-info {
+.btn {
     display: inline-block;
-    vertical-align: top;
-    margin-left: 10px;
-}
-
-.ride-info-header {
-    display: flex;
-    align-items: center;
-}
-
-.confirm-ride-link {
+    padding: 10px 20px;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 5px;
     text-decoration: none;
-    color: inherit;
-}
-
-.view-more-rides-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 20px;
-    background-color: #818181;
-    padding: 0px;
-    width: 10%;
-    height: 50px;
-    border-radius: 10px;
-    color: white;
-    font-weight: 700;
-    font-size: 20px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background-color 0.3s ease-in-out;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
-}
-
-.view-more-rides-button:hover {
-    background-color: #5f5f5f;
 }

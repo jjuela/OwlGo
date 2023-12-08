@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <div class="container">
-    <h1>Confirm Ride</h1>
-
-    <div class="ride-details">
-      <p>Ride ID: {{ ride.id }}</p>
-      <p>Passenger ID: {{ passenger.id }}</p>
-    </div>
-
-    <form method="post">
-      {{ form.hidden_tag() }}
-      <input type="submit" value="Confirm Ride">
-    </form>
-  </div>
+<div class="ride-details">
+  <h2>{{ passenger.first_name }}</h2>
+  {% if ride_request.role %}<p>Role: {{ ride_request.role }}</p>{% endif %}
+  {% if ride_request.commute_days %}<p>Commute Days: {{ ride_request.commute_days }}</p>{% endif %}
+  {% if ride_request.accessibility %}<p>Accessibility: {{ ride_request.accessibility }}</p>{% endif %}
+  {% if ride_request.custom_message %}<p>Custom Message: {{ ride_request.custom_message }}</p>{% endif %}
+  {% if ride_request.requested_stops %}<p>Requested Stops: {{ ride_request.requested_stops }}</p>{% endif %}
+  
+  <form method="post">
+    {{ form.hidden_tag() }}
+    <input type="submit" value="Confirm Ride">
+  </form>
+</div>
 {% endblock %}
