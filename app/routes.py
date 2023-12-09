@@ -10,8 +10,8 @@ from sqlalchemy.exc import IntegrityError
 # app imports
 from app import app, db, mail
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm
-from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm
+from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email, send_new_message_email, send_ride_rejection_email
 
 # other imports
 from datetime import datetime
@@ -20,6 +20,25 @@ from werkzeug.utils import secure_filename
 from pytz import timezone, utc
 
 import os
+
+@app.context_processor
+def context_processor():
+    if current_user.is_authenticated:
+        # Fetch unconfirmed ride requests made to the current user's rides
+        user_ride_ids = [ride.ride_id for ride in current_user.rides]
+        ride_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids), RideRequest.confirmed == False).all()
+
+        # Fetch unread messages for the current user
+        unread_messages = Message.query.filter_by(recipient_id=current_user.user_id, is_read=False).all()
+
+        # Determine if there are any pending requests or unread messages
+        has_pending_requests = len(ride_requests) > 0
+        has_unread_messages = len(unread_messages) > 0
+    else:
+        has_pending_requests = False
+        has_unread_messages = False
+
+    return dict(has_pending_requests=has_pending_requests, has_unread_messages=has_unread_messages)
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
@@ -145,7 +164,32 @@ def pending_requests_page():
     user_ride_ids = [ride.ride_id for ride in current_user.rides]
     ride_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids), RideRequest.confirmed == False).order_by(RideRequest.timestamp).all()
 
-    return render_template('pending_requests.html', ride_requests=ride_requests)
+    # Fetch unread messages for the current user
+    unread_messages = Message.query.filter_by(recipient_id=current_user.user_id, is_read=False).all()
+
+    # Set all unread messages to read
+    for message in unread_messages:
+        message.is_read = True
+    db.session.commit()
+
+    # Determine if there are any pending requests or unread messages
+    has_pending_requests = len(ride_requests) > 0
+    has_unread_messages = len(unread_messages) > 0
+
+    return render_template('pending_requests.html', ride_requests=ride_requests, unread_messages=unread_messages, has_pending_requests=has_pending_requests, has_unread_messages=has_unread_messages)
+
+@app.route('/view_messages', methods=['GET'])
+@login_required
+def view_messages():
+    # Fetch all messages for the current user
+    messages = Message.query.filter_by(recipient_id=current_user.user_id).order_by(Message.timestamp.desc()).all()
+
+    # Set all unread messages to read
+    for message in messages:
+        message.is_read = True
+    db.session.commit()
+
+    return render_template('view_messages.html', messages=messages)
 
 @app.route('/home')
 def home():
@@ -329,6 +373,15 @@ def view_profile(user_id):
 
     average_rating = total_ratings / total_count if total_count else 0
 
+    message_form = MessageForm()
+    if message_form.validate_on_submit():
+        message = Message(user_id=current_user.user_id, recipient_id=user.user_id, content=message_form.content.data, is_read=False)
+        db.session.add(message)
+        db.session.commit()
+        send_new_message_email(current_user, user, message_form.content.data)
+        flash('Your message has been sent.', 'success')
+        return redirect(url_for('view_profile', user_id=user.user_id))
+
     form = ReportForm()
     if form.validate_on_submit():
         report = UserReport(reporter_id=current_user.user_id, reported_user_id=user.user_id, report_text=form.report_text.data)
@@ -339,7 +392,7 @@ def view_profile(user_id):
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form)
+                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form, message_form=message_form)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
 @login_required 
@@ -380,10 +433,17 @@ def view_post(ride_id):
         send_ride_driver_email(post.user, current_user, post, new_request)
         send_ride_passenger_email(current_user, post, new_request)
 
-        custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
-        message = Message(user_id=current_user.user_id, recipient_id=post.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
-        db.session.add(message)
-        db.session.commit()
+        sender_name = current_user.user_profile.first_name
+        custom_message = f"{sender_name} Message: {form.custom_message.data}" if form.custom_message.data else ""
+        
+        if custom_message:  
+            message = Message(
+                user_id=current_user.user_id,
+                recipient_id=post.user.user_id,
+                content=custom_message
+            )
+            db.session.add(message)
+            db.session.commit()
 
         flash('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
@@ -427,8 +487,32 @@ def confirm_ride(ride_id, passenger_id):
             flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-    # Pass the ride_request to the template
+    # Pass the ride to the template
     return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, ride_request=ride_request)
+
+@app.route('/reject_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
+@login_required
+def reject_ride(ride_id, passenger_id):
+    form = RejectRideForm()
+    ride = Ride.query.get_or_404(ride_id)
+    ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
+    passenger = User.query.get_or_404(passenger_id)
+    if form.validate_on_submit():
+        sender_name = current_user.user_profile.first_name
+        rejection_reason = f"Your ride request from {ride.departingFrom} to {ride.destination} on {ride.ride_timestamp.strftime('%m/%d/%Y')} has been rejected by {sender_name} for the following reason: {form.rejection_reason.data}"
+        message = Message(
+            user_id=current_user.user_id,
+            recipient_id=passenger.user_id,
+            content=rejection_reason
+        )
+        db.session.add(message)
+        db.session.delete(ride_request)  
+        db.session.commit()
+        send_ride_rejection_email(ride.user, ride, rejection_reason)  # send email to the driver
+        send_ride_rejection_email(passenger, ride, rejection_reason)  # send email to the passenger
+        flash('The ride request has been rejected and the passenger has been notified.', 'success')
+        return redirect(url_for('pending_requests_page'))
+    return render_template('reject_ride.html', title='Reject Ride', form=form, passenger=passenger, ride=ride)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 @login_required

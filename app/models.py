@@ -90,6 +90,7 @@ class RidePassenger(db.Model):
     accessibility = db.Column(db.String(255))
     custom_message = db.Column(db.String(255))
     requested_stops = db.Column(db.String(255))  # Add this line
+    
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')
 
@@ -105,13 +106,15 @@ class RideRequest(db.Model):
     custom_message = db.Column(db.String(500))
     requested_stops = db.Column(db.String(100))
     confirmed = db.Column(db.Boolean, default=False)
+    is_read = db.Column(db.Boolean, default=False)
 
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     content = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', foreign_keys=[user_id], backref='user_messages')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='receiver_messages')

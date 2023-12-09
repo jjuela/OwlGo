@@ -75,3 +75,31 @@ Ride Type: {ride.ridetype.capitalize()}
 {commute_days_line}Accessibility: {utility_functions()['get_full_accessibility_names'](ride_request.accessibility)}
 '''
     mail.send(msg)
+
+def send_new_message_email(sender, recipient, message_content):
+    sender_profile = Profile.query.get(sender.user_id)
+    recipient_profile = Profile.query.get(recipient.user_id)
+    sender_email = app.config['ADMINS'][0]
+    msg = MailMessage('New Message from ' + sender_profile.first_name, sender=sender_email, recipients=[recipient.email])
+    msg.body = f'''Hello {recipient_profile.first_name},
+
+You have received a new message from {sender_profile.first_name}.
+
+Here is the message:
+
+{message_content}
+
+You can reply to this message by logging into your account.
+'''
+    mail.send(msg)
+
+def send_ride_rejection_email(user, ride, rejection_reason):
+    user_profile = Profile.query.get(user.user_id)
+    sender = app.config['ADMINS'][0]
+    msg = MailMessage('Ride Rejection', sender=sender, recipients=[user.email])
+    msg.body = f'''Hello {user_profile.first_name},
+
+Your request to join the ride from {ride.departingFrom} to {ride.destination} on {datetimefilter(ride.ride_timestamp)} has been rejected.
+Reason: {rejection_reason}
+'''
+    mail.send(msg)

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/view_messages.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {% for message in messages %}
+                <div class="col-md-4">
+                    <div class="message">
+                        <h2><a href="{{ url_for('view_profile', user_id=message.sender.user_id) }}">{{ message.sender.user_profile.first_name }}</a></h2>
+                        <p>{{ message.timestamp.strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
+                        <p>{{ message.content }}</p>
+                        <p>Want to reply? <a href="{{ url_for('view_profile', user_id=message.sender.user_id) }}">Click here</a> to go to {{ message.sender.user_profile.first_name }}'s profile.</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

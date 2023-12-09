@@ -1,3 +1,8 @@
+function openMessageModal() {
+  var messageModal = document.getElementById("messageModal");
+  messageModal.style.display = "block";
+}
+
 function openReportModal() {
   var reportModal = document.getElementById("reportModal");
   reportModal.style.display = "block";
@@ -9,5 +14,12 @@ window.onload = function() {
 
   reportSpan.onclick = function() {
     reportModal.style.display = "none";
+  }
+
+  var messageModal = document.getElementById("messageModal");
+  var messageSpan = document.getElementsByClassName("close-message")[0];
+
+  messageSpan.onclick = function() {
+    messageModal.style.display = "none";
   }
 }

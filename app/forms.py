@@ -27,10 +27,16 @@ class PasswordResetRequestForm(FlaskForm):
 
 class ConfirmRideForm(FlaskForm):
     pass
+
+class RejectRideForm(FlaskForm):
+    rejection_reason = TextAreaField('Reason for Rejection', validators=[DataRequired()])
+    submit = SubmitField('Reject Ride')
+
 class PasswordResetForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password2 = PasswordField('Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Reset Password')
+
 class SendEmail(FlaskForm):
     email = StringField('Recipient: ', validators=[DataRequired()])
     message = TextAreaField('Your message:', validators=[DataRequired()])
@@ -66,6 +72,10 @@ class AnnouncementForm(FlaskForm):
     announcement_title = StringField('Title', validators=[DataRequired(), Length(max=100)])
     announcement_text = TextAreaField('Announcement', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class MessageForm(FlaskForm):
+    content = TextAreaField('Enter your message', validators=[DataRequired()])
+    submit = SubmitField('Send')
 
 class RideForm(FlaskForm):
     ridetype = SelectField('Ride Type', choices=[
