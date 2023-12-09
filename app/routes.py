@@ -434,8 +434,9 @@ def view_post(ride_id):
         send_ride_passenger_email(current_user, post, new_request)
 
         sender_name = current_user.user_profile.first_name
-        custom_message = f"{sender_name} Message: {form.custom_message.data}" if form.custom_message.data else ""
-        
+        ride_details = f"Ride from {post.departingFrom} to {post.destination} on {post.ride_timestamp.strftime('%m/%d/%Y')}"
+        custom_message = f"{sender_name} has a special request for the {ride_details}: {form.custom_message.data}" if form.custom_message.data else ""
+
         if custom_message:  
             message = Message(
                 user_id=current_user.user_id,
@@ -444,6 +445,15 @@ def view_post(ride_id):
             )
             db.session.add(message)
             db.session.commit()
+        # Create request message
+        request_message = f"Your ride request from {post.departingFrom} to {post.destination} has been sent."
+        message = Message(
+            user_id=current_user.user_id,
+            recipient_id=post.user.user_id,
+            content=request_message
+        )
+        db.session.add(message)
+        db.session.commit()
 
         flash('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
@@ -483,6 +493,16 @@ def confirm_ride(ride_id, passenger_id):
             db.session.commit()
             send_ride_confirmation_email(ride.user, ride, ride_passenger)  # send email to the driver
             send_ride_confirmation_email(passenger, ride, ride_passenger)  # send email to the passenger
+
+            # Create confirmation message
+            confirmation_message = f"Your ride request from {ride.departingFrom} to {ride.destination} on {ride.ride_timestamp.strftime('%m/%d/%Y')} has been confirmed."
+            message = Message(
+                user_id=current_user.user_id,
+                recipient_id=passenger.user_id,
+                content=confirmation_message
+            )
+            db.session.add(message)
+            db.session.commit()
 
             flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
