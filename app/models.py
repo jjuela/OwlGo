@@ -106,7 +106,6 @@ class RideRequest(db.Model):
     custom_message = db.Column(db.String(500))
     requested_stops = db.Column(db.String(100))
     confirmed = db.Column(db.Boolean, default=False)
-    is_read = db.Column(db.Boolean, default=False)
 
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
