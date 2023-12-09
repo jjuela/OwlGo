@@ -63,7 +63,10 @@
 <div>
   <form method="post">
     {{ form.hidden_tag() }}
-    <input type="submit" value="Confirm Ride">
+    <div class="form-group">
+      {{ form.rejection_reason.label }} {{ form.rejection_reason() }}
+    </div>
+    {{ form.submit() }}
   </form>
 </div>
 {% endblock %}
