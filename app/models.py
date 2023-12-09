@@ -2,6 +2,8 @@ from app import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from datetime import datetime
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask import current_app
 
 class User(UserMixin, db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -26,6 +28,19 @@ class User(UserMixin, db.Model):
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
+
+    def get_reset_password_token(self, expires_in=600):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
+        return s.dumps({'reset_password': self.user_id}).decode('utf-8')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except:
+            return None
+        return User.query.get(data['reset_password'])
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -68,8 +83,14 @@ class Ride(db.Model):
 class RidePassenger(db.Model):
     ride_id = db.Column(db.Integer, db.ForeignKey('ride.ride_id'), primary_key=True)
     passenger_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), primary_key=True)
-    confirmed = db.Column(db.Boolean, default=False)  # Add this line
+    confirmed = db.Column(db.Boolean, default=False)
     is_driver = db.Column(db.Boolean, default=False)
+    role = db.Column(db.String(255))
+    commute_days = db.Column(db.String(255))
+    accessibility = db.Column(db.String(255))
+    custom_message = db.Column(db.String(255))
+    requested_stops = db.Column(db.String(255))  # Add this line
+    
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')
 
@@ -84,13 +105,15 @@ class RideRequest(db.Model):
     accessibility = db.Column(db.String(100))
     custom_message = db.Column(db.String(500))
     requested_stops = db.Column(db.String(100))
+    confirmed = db.Column(db.Boolean, default=False)
 
 class Message(db.Model):
     message_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     recipient_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
     content = db.Column(db.Text)
-    timestamp = db.Column(db.DateTime)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    is_read = db.Column(db.Boolean, default=False)
 
     user = db.relationship('User', foreign_keys=[user_id], backref='user_messages')
     recipient = db.relationship('User', foreign_keys=[recipient_id], backref='receiver_messages')

@@ -1,49 +1,89 @@
-from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from flask import render_template, redirect, url_for, flash
+# flask imports
+from flask import render_template, redirect, url_for, flash, session, request
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_mail import Message as MailMessage, Mail
+
+# sqlalchemy imports
+from sqlalchemy import func, and_
+from sqlalchemy.exc import IntegrityError
+
+# app imports
 from app import app, db, mail
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, ReportForm, TakeActionForm
-from flask import request
+from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm, TakeActionForm
+from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email, send_new_message_email, send_ride_rejection_email
+
+# other imports
 from datetime import datetime
 from smtplib import SMTPException
-from sqlalchemy.exc import IntegrityError
-from app.utils import generate_verification_code
 from werkzeug.utils import secure_filename
-import os
-from sqlalchemy import func
-from sqlalchemy import and_
-from flask_mail import Message
 from pytz import timezone, utc
 
-@app.template_filter('datetimefilter')
-def datetimefilter(value, format='%B %d, %Y %I:%M %p'):
-    if value.tzinfo is None or value.tzinfo.utcoffset(value) is None:
-        value = utc.localize(value)
-    eastern = timezone('US/Eastern')
-    value = value.astimezone(eastern)
-    return value.strftime(format)
+import os
 
-@app.context_processor # this is so templates can use utility functions
-def utility_functions():
-    def get_full_day_names(recurring_days):
-        day_names = {'mon': 'Monday', 'tue': 'Tuesday', 'wed': 'Wednesday', 'thu': 'Thursday', 'fri': 'Friday', 'sat': 'Saturday', 'sun': 'Sunday'}
-        return ', '.join(day_names[day] for day in recurring_days.split(','))
+@app.context_processor
+def context_processor():
+    if current_user.is_authenticated:
+        # Fetch unconfirmed ride requests made to the current user's rides
+        user_ride_ids = [ride.ride_id for ride in current_user.rides]
+        ride_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids), RideRequest.confirmed == False).all()
 
-    def get_full_accessibility_names(accessibility_keys):
-        accessibility_names = {
-            'wheelchair': 'Wheelchair',
-            'visual': 'Visual impairment',
-            'hearing': 'Hearing impairment',
-            'service_dog': 'Service dog friendly',
-            'quiet': 'Quiet ride',
-            'step_free': 'Step-free access',
-        }
-        return ', '.join(accessibility_names[key] for key in accessibility_keys.split(','))
+        # Fetch unread messages for the current user
+        unread_messages = Message.query.filter_by(recipient_id=current_user.user_id, is_read=False).all()
 
-    return dict(get_full_day_names=get_full_day_names, get_full_accessibility_names=get_full_accessibility_names)
+        # Determine if there are any pending requests or unread messages
+        has_pending_requests = len(ride_requests) > 0
+        has_unread_messages = len(unread_messages) > 0
+    else:
+        has_pending_requests = False
+        has_unread_messages = False
+
+    return dict(has_pending_requests=has_pending_requests, has_unread_messages=has_unread_messages)
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = PasswordResetRequestForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        # Check if the email domain is 'southernct.edu'
+        if '@southernct.edu' not in email:
+            flash('Sorry, only southern emails are allowed.')
+            return render_template('reset_password_request.html', form=form)
+        user = User.query.filter_by(email=email).first()
+        # Check if the user exists
+        if user:
+            token = user.get_reset_password_token()
+            send_password_reset_email(user, token)
+            # Return the full URL with the token in the response along with instructions
+            return f'<p>Copy this link and paste it in your browser to change your password:</p><p>104.198.140.100:8080/reset_password/{token}</p>'
+        else:
+            flash('No account with this email exists. Please click the sign up button to create an account.')
+            return render_template('reset_password_request.html', form=form)
+    return render_template('reset_password_request.html', form=form)
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('landing'))  # redirect to landing page if user is authenticated
+    # Verify the token
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('landing'))  # redirect to landing page if token is invalid
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        # Set the new password
+        user.set_password(form.password.data)
+        db.session.commit()
+        session.pop('_flashes', None)  # clear all flash messages
+        flash('Your password has been reset.')
+        return redirect(url_for('landing'))  # redirect to landing page after resetting password
+    return render_template('reset_password.html', form=form)
 
 @app.route('/', methods=['GET', 'POST'])
 def landing():
+    logout_user()
     login_form = LoginForm()
     register_form = RegistrationForm()
 
@@ -85,6 +125,8 @@ def landing():
                 db.session.commit()
                 return redirect(url_for('landing'))
 
+            msg = MailMessage(subject=subject, recipients=recipient, body=body)
+            # ...
             flash('Please check your email for the verification code in order to create a profile.')
             return redirect(url_for('verify', user_id=user.user_id))
 
@@ -123,12 +165,55 @@ def verify(user_id):
 
     return render_template('verify.html', form=form)
 
+@app.route('/pending_requests_page', methods=['GET'])
+@login_required
+def pending_requests_page():
+    # Fetch unconfirmed ride requests made to the current user's rides
+    user_ride_ids = [ride.ride_id for ride in current_user.rides]
+    ride_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids), RideRequest.confirmed == False).order_by(RideRequest.timestamp).all()
+
+    # Fetch unread messages for the current user
+    unread_messages = Message.query.filter_by(recipient_id=current_user.user_id, is_read=False).all()
+
+    # Set all unread messages to read
+    for message in unread_messages:
+        message.is_read = True
+    db.session.commit()
+
+    # Determine if there are any pending requests or unread messages
+    has_pending_requests = len(ride_requests) > 0
+    has_unread_messages = len(unread_messages) > 0
+
+    return render_template('pending_requests.html', ride_requests=ride_requests, unread_messages=unread_messages, has_pending_requests=has_pending_requests, has_unread_messages=has_unread_messages)
+
+@app.route('/view_messages', methods=['GET'])
+@login_required
+def view_messages():
+    # Fetch all messages for the current user
+    messages = Message.query.filter_by(recipient_id=current_user.user_id).order_by(Message.timestamp.desc()).all()
+
+    # Set all unread messages to read
+    for message in messages:
+        message.is_read = True
+    db.session.commit()
+
+    return render_template('view_messages.html', messages=messages)
+
 @app.route('/home')
 def home():
     newest_rides = Ride.query.order_by(Ride.ride_timestamp.desc()).limit(3).all()
     newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(4).all()
 
-    return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements)
+    # Calculate has_pending_requests
+    user_ride_ids = [ride.ride_id for ride in current_user.rides]
+    has_pending_requests = RideRequest.query.filter(RideRequest.ride_id.in_(user_ride_ids)).count() > 0
+
+    return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements, has_pending_requests=has_pending_requests)
+
+@app.route('/view_more_requests')
+def view_more_requests():
+    # Your code here
+    return render_template('view_more_requests.html')
 
 @app.route('/create_profile', methods=['GET','POST'])
 def create_profile():
@@ -296,6 +381,15 @@ def view_profile(user_id):
 
     average_rating = total_ratings / total_count if total_count else 0
 
+    message_form = MessageForm()
+    if message_form.validate_on_submit():
+        message = Message(user_id=current_user.user_id, recipient_id=user.user_id, content=message_form.content.data, is_read=False)
+        db.session.add(message)
+        db.session.commit()
+        send_new_message_email(current_user, user, message_form.content.data)
+        flash('Your message has been sent.', 'success')
+        return redirect(url_for('view_profile', user_id=user.user_id))
+
     form = ReportForm()
     if form.validate_on_submit():
         report = UserReport(reporter_id=current_user.user_id, reported_user_id=user.user_id, report_text=form.report_text.data)
@@ -306,7 +400,7 @@ def view_profile(user_id):
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
                            review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form)
+                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form, message_form=message_form)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
 @login_required 
@@ -329,7 +423,7 @@ def view_post(ride_id):
     if form.validate_on_submit():
         existing_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
         if existing_request:
-            print('You are already signed up for this ride.')
+            flash('You are already signed up for this ride.')
             return redirect(url_for('view_post', ride_id=ride_id))
         
         new_request = RideRequest(
@@ -344,28 +438,52 @@ def view_post(ride_id):
         db.session.add(new_request)
         db.session.commit()
 
-        custom_message = f" Message: {form.custom_message.data}" if form.custom_message.data else ""
-        message = Message(user_id=current_user.user_id, recipient_id=post.user_id, content=f"{current_user.username} has requested to join your ride.{custom_message}")
+        send_ride_driver_email(post.user, current_user, post, new_request)
+        send_ride_passenger_email(current_user, post, new_request)
+
+        sender_name = current_user.user_profile.first_name
+        ride_details = f"Ride from {post.departingFrom} to {post.destination} on {post.ride_timestamp.strftime('%m/%d/%Y')}"
+        custom_message = f"{sender_name} has a special request for the {ride_details}: {form.custom_message.data}" if form.custom_message.data else ""
+
+        if custom_message:  
+            message = Message(
+                user_id=current_user.user_id,
+                recipient_id=post.user.user_id,
+                content=custom_message
+            )
+            db.session.add(message)
+            db.session.commit()
+        # Create request message
+        request_message = f"Your ride request from {post.departingFrom} to {post.destination} has been sent."
+        message = Message(
+            user_id=current_user.user_id,
+            recipient_id=post.user.user_id,
+            content=request_message
+        )
         db.session.add(message)
         db.session.commit()
 
-        print('Your request to join the ride has been sent.')
+        flash('Your request to join the ride has been sent.')
         return redirect(url_for('view_post', ride_id=ride_id))
 
     return render_template('view_post.html', post=post, profile=profile, user_img_url=user_img_url, form=form, report_form=report_form)
 
 @app.route('/confirm_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
-@login_required 
+@login_required
 def confirm_ride(ride_id, passenger_id):
     ride = Ride.query.get_or_404(ride_id)
     passenger = User.query.get_or_404(passenger_id)
+    form = ConfirmRideForm()
+    ride_passenger = None
 
-    if request.method == 'POST':
-        if current_user.user_id != ride.user_id:
-            print('You are not authorized to confirm this ride.')
-            return redirect(url_for('view_post', ride_id=ride_id))
+    # Fetch the ride_request
+    ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
 
-        ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).order_by(Ride_Request.timestamp).first()
+    if current_user.user_id != ride.user_id:
+        flash('You are not authorized to confirm this ride.')
+        return redirect(url_for('index'))
+
+    if form.validate_on_submit():
         if ride_request:
             ride_passenger = RidePassenger(
                 ride_id=ride_id,
@@ -374,16 +492,55 @@ def confirm_ride(ride_id, passenger_id):
                 commute_days=ride_request.commute_days,
                 accessibility=ride_request.accessibility,
                 custom_message=ride_request.custom_message,
-                requested_stops=ride_request.requested_stops
+                requested_stops=ride_request.requested_stops,
+                confirmed=True 
             )
             db.session.add(ride_passenger)
+            ride.occupants += 1  # increment the occupants field
             db.session.delete(ride_request)
             db.session.commit()
+            send_ride_confirmation_email(ride.user, ride, ride_passenger)  # send email to the driver
+            send_ride_confirmation_email(passenger, ride, ride_passenger)  # send email to the passenger
 
-            print('The ride has been confirmed.')
+            # Create confirmation message
+            confirmation_message = f"Your ride request from {ride.departingFrom} to {ride.destination} on {ride.ride_timestamp.strftime('%m/%d/%Y')} has been confirmed."
+            message = Message(
+                user_id=current_user.user_id,
+                recipient_id=passenger.user_id,
+                content=confirmation_message
+            )
+            db.session.add(message)
+            db.session.commit()
+
+            flash('The ride has been confirmed.')
             return redirect(url_for('view_post', ride_id=ride_id))
 
-    return render_template('confirm_ride.html', ride=ride, passenger=passenger)
+    # Pass the ride to the template
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, ride_request=ride_request)
+
+@app.route('/reject_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
+@login_required
+def reject_ride(ride_id, passenger_id):
+    form = RejectRideForm()
+    ride = Ride.query.get_or_404(ride_id)
+    ride_request = RideRequest.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
+    passenger = User.query.get_or_404(passenger_id)
+    if form.validate_on_submit():
+        sender_name = current_user.user_profile.first_name
+        rejection_reason = f"Your ride request from {ride.departingFrom} to {ride.destination} on {ride.ride_timestamp.strftime('%m/%d/%Y')} has been rejected by {sender_name} for the following reason: {form.rejection_reason.data}"
+        message = Message(
+            user_id=current_user.user_id,
+            recipient_id=passenger.user_id,
+            content=rejection_reason
+        )
+        db.session.add(message)
+        db.session.delete(ride_request)  
+        db.session.commit()
+        send_ride_rejection_email(ride.user, ride, rejection_reason)  # send email to the driver
+        send_ride_rejection_email(passenger, ride, rejection_reason)  # send email to the passenger
+        flash('The ride request has been rejected and the passenger has been notified.', 'success')
+        return redirect(url_for('pending_requests_page'))
+    return render_template('reject_ride.html', title='Reject Ride', form=form, passenger=passenger, ride=ride)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 @login_required

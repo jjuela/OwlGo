@@ -6,6 +6,16 @@
 
 {% block content %}
 <div class="content">
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flashes">
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
     <div class="profile-about">
         <div class="profile-header">
             <div class="name-and-buttons">
@@ -13,9 +23,10 @@
                 <h1>{{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h1>
                 <div class="vertical-line"></div>
                 <div class="button-group">
-                    <button class="message-button">
-                        <img src="{{ url_for('static', filename='img/message.png') }}" alt="Message">
-                    </button>
+                    <div class="button-group">
+                        <button class="message-button" onclick="openMessageModal()">
+                            <img src="{{ url_for('static', filename='img/message.png') }}" alt="Message">
+                        </button>
                     <button class="more-button">
                         <img src="{{ url_for('static', filename='img/more.png') }}" alt="More">
                         <div class="dropdown-menu">
@@ -79,6 +90,17 @@
             {{ form.hidden_tag() }}
             {{ form.report_text.label }} {{ form.report_text() }}
             {{ form.submit() }}
+        </form>
+    </div>
+</div>
+<div id="messageModal" class="message-modal">
+    <div class="message-modal-content">
+        <h2>Send a message to {{ user.user_profile.first_name }} {{ user.user_profile.last_name }}</h2>
+        <span class="close-message">&times;</span>
+        <form method="POST">
+            {{ message_form.hidden_tag() }}
+            {{ message_form.content.label }} {{ message_form.content() }}
+            {{ message_form.submit() }}
         </form>
     </div>
 </div>

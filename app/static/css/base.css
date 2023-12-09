@@ -19,6 +19,17 @@ header img {
     height: 30px;
 }
 
+.notification-icon.active {
+    filter: brightness(1.5);
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
 .profile-pic {
     width: 50px;
     height: 50px;
@@ -159,4 +170,23 @@ footer a {
     font-weight: 600;
     color: black;
     text-decoration: none;
+}
+
+.flash {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.flash.success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.flash.error {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
 }

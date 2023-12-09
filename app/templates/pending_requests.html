@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pending_requests.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for message in messages %}
+                        <div class="alert alert-info">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <!-- End of Flash messages -->
+        <div class="ride-requests"> 
+            <h1>Pending Ride Requests</h1>
+            {% for request in ride_requests[:4] %}
+            <div class="request">
+                <h2>From:{{ request.passenger.user_profile.first_name }}</h2>
+                <p>{{ request.timestamp.strftime('%I:%M %p on %m/%d/%y') }}</p>
+            
+                {% if request.ride.departingAt %}
+                    <p><strong>Departing At:</strong>{{ request.ride.departingAt.strftime('%I:%M %p') }}</p>
+                {% endif %}
+            
+                {% if request.ride.arrival %}
+                    <p><strong>Arrival:</strong> {{ request.ride.arrival.strftime('%I:%M %p') }}</p>
+                {% endif %}
+            
+                {% if request.ride.ridetype %}
+                    <p><strong>Ride Type:</strong>{{ request.ride.ridetype|capitalize}}</p>
+                {% endif %}
+            
+                {% if request.ride.departingFrom %}
+                    <p><strong>Departing From:</strong> {{ request.ride.departingFrom }}</p>
+                {% endif %}
+            
+                {% if request.ride.destination %}
+                    <p><strong>Destination:</strong> {{ request.ride.destination }}</p>
+                {% endif %}
+            
+                <a href="{{ url_for('confirm_ride', ride_id=request.ride_id, passenger_id=request.passenger_id) }}" class="btn" id="confirmButton">Confirm Ride and View More Details</a>
+                <a href="{{ url_for('reject_ride', ride_id=request.ride_id, passenger_id=request.passenger_id) }}" class="btn" id="rejectButton">Reject Ride</a>
+            </div>
+            {% endfor %}
+            <a href="{{ url_for('my_rides') }}" class="btn" id="viewMoreButton">View More Rides</a>
+        </div>
+        <div class="new-messages">
+            <h1>New Messages</h1>
+            <a href="{{ url_for('view_messages') }}" class="btn">To reply to these messages, please click here</a>
+            {% for message in unread_messages[:10] %}
+                <div class="messages">
+                    <h2>From:{{ message.sender.user_profile.first_name }}</h2>
+                    <p>{{ message.timestamp.strftime('%I:%M %p on %m/%d/%y') }}</p>
+                    <p>{{ message.content }}</p>
+                </div>
+            {% endfor %}
+        </div>
+        </div>
+        {% endblock %}
