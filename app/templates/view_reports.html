@@ -9,25 +9,29 @@
         <div class="user-reports">
             <h2>User Reports</h2>
             {% for report in user_reports %}
-            <div class="report">
-                <div class="report-header">
-                    <h3>{{ report.report_title }}</h3>
-                    <p>{{ report.report_timestamp|datetimefilter }}</p>
+            <a href="{{ url_for('view_user_report', report_id=report.report_id)}}">
+                <div class="report">
+                    <div class="report-header">
+                        <h3>{{ report.report_title }}</h3>
+                        <p>{{ report.report_timestamp|datetimefilter }}</p>
+                    </div>
+                    <p>{{ report.report_text }}</p>
                 </div>
-                <p>{{ report.report_text }}</p>
-            </div>
+            </a>
             {% endfor %}
         </div>
         <div class="ride-reports">
             <h2>Ride Reports</h2>
             {% for report in ride_reports %}
-            <div class="report">
-                <div class="report-header">
-                    <h3>{{ report.report_title }}</h3>
-                    <p>{{ report.report_timestamp|datetimefilter }}</p>
+            <a href="{{ url_for('view_ride_report', report_id=report.report_id)}}">
+                <div class="report">
+                    <div class="report-header">
+                        <h3>{{ report.report_title }}</h3>
+                        <p>{{ report.report_timestamp|datetimefilter }}</p>
+                    </div>
+                    <p>{{ report.report_text }}</p>
                 </div>
-                <p>{{ report.report_text }}</p>
-            </div>
+            </a>
             {% endfor %}
         </div>
     </div>
