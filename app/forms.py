@@ -186,6 +186,10 @@ class ReportForm(FlaskForm):
     report_text = TextAreaField('Write your report', validators=[DataRequired()])
     submit = SubmitField('Report')
 
+class TakeActionForm(FlaskForm):
+    action = SelectField('Take action', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 def validate(self):
     # original validate fn
     initial_validation = super(RideForm, self).validate()

@@ -2,7 +2,7 @@ from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Revi
 from flask import render_template, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db, mail
-from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, ReportForm
+from app.forms import RegistrationForm, LoginForm,  ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, ReportForm, TakeActionForm
 from flask import request
 from datetime import datetime
 from smtplib import SMTPException
@@ -75,7 +75,7 @@ def landing():
             subject = "OwlGo Verification Code"
             recipient = user.email
             body = f"Your verification code is: {verification_code}"
-            msg = Message(subject=subject, recipients=[recipient], body=body)  # Corrected line
+            msg = Message(subject=subject, recipients=[recipient], body=body)
             
             try:
                 mail.send(msg)
@@ -126,7 +126,7 @@ def verify(user_id):
 @app.route('/home')
 def home():
     newest_rides = Ride.query.order_by(Ride.ride_timestamp.desc()).limit(3).all()
-    newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(5).all()
+    newest_announcements = Announcement.query.order_by(Announcement.announcement_timestamp.desc()).limit(4).all()
 
     return render_template('home.html', rides=newest_rides, newest_announcements=newest_announcements)
 
@@ -475,7 +475,66 @@ def view_user_report(report_id):
         report = UserReport.query.get_or_404(report_id)
         if report is None:
             return "Report not found", 404
-        return render_template('view_user_report.html', report=report)
+        else:
+            reporter = User.query.get_or_404(report.reporter_id)
+            reported_user = User.query.get_or_404(report.reported_user_id)
+            reporter_user_profile = reporter.profile_backref[0]
+            reported_user_profile = reported_user.profile_backref[0]
+            form = TakeActionForm()
+            form.action.choices = [
+                ('select', 'Select an action'),
+                ('ban', 'Ban user'),
+                ('warn', 'Warn user'),
+                ('ignore', 'Ignore report')
+            ]
+            if form.validate_on_submit():
+                if form.action.data == "select":
+                    flash('Please select an action.', 'danger')
+                if form.action.data == "ban":
+                    reported_user.banned = True
+                    db.session.delete(report)
+                    db.session.commit()
+
+                    subject = "OwlGo Ban"
+                    recipient = reported_user.email
+                    body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
+                    msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send ban email. Please try again."
+                if form.action.data == "warn":
+                    db.session.delete(report)
+                    db.session.commit()
+
+                    subject = "OwlGo Warning"
+                    recipient = reported_user.email
+                    body = f"You have been warned for violating OwlGo's terms of service."
+                    msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send warning email. Please try again."
+                    
+                if form.action.data == "ignore":
+                    db.session.delete(report)
+                    db.session.commit()
+
+                    subject = "OwlGo Report"
+                    recipient = reporter.email
+                    body = f"We've decided your report doesn't violate OwlGo's terms of service."
+                    msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send ignore email. Please try again."
+                return render_template('action_taken.html', report_id=report_id, form=form, reporter=reporter, reported_user=reported_user, reporter_user_profile=reporter_user_profile, reported_user_profile=reported_user_profile, action=form.action.data)
+        return render_template('view_user_report.html', report=report, reporter=reporter, reported_user=reported_user, reported_user_profile=reported_user_profile, reporter_user_profile=reporter_user_profile, form=form)
+    
+
 
 @app.route('/admin_hub/view_reports/ride/<int:report_id>', methods=['GET', 'POST'])
 @login_required
@@ -486,7 +545,119 @@ def view_ride_report(report_id):
         report = RideReport.query.get_or_404(report_id)
         if report is None:
             return "Report not found", 404
-        return render_template('view_ride_report.html', report=report)
+        else:
+            reporter = User.query.get_or_404(report.user_id)
+            reporter_user_profile = reporter.profile_backref[0]
+            reported_ride = Ride.query.get_or_404(report.ride_id)
+            reported_user = User.query.get(reported_ride.user_id)
+            reported_user_profile = reported_user.profile_backref[0]
+            form = TakeActionForm()
+            moreActionForm = TakeActionForm()
+            moreActionForm.action.choices = [
+                ('select', 'Select an action'),
+                ('ban', 'Ban user'),
+                ('warn', 'Warn user')
+            ]
+
+            form.action.choices = [
+                ('select', 'Select an action'),
+                ('delete', 'Delete ride'),
+                ('ignore', 'Ignore report')
+            ]
+
+            if moreActionForm.validate_on_submit():
+                print("moreActionForm submitted")
+                if moreActionForm.action.data == "select":
+                    flash('Please select an action.', 'danger')
+                if moreActionForm.action.data == "ban":
+                    reported_user.banned = True
+                    db.session.commit()
+
+                    subject = "OwlGo Ban"
+                    recipient = reported_user.email
+                    body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
+                    msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send ban email. Please try again."
+                if moreActionForm.action.data == "warn":
+                    db.session.delete(report)
+                    db.session.commit()
+
+                    subject = "OwlGo Warning"
+                    recipient = reported_user.email
+                    body = f"You have been warned for violating OwlGo's terms of service."
+                    msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send warning email. Please try again."
+                print("Returning action_taken.html")
+                return render_template('action_taken.html', report_id=report_id, reporter=reporter, action=moreActionForm.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
+
+            if form.validate_on_submit():
+                if form.action.data == "select":
+                    flash('Please select an action.', 'danger')
+                if form.action.data == "delete":
+                    RideReport.query.filter_by(ride_id=reported_ride.ride_id).delete()
+                    db.session.delete(reported_ride)
+
+                    subject = "OwlGo Report"
+                    recipient = reported_user.email
+                    body = f"Your ride has been deleted for violating OwlGo's terms of service."
+                    msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                    if moreActionForm.validate_on_submit():
+                        print("moreActionForm submitted")
+                        if moreActionForm.action.data == "select":
+                            flash('Please select an action.', 'danger')
+                        if moreActionForm.action.data == "ban":
+                            reported_user.banned = True
+                            db.session.commit()
+
+                            subject = "OwlGo Ban"
+                            recipient = reported_user.email
+                            body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
+                            msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                            try:
+                                mail.send(msg)
+                            except SMTPException:
+                                return "Failed to send ban email. Please try again."
+                        if moreActionForm.action.data == "warn":
+                            db.session.delete(report)
+                            db.session.commit()
+
+                            subject = "OwlGo Warning"
+                            recipient = reported_user.email
+                            body = f"You have been warned for violating OwlGo's terms of service."
+                            msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                            try:
+                                mail.send(msg)
+                            except SMTPException:
+                                return "Failed to send warning email. Please try again."
+                        print("Returning action_taken.html")
+                        return render_template('action_taken.html', report_id=report_id, reporter=reporter, action=moreActionForm.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
+                    
+                if form.action.data == "ignore":
+                    db.session.delete(report)
+                    db.session.commit()
+
+                    subject = "OwlGo Report"
+                    recipient = reporter.email
+                    body = f"We've decided your report doesn't violate OwlGo's terms of service."
+                    msg = Message(subject=subject, recipients=[recipient], body=body)
+
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send ignore email. Please try again."
+                return render_template('action_taken_ride.html', report_id=report_id, moreActionForm=moreActionForm, reporter=reporter, reported_ride=reported_ride, action=form.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
+            return render_template('view_ride_report.html', report=report, reporter=reporter, reported_ride=reported_ride, form=form, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
 
 @app.route('/admin_hub/ban_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required

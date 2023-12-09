@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/view_user_report.css') }}">
+{% endblock %}
+{% block content %}
+<div class="content">
+    <h1>Report details</h1>
+    <div class="report">
+        <div class="report-header">
+            <div class="reported-user">
+                <h2>Report of {{reported_user_profile.first_name }} {{ reported_user_profile.last_name }}'s ride</h1>
+                <a href="{{ url_for('view_profile', user_id=reported_user_profile.user_id) }}">
+                    <img src="{{ url_for('static', filename='uploads/' + reported_user_profile.user_img) }}" alt="{{ reported_user_profile.first_name }}'s profile picture" class="pfp">
+                </a>
+            </div>
+            <h2>{{ report.report_timestamp|datetimefilter }}</h2>
+        </div>
+        <a href="{{ url_for('view_post', ride_id=reported_ride.ride_id) }}" class="reported-link">
+            <div class="reported-ride">
+                <div class="ride">
+                        <p>Ride type: {{ reported_ride.ridetype.capitalize() }}</p>
+                        {% if reported_ride.ridetype == 'commute' %}
+                            <p>Arrival: {{ reported_ride.arrival.strftime('%l:%M %p').lstrip() if reported_ride.arrival else None }}</p>
+                            <p>Departing from: {{ reported_ride.departingFrom }}</p>
+                            <p>Destination: {{ reported_ride.destination }}</p>
+                            {% if reported_ride.reccuring %}
+                                <p>Recurring on days: {{ get_full_day_names(reported_ride.recurring_days) }}</p>
+                            {% endif %}
+                        {% elif reported_ride.ridetype == 'errand' %}
+                            <p>Departing at: {{ reported_ride.departingAt.strftime('%l:%M %p').lstrip() if reported_ride.departingAt else None }}</p>
+                            <p>Departing from: {{ reported_ride.departingFrom }}</p>
+                            <p>Stops: {{ reported_ride.stops }}</p>
+                        {% elif reported_ride.ridetype == 'leisure' %}
+                            <p>Departing at: {{ reported_ride.departingAt.strftime('%l:%M %p').lstrip() if reported_ride.departingAt else None }}</p>
+                            <p>Departing from: {{ reported_ride.departingFrom }}</p>
+                            <p>Destination: {{ reported_ride.destination }}</p>
+                            <p>Duration: {{ reported_ride.duration }}</p>
+                    {% endif %}
+                    <p>Accessibility: {{ get_full_accessibility_names(reported_ride.accessibility) }}</p>
+                    <p class="ride_description">Description: {{ reported_ride.ride_description }}</p>
+                </div>
+            </div>
+        </a>
+        <div class="report-body">
+            <h3>Feedback from {{ reporter_user_profile.first_name }} {{ reporter_user_profile.last_name }}</h3>
+            <p>{{ report.report_text }}</p>
+        </div>
+        <form method="POST" class="form">
+            {{ form.hidden_tag() }}
+            {{ form.action.label }} {{ form.action() }}
+            {{ form.submit(id='submit-button') }}
+        </form>  
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/action_taken.css') }}">
+{% endblock %}
+{% block content %}
+{% if action == "delete" %}
+    <div class="content">
+        <h1>Ride deleted</h1>
+        <p>{{ reported_user_profile.first_name }} {{ reported_user_profile.last_name }}'s ride been deleted.</p>
+        <p>Would you like to take further action?</p>
+        <form method="POST" class="form">
+            {{ moreActionForm.hidden_tag() }}
+            {{ moreActionForm.action.label }} {{ moreActionForm.action() }}
+            {{ moreActionForm.submit(id='submit-button') }}
+        <a href="{{ url_for('view_reports') }}" class="view-reports">Back to reports</a>
+    </div>
+    {% elif action == "ignore" %}
+    <div class="content">
+        <h1>Report ignored</h1>
+        <p>{{ reporter_user_profile.first_name }} {{ reporter_user_profile.last_name }}'s report has been ignored.</p>
+        <a href="{{ url_for('view_reports') }}" class="view-reports">Back to reports</a>
+    </div>
+    {% else %}
+    <div class="content">
+        <h1>Something went wrong</h1>
+        <p>Please try again.</p>
+        <a href="{{ url_for('view_reports') }}" class="view-reports">Back to reports</a>
+    {% endif %}
+{% endblock %}
