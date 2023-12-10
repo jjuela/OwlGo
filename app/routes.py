@@ -636,7 +636,7 @@ def rate_ride(ride_id):
 
         if review_form.review_text.data:
             review = Review(
-                rating_id=rating.id,
+                rating_id=rating.rating_id,
                 user_id=current_user.id,
                 review_text=review_form.review_text.data
             )
