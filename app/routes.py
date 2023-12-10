@@ -18,8 +18,16 @@ from datetime import datetime
 from smtplib import SMTPException
 from werkzeug.utils import secure_filename
 from pytz import timezone, utc
-
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from collections import defaultdict
+import calendar
+import time
+import re
 import os
+import glob
 
 @app.context_processor
 def context_processor():
@@ -854,5 +862,141 @@ def view_usage():
     if current_user.admin == False:
         return "You are not an admin!"
     else:
-        return render_template('view_usage.html')
-    
+        totalUsers = User.query.count()
+        totalRides = Ride.query.count()
+        totalCompletedRides = Ride.query.filter_by(completed=True).count()
+        totalAnnouncements = Announcement.query.count()
+        totalReviews = Review.query.count()
+        totalRatings = Rating.query.count()
+        totalMessages = Message.query.count()
+        totalRideRequests = RideRequest.query.count()
+        totalCommuteRides = Ride.query.filter_by(ridetype='commute').count()
+        totalErrandRides = Ride.query.filter_by(ridetype='errand').count()
+        totalLeisureRides = Ride.query.filter_by(ridetype='leisure').count()
+        totalOfferedRides = Ride.query.filter_by(is_offered=True).count()
+        totalRequestedRides = Ride.query.filter_by(is_offered=False).count()
+        
+        averageRidesPerUser = totalRides / totalUsers
+        averageCompletedRidesPerUser = totalCompletedRides / totalUsers
+        averageReviewsPerUser = totalReviews / totalUsers
+        averageRatingsPerUser = totalRatings / totalUsers
+        averageRidesPerDay = totalRides / 365
+        averageMessagesPerUser = totalMessages / totalUsers
+        averageRideRequestsPerUser = totalRideRequests / totalUsers
+        averagePassengers = Ride.query.with_entities(func.avg(Ride.occupants)).first()[0]
+
+        ratingToReviewRatio = totalRatings / totalReviews if totalReviews != 0 else 0
+        rideToCompletedRatio = totalRides / totalCompletedRides if totalCompletedRides != 0 else 0
+        offerToRequestedRatio = totalOfferedRides / totalRequestedRides if totalRequestedRides != 0 else 0
+
+        rides_list = Ride.query.all() 
+        sorted_rides_list = sorted(rides_list, key=lambda ride: ride.ride_timestamp or datetime.min)
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        timestamp = str(time.time())
+
+        # creating a new directory for graphs
+        graph_dir = os.path.join(current_dir, 'static/img/graphs')
+        os.makedirs(graph_dir, exist_ok=True)
+
+        # Total Rides Over Time
+        ridesPerDate = defaultdict(int)
+        for ride in rides_list:
+            if ride.ride_timestamp is not None:
+                date = ride.ride_timestamp.date()  # Extract the date part
+                ridesPerDate[date] += 1
+        dates, counts = zip(*sorted(ridesPerDate.items()))
+
+        plt.plot(dates, counts)
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))  # Format dates as 'mm-dd'
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))  # Set major ticks every day
+        plt.xlabel('Date')
+        plt.ylabel('Number of Rides')
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))  # Set major ticks every day
+        plt.xticks(rotation=45)  # Rotate x-axis labels
+        plt.title('Total Rides Over Time')
+        img_path = os.path.join(graph_dir, f'total_rides_over_time_{timestamp}.png')
+        plt.savefig(img_path)
+        plt.clf()
+
+        # Total Rides Per Weekday
+        ridesPerWeekday = defaultdict(int)
+        for ride in sorted_rides_list:
+            if ride.ride_timestamp is not None:
+                weekday = ride.ride_timestamp.weekday()  # This will be an integer
+                ridesPerWeekday[weekday] += 1
+
+        weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        counts = [ridesPerWeekday[weekday] for weekday in range(7)]  # Use integers as indices
+        plt.bar(weekdays, counts)
+        plt.xlabel('Weekday')
+        plt.ylabel('Number of Rides')
+        plt.title('Total Rides Per Weekday')
+        img_path = os.path.join(graph_dir, f'total_rides_per_weekday_{timestamp}.png')
+        plt.savefig(img_path)
+        plt.clf()
+
+        # Ride Types
+        ride_types = ['Commute', 'Errand', 'Leisure']
+        counts = [totalCommuteRides, totalErrandRides, totalLeisureRides]
+        plt.pie(counts, labels=ride_types, autopct='%1.1f%%')
+        plt.title('Ride Types')
+        img_path = os.path.join(graph_dir, f'ride_types_{timestamp}.png')
+        plt.savefig(img_path)
+        plt.clf()
+
+        # Ratings and Reviews
+        if totalReviews > 0 and totalRatings > 0:
+            plt.bar(['Total Ratings', 'Total Reviews'], [totalRatings, totalReviews])
+            plt.ylabel('Count')
+            plt.title('Ratings and Reviews')
+            img_path = os.path.join(graph_dir, f'rating_to_review_{timestamp}.png')
+            plt.savefig(img_path)
+            plt.clf()
+
+        # Offered and Requested Rides
+        if totalOfferedRides > 0 and totalRequestedRides > 0:
+            plt.bar(['Total Offered Rides', 'Total Requested Rides'], [totalOfferedRides, totalRequestedRides])
+            plt.ylabel('Count')
+            plt.title('Offered and Requested Rides')
+            img_path = os.path.join(graph_dir, f'offer_to_requested_{timestamp}.png')
+            plt.savefig(img_path)
+            plt.clf()
+
+        # Rides and Completed Rides
+        if totalRides > 0:
+            plt.bar(['Total Rides', 'Total Completed Rides'], [totalRides, totalCompletedRides])
+            plt.ylabel('Count')
+            plt.title('Rides and Completed Rides')
+            img_path = os.path.join(graph_dir, f'ride_to_completed_{timestamp}.png')
+            plt.savefig(img_path)
+            plt.clf()
+
+        # Delete old images
+        image_files = glob.glob(os.path.join(graph_dir, '*.png'))
+
+        # Group the files by type
+        image_files_by_type = defaultdict(list)
+        for image_file in image_files:
+            # Extract the type from the file name
+            match = re.match(r'.*/(.*?)_\d+\.\d+\.png$', image_file)
+            if match:
+                image_type = match.group(1)
+                image_files_by_type[image_type].append(image_file)
+
+        # For each type, sort the files by creation time and delete all but the most recent one
+        for image_type, image_files in image_files_by_type.items():
+            image_files.sort(key=os.path.getctime)
+            for image_file in image_files[:-1]:
+                os.remove(image_file)
+
+        return render_template('view_usage.html', totalUsers=totalUsers, totalRides=totalRides, totalCompletedRides=totalCompletedRides, 
+                               totalAnnouncements=totalAnnouncements, totalReviews=totalReviews, totalRatings=totalRatings, 
+                               totalMessages=totalMessages, totalRideRequests=totalRideRequests, totalCommuteRides=totalCommuteRides, 
+                               totalErrandRides=totalErrandRides, totalLeisureRides=totalLeisureRides, totalOfferedRides=totalOfferedRides, 
+                               totalRequestedRides=totalRequestedRides, averageRidesPerUser=averageRidesPerUser, 
+                               averageCompletedRidesPerUser=averageCompletedRidesPerUser, averageReviewsPerUser=averageReviewsPerUser, 
+                               averageRatingsPerUser=averageRatingsPerUser, averageRidesPerDay=averageRidesPerDay, 
+                               averageMessagesPerUser=averageMessagesPerUser, averageRideRequestsPerUser=averageRideRequestsPerUser, 
+                               averagePassengers=averagePassengers, ratingToReviewRatio=ratingToReviewRatio, rideToCompletedRatio=rideToCompletedRatio, 
+                               offerToRequestedRatio=offerToRequestedRatio, timestamp=timestamp)
