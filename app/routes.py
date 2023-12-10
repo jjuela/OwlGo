@@ -562,6 +562,10 @@ def find_ride():
     rides = Ride.query
 
     if form.validate_on_submit():
+        print(rides)
+        print(form.data)
+        print(form.ridetype.data, type(form.ridetype.data))
+        print(Ride.ridetype, type(Ride.ridetype))
         if form.ridetype.data:
             rides = rides.filter(Ride.ridetype == form.ridetype.data)
         if form.departingFrom.data:
