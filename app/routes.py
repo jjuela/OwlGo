@@ -626,8 +626,11 @@ def rate_ride(ride_id):
             ride_id=ride_id,
             user_id=current_user.user_id,
             recipient_id=ride.user_id,
-            average=float(rating_form.rating.data)
-        )
+            cleanliness=rating_form.cleanliness.data,
+            punctuality=rating_form.punctuality.data,
+            safety=rating_form.safety.data,
+            communication=rating_form.communication.data
+            )
         db.session.add(rating)
         db.session.commit()
 
