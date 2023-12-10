@@ -599,6 +599,7 @@ def find_ride():
             rides = rides.filter(Ride.accessibility.in_(form.accessibility.data))
 
         rides = rides.all()
+        print(rides)
 
     else:
         rides = rides.all()
