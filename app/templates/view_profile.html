@@ -34,7 +34,13 @@
     <div class="profile-statistics">
         <div class="star"></div>
         <div class="average">
-            <p>{{ average_rating }}</p>
+            <p>{{ overall_average }}</p>
+            <div class="stars">
+                {% set rounded_overall_average = overall_average|round(0) %}
+                {% for i in range(5) %}
+                    <div class="star-empty {% if i < rounded_overall_average %}filled{% endif %}"></div>
+                {% endfor %}
+            </div>
         </div>
         <div class="vertical-line-s"></div>
         <div class="completed-rides">
@@ -50,8 +56,9 @@
             <div class="rating">
                 <p class="category">{{ category.capitalize() }}</p>
                 <div class="stars">
+                    {% set rounded_average = average|round(0) %}
                     {% for i in range(5) %}
-                        <div class="star-empty {% if i < average %}filled{% endif %}"></div>
+                        <div class="star-empty {% if i < rounded_average %}filled{% endif %}"></div>
                     {% endfor %}
                 </div>
                 <p class="category_average">{{ average }}</p>
@@ -65,7 +72,9 @@
             <div class="review">
                 <img src="{{ url_for('static', filename='uploads/' + review.user.profile_backref.user_img) }}" alt="{{ review.user.profile_backref.first_name }}'s profile picture" class="pfp">
                 <h3>{{ review.user.profile_backref.first_name }} {{ review.user.profile_backref.last_name }}</h3>
-                <p>{{ review.review_text }}</p>
+                <div class="review-text-box">
+                    <p>{{ review.review_text }}</p>
+                </div>
             </div>
             {% endfor %}
         </div>

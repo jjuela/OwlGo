@@ -366,24 +366,24 @@ def view_profile(user_id):
     about = profile.about
 
     completed_rides = len([ride for ride in user.rides if ride.completed])
-    review_count = len(user.received_reviews)
-    ratings = user.received_ratings
-
+    review_count = Review.query.filter_by(recipient_id=user_id).count()
+    reviews = Review.query.filter_by(recipient_id=user_id).all()
+    ratings = Rating.query.filter_by(recipient_id=user_id).all()
     categories = ['communication', 'safety', 'punctuality', 'cleanliness']
     average_ratings = {}
     for category in categories:
         category_ratings = [getattr(rating, category) for rating in ratings]
-        average_ratings[category] = sum(category_ratings) / len(category_ratings) if category_ratings else 0
+        average_ratings[category] = round(sum(category_ratings) / len(category_ratings), 1) if category_ratings else 0
 
-    total_ratings = 0
+    ratings_sum = 0
     total_count = 0
     for category in categories:
         category_ratings = [getattr(rating, category) for rating in ratings]
         if category_ratings:
-            total_ratings += sum(category_ratings)
+            ratings_sum += sum(category_ratings)
             total_count += len(category_ratings)
 
-    average_rating = total_ratings / total_count if total_count else 0
+    overall_average = round(ratings_sum / total_count, 1) if total_count else 0
 
     message_form = MessageForm()
     if message_form.validate_on_submit():
@@ -403,8 +403,9 @@ def view_profile(user_id):
         return redirect(url_for('view_profile', user_id=user.user_id))
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
-                           review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form, message_form=message_form)
+                       review_count=review_count, reviews=user.received_reviews, 
+                       ratings=average_ratings, home_town=home_town, about=about, overall_average=overall_average, 
+                       form=form, message_form=message_form, reviews = reviews)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
 @login_required 
@@ -623,6 +624,7 @@ def rate_ride(ride_id):
         rating = Rating(
             ride_id=ride_id,
             user_id=current_user.user_id,
+            recipient_id=ride.user_id,
             average=float(rating_form.rating.data)
         )
         db.session.add(rating)
@@ -637,7 +639,7 @@ def rate_ride(ride_id):
             db.session.add(review)
             db.session.commit()
 
-        return redirect(url_for('view_profile', user_id=current_user.id))
+        return redirect(url_for('view_profile', user_id=ride.user_id))
 
     return render_template('rate_ride.html', rating_form=rating_form, review_form=review_form)
 

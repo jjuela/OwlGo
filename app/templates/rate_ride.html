@@ -3,53 +3,64 @@
 <head>
     <title>Rate Ride</title>
     <style>
-        .star-rating {
-            direction: rtl;
+        .rating {
             display: inline-block;
-            padding: 20px;
+            unicode-bidi: bidi-override;
+            direction: rtl;
         }
-        .star-rating input {
+        .rating > input {
             display: none;
         }
-        .star-rating label {
-            font-size: 30px;
-            color: lightgray;
-            cursor: pointer;
+        .rating > label:before {
+            content: "\2605";
+            display: inline-block;
+            font-size: 1.25em;
+            color: #888;
         }
-        .star-rating input:checked ~ label,
-        .star-rating label:hover,
-        .star-rating label:hover ~ label {
-            color: gold;
+        .rating > input:checked ~ label:before,
+        .rating > input:hover ~ label:before,
+        .rating > input:hover ~ label:before {
+            color: #fde16d;
+        }
+        .rating > input:checked + label:before {
+            color: #f4b400;
         }
     </style>
 </head>
 <body>
-    <h1>Rate Ride</h1>
-    <form action="/rate_ride" method="post">
-        <div class="star-rating">
-            <input id="star5" type="radio" name="rating" value="5">
-            <label for="star5">★</label>
-            <input id="star4half" type="radio" name="rating" value="4.5">
-            <label for="star4half">★</label>
-            <input id="star4" type="radio" name="rating" value="4">
-            <label for="star4">★</label>
-            <input id="star3half" type="radio" name="rating" value="3.5">
-            <label for="star3half">★</label>
-            <input id="star3" type="radio" name="rating" value="3">
-            <label for="star3">★</label>
-            <input id="star2half" type="radio" name="rating" value="2.5">
-            <label for="star2half">★</label>
-            <input id="star2" type="radio" name="rating" value="2">
-            <label for="star2">★</label>
-            <input id="star1half" type="radio" name="rating" value="1.5">
-            <label for="star1half">★</label>
-            <input id="star1" type="radio" name="rating" value="1">
-            <label for="star1">★</label>
-            <input id="starhalf" type="radio" name="rating" value="0.5">
-            <label for="starhalf">★</label>
+    <form method="POST">
+        <div>
+            <label for="cleanliness">Cleanliness:</label><br>
+            <input type="radio" name="cleanliness" value="1">1
+            <input type="radio" name="cleanliness" value="2">2
+            <input type="radio" name="cleanliness" value="3">3
+            <input type="radio" name="cleanliness" value="4">4
+            <input type="radio" name="cleanliness" value="5">5
         </div>
-        <label for="review">Review:</label><br>
-        <textarea id="review" name="review"></textarea><br>
+        <div>
+            <label for="punctuality">Punctuality:</label><br>
+            <input type="radio" name="punctuality" value="1">1
+            <input type="radio" name="punctuality" value="2">2
+            <input type="radio" name="punctuality" value="3">3
+            <input type="radio" name="punctuality" value="4">4
+            <input type="radio" name="punctuality" value="5">5
+        </div>
+        <div>
+            <label for="safety">Safety:</label><br>
+            <input type="radio" name="safety" value="1">1
+            <input type="radio" name="safety" value="2">2
+            <input type="radio" name="safety" value="3">3
+            <input type="radio" name="safety" value="4">4
+            <input type="radio" name="safety" value="5">5
+        </div>
+        <div>
+            <label for="communication">Communication:</label><br>
+            <input type="radio" name="communication" value="1">1
+            <input type="radio" name="communication" value="2">2
+            <input type="radio" name="communication" value="3">3
+            <input type="radio" name="communication" value="4">4
+            <input type="radio" name="communication" value="5">5
+        </div>
         <input type="submit" value="Submit">
     </form>
 </body>
