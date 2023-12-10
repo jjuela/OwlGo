@@ -608,6 +608,44 @@ def my_rides():
     # they should be able to see it here
     # this should have active rides and history of rides
     # this should also have an option to cancel a ride
+    
+@app.route('/rate_ride/<int:ride_id>', methods=['GET', 'POST'])
+def rate_ride(ride_id):
+    review_form = ReviewForm()
+    ride_passenger = RidePassenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+    if ride_passenger is None:
+        flash('You were not a passenger on this ride.')
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        rating_value = request.form.get('rating')
+        review_text = request.form.get('review')
+
+        if rating_value is None:
+            flash('Please provide a rating.')
+            return render_template('rate_ride.html', review_form=review_form)
+
+        rating = Rating(
+            ride_id=ride_id,
+            user_id=current_user.user_id,
+            average=float(rating_value)
+        )
+        db.session.add(rating)
+
+        if review_text:
+            review = Review(
+                rating_id=rating.id,
+                user_id=current_user.id,
+                review_text=review_text
+            )
+            db.session.add(review)
+
+        db.session.commit()
+        return redirect(url_for('view_profile', user_id=current_user.id))
+
+    return render_template('rate_ride.html', review_form=review_form)
+
+
 
 @app.route('/admin_hub', methods=['GET', 'POST'])
 @login_required

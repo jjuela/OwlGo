@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate Ride</title>
+    <style>
+        .star-rating {
+            direction: rtl;
+            display: inline-block;
+            padding: 20px;
+        }
+        .star-rating input {
+            display: none;
+        }
+        .star-rating label {
+            font-size: 30px;
+            color: lightgray;
+            cursor: pointer;
+        }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: gold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rate Ride</h1>
+    <form action="/rate_ride" method="post">
+        <div class="star-rating">
+            <input id="star5" type="radio" name="rating" value="5">
+            <label for="star5">★</label>
+            <input id="star4half" type="radio" name="rating" value="4.5">
+            <label for="star4half">★</label>
+            <input id="star4" type="radio" name="rating" value="4">
+            <label for="star4">★</label>
+            <input id="star3half" type="radio" name="rating" value="3.5">
+            <label for="star3half">★</label>
+            <input id="star3" type="radio" name="rating" value="3">
+            <label for="star3">★</label>
+            <input id="star2half" type="radio" name="rating" value="2.5">
+            <label for="star2half">★</label>
+            <input id="star2" type="radio" name="rating" value="2">
+            <label for="star2">★</label>
+            <input id="star1half" type="radio" name="rating" value="1.5">
+            <label for="star1half">★</label>
+            <input id="star1" type="radio" name="rating" value="1">
+            <label for="star1">★</label>
+            <input id="starhalf" type="radio" name="rating" value="0.5">
+            <label for="starhalf">★</label>
+        </div>
+        <label for="review">Review:</label><br>
+        <textarea id="review" name="review"></textarea><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
