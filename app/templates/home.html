@@ -45,7 +45,9 @@
                 </div>
                 {% endif %}
                 <div class="ride_header">
-                    <img class="post-pfp" src="{{ url_for('static', filename='uploads/' + ride.user.user_profile.user_img) }}" alt="{{ ride.user.username }}'s profile picture">
+                {% for user in ride.user %}
+                    <img class="post-pfp" src="{{ url_for('static', filename='uploads/' + user.user_profile.user_img) }}" alt="{{ user.username }}'s profile picture">
+                {% endfor %}
                     <h2 class="ride-title">Ride {{ "by" if ride.is_offered else "for" }} {{ ride.user.user_profile.first_name }} {{ ride.user.user_profile.last_name }}</h2>
                 </div>
                     <p>Ride type: {{ ride.ridetype.capitalize() }}</p>
