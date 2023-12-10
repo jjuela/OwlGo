@@ -18,6 +18,9 @@ from datetime import datetime
 from smtplib import SMTPException
 from werkzeug.utils import secure_filename
 from pytz import timezone, utc
+import matplotlib.pyplot as plt
+from collections import defaultdict
+import calendar
 
 import os
 
@@ -854,5 +857,95 @@ def view_usage():
     if current_user.admin == False:
         return "You are not an admin!"
     else:
-        return render_template('view_usage.html')
-    
+        totalUsers = User.query.count()
+        totalRides = Ride.query.count()
+        totalCompletedRides = Ride.query.filter_by(completed=True).count()
+        totalAnnouncements = Announcement.query.count()
+        totalReviews = Review.query.count()
+        totalRatings = Rating.query.count()
+        totalMessages = Message.query.count()
+        totalRideRequests = RideRequest.query.count()
+        totalCommuteRides = Ride.query.filter_by(ridetype='commute').count()
+        totalErrandRides = Ride.query.filter_by(ridetype='errand').count()
+        totalLeisureRides = Ride.query.filter_by(ridetype='leisure').count()
+        totalOfferedRides = Ride.query.filter_by(is_offered=True).count()
+        totalRequestedRides = Ride.query.filter_by(is_offered=False).count()
+        
+        averageRidesPerUser = totalRides / totalUsers
+        averageCompletedRidesPerUser = totalCompletedRides / totalUsers
+        averageReviewsPerUser = totalReviews / totalUsers
+        averageRatingsPerUser = totalRatings / totalUsers
+        averageRidesPerDay = totalRides / 365
+        averageMessagesPerUser = totalMessages / totalUsers
+        averageRideRequestsPerUser = totalRideRequests / totalUsers
+        averagePassengers = Ride.query.with_entities(func.avg(Ride.occupants)).first()
+
+        rides_list = Ride.query.all() 
+        sorted_rides_list = rides_list.sort(key=lambda ride: ride.ride_timestamp)
+
+        ridesPerDate = defaultdict(int)
+        for ride in rides_list:
+            date = ride.ride_timestamp.data()
+            ridesPerDate[date] += 1
+        dates, counts = zip(*sorted(ridesPerDate.items))
+
+        plt.plot(dates, counts)
+        plt.xlabel('Date')
+        plt.ylabel('Number of Rides')
+        plt.title('Total Rides Over Time')
+        plt.savefig('static/img/total_rides_over_time.png')
+        plt.close()
+
+        ridesPerWeekday = defaultdict(int)
+        for ride in sorted_rides_list:
+            weekday = calendar.day_name[ride.ride_timestamp.weekday()]
+            ridesPerWeekday[weekday] += 1
+
+        weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']   
+        counts = [ridesPerWeekday[weekday] for weekday in weekdays]
+        plt.bar(weekdays, counts)
+        plt.xlabel('Weekday')
+        plt.ylabel('Number of Rides')
+        plt.title('Total Rides Per Weekday')
+        plt.savefig('static/img/total_rides_per_weekday.png')
+        plt.close()
+
+        ride_types = ['Commute', 'Errand', 'Leisure']
+        counts = [totalCommuteRides, totalErrandRides, totalLeisureRides]
+        plt.pie(counts, labels=ride_types, autopct='%1.1f%%')
+        plt.title('Ride Types')
+        plt.savefig('static/img/ride_types.png')
+        plt.close()
+
+        ratingToReviewRatio = totalRatings / totalReviews
+        plt.bar(['Rating to Review Ratio'], [ratingToReviewRatio])
+        plt.ylabel('Ratio')
+        plt.title('Rating to Review Ratio')
+        plt.savefig('static/img/rating_to_review_ratio.png')
+        plt.close()
+
+        rideToCompletedRatio = totalRides / totalCompletedRides
+        plt.bar(['Ride to Completed Ride Ratio'], [rideToCompletedRatio])
+        plt.ylabel('Ratio')
+        plt.title('Ride to Completed Ride Ratio')
+        plt.savefig('static/img/ride_to_completed_ratio.png')
+        plt.close()
+
+        offerToRequestedRatio = totalOfferedRides / totalRequestedRides
+        plt.bar(['Offer to Requested Ride Ratio'], [offerToRequestedRatio])
+        plt.ylabel('Ratio')
+        plt.title('Offer to Requested Ride Ratio')
+        plt.savefig('static/img/offer_to_requested_ratio.png')
+        plt.close()
+
+
+        return render_template('view_usage.html', totalUsers=totalUsers, totalRides=totalRides, totalCompletedRides=totalCompletedRides, 
+                               totalAnnouncements=totalAnnouncements, totalReviews=totalReviews, totalRatings=totalRatings, 
+                               totalMessages=totalMessages, totalRideRequests=totalRideRequests, totalCommuteRides=totalCommuteRides, 
+                               totalErrandRides=totalErrandRides, totalLeisureRides=totalLeisureRides, totalOfferedRides=totalOfferedRides, 
+                               totalRequestedRides=totalRequestedRides, averageRidesPerUser=averageRidesPerUser, 
+                               averageCompletedRidesPerUser=averageCompletedRidesPerUser, averageReviewsPerUser=averageReviewsPerUser, 
+                               averageRatingsPerUser=averageRatingsPerUser, averageRidesPerDay=averageRidesPerDay, 
+                               averageMessagesPerUser=averageMessagesPerUser, averageRideRequestsPerUser=averageRideRequestsPerUser, 
+                               averagePassengers=averagePassengers, ratingToReviewRatio=ratingToReviewRatio, rideToCompletedRatio=rideToCompletedRatio, 
+                               offerToRequestedRatio=offerToRequestedRatio)
