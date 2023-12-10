@@ -883,7 +883,7 @@ def view_usage():
         averageRidesPerDay = totalRides / 365
         averageMessagesPerUser = totalMessages / totalUsers
         averageRideRequestsPerUser = totalRideRequests / totalUsers
-        averagePassengers = Ride.query.with_entities(func.avg(Ride.occupants)).first()
+        averagePassengers = Ride.query.with_entities(func.avg(Ride.occupants)).first()[0]
 
         ratingToReviewRatio = totalRatings / totalReviews if totalReviews != 0 else 0
         rideToCompletedRatio = totalRides / totalCompletedRides if totalCompletedRides != 0 else 0
