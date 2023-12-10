@@ -634,11 +634,11 @@ def rate_ride(ride_id):
         db.session.add(rating)
         db.session.commit()
 
-        if review_form.review.data:
+        if review_form.review_text.data:
             review = Review(
                 rating_id=rating.id,
                 user_id=current_user.id,
-                review_text=review_form.review.data
+                review_text=review_form.review_text.data
             )
             db.session.add(review)
             db.session.commit()
