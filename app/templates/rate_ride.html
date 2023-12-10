@@ -29,6 +29,8 @@
 </head>
 <body>
     <form method="POST">
+        {{ rating_form.hidden_tag() }}
+        {{ review_form.hidden_tag() }}
         <div>
             <label for="cleanliness">Cleanliness:</label><br>
             <input type="radio" name="cleanliness" value="1">1
