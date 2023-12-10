@@ -6,12 +6,12 @@
 <div class="content">
     <h1>Usage Statistics</h1>
     <div id="graphs">
-        <img src="{{ url_for('static', filename='img/total_rides_over_time.png') }}" alt="Total Rides Over Time">
-        <img src="{{ url_for('static', filename='img/total_rides_per_weekday.png') }}" alt="Total Rides Per Weekday">
-        <img src="{{ url_for('static', filename='img/ride_types.png') }}" alt="Ride Types">
-        <img src="{{ url_for('static', filename='img/rating_to_review_ratio.png') }}" alt="Rating to Review Ratio">
-        <img src="{{ url_for('static', filename='img/ride_to_completed_ratio.png') }}" alt="Ride to Completed Ride Ratio">
-        <img src="{{ url_for('static', filename='img/offer_to_requested_ratio.png') }}" alt="Offer to Requested Ride Ratio">
+        <img src="{{ url_for('static', filename='img/graphs/total_rides_over_time_' + timestamp + '.png') }}" alt="Total Rides Over Time">
+        <img src="{{ url_for('static', filename='img/graphs/total_rides_per_weekday_' + timestamp + '.png') }}" alt="Total Rides Per Weekday">
+        <img src="{{ url_for('static', filename='img/graphs/ride_types_' + timestamp + '.png') }}" alt="Ride Types">
+        <img src="{{ url_for('static', filename='img/graphs/rating_to_review_' + timestamp + '.png') }}" alt="Rating to Review Ratio">
+        <img src="{{ url_for('static', filename='img/graphs/ride_to_completed_' + timestamp + '.png') }}" alt="Rides and Completed Rides">
+        <img src="{{ url_for('static', filename='img/graphs/offer_to_requested_' + timestamp + '.png') }}" alt="Offered and Requested Rides">
     </div>
     <div id="rawData">
         <div class="totals">
