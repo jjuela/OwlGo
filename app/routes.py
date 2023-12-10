@@ -403,7 +403,7 @@ def view_profile(user_id):
         return redirect(url_for('view_profile', user_id=user.user_id))
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
-                       review_count=review_count, reviews=user.received_reviews, 
+                       review_count=review_count, 
                        ratings=average_ratings, home_town=home_town, about=about, overall_average=overall_average, 
                        form=form, message_form=message_form, reviews = reviews)
 
