@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 # app imports
 from app import app, db, mail
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm, TakeActionForm, ReviewForm
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm, TakeActionForm, ReviewForm, RatingForm
 from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email, send_new_message_email, send_ride_rejection_email
 
 # other imports
