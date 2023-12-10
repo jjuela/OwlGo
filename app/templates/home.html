@@ -4,6 +4,25 @@
 {% endblock %}
 {% block content %}
 <div class="content">
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flashes">
+                {% for message in messages %}
+                    <div class="alert alert-info">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <!-- Rest of the content -->
+    ...
+</div>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}
+{% block content %}
+<div class="content">
     <div class="announcements">
         <h2 class="announcement-h2">Announcements</h2>
         <div class="announcements-container">

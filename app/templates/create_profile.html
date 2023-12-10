@@ -43,5 +43,16 @@
         <p>Support</p>
     </div>
     <script src="{{ url_for('static', filename='js/create_profile.js') }}"></script>
-</body>
-</html>
+</div>
+<script>
+    window.onload = function() {
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    alert("{{ message }}");
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    }
+</script>
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>

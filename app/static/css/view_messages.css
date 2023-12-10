@@ -1,0 +1,37 @@
+.container {
+    overflow-y: auto;
+    scrollbar-width: none;
+    width: 80%; 
+    height: auto; 
+    padding: 30px; 
+    background-color: #808080; 
+    border-radius: 50px;
+    margin: auto; /* Add this line */
+}
+
+.container::-webkit-scrollbar {
+    display: none;
+}
+
+.message {
+    margin: auto;
+    margin-bottom: 25px;
+    padding: 10px;
+    border: 1px solid black;
+    border-radius: 25px;
+    min-width: 50%;
+    max-width: 90%;
+    height: auto;
+    box-sizing: border-box;
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    line-height: .5;
+}
+
+@media (max-width: 768px) {
+    .message {
+        width: 100%;
+        height: auto;
+    }
+}

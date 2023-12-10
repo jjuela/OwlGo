@@ -88,6 +88,10 @@ def landing():
     register_form = RegistrationForm()
 
     if login_form.validate_on_submit():
+        if not register_form.email.data.endswith('@southernct.edu'):
+            flash('Only southernct.edu emails are allowed.')
+            return redirect(url_for('landing'))
+
         user = User.query.filter_by(email=login_form.email.data).first()
         if user and user.check_password(login_form.password.data):
             login_user(user)
@@ -158,7 +162,7 @@ def verify(user_id):
             user.verification_code = None  # Clear the verification code
             db.session.commit()
             login_user(user)  # Log in the user
-            flash('Account verified and logged in successfully.')
+            flash('Account verified please create profile.')
             return redirect(url_for('create_profile'))
         else:
             flash('Invalid verification code. Please try again.')
@@ -647,6 +651,7 @@ def view_user_report(report_id):
             if form.validate_on_submit():
                 if form.action.data == "select":
                     flash('Please select an action.', 'danger')
+                    #return redirect(url_for('some_route'))
                 if form.action.data == "ban":
                     reported_user.banned = True
                     db.session.delete(report)
@@ -691,8 +696,6 @@ def view_user_report(report_id):
                 return render_template('action_taken.html', report_id=report_id, form=form, reporter=reporter, reported_user=reported_user, reporter_user_profile=reporter_user_profile, reported_user_profile=reported_user_profile, action=form.action.data)
         return render_template('view_user_report.html', report=report, reporter=reporter, reported_user=reported_user, reported_user_profile=reported_user_profile, reporter_user_profile=reporter_user_profile, form=form)
     
-
-
 @app.route('/admin_hub/view_reports/ride/<int:report_id>', methods=['GET', 'POST'])
 @login_required
 def view_ride_report(report_id):
@@ -726,6 +729,7 @@ def view_ride_report(report_id):
                 print("moreActionForm submitted")
                 if moreActionForm.action.data == "select":
                     flash('Please select an action.', 'danger')
+                    #return redirect(url_for('some_route'))
                 if moreActionForm.action.data == "ban":
                     reported_user.banned = True
                     db.session.commit()
@@ -758,6 +762,7 @@ def view_ride_report(report_id):
             if form.validate_on_submit():
                 if form.action.data == "select":
                     flash('Please select an action.', 'danger')
+                    #return redirect(url_for('some_route'))
                 if form.action.data == "delete":
                     RideReport.query.filter_by(ride_id=reported_ride.ride_id).delete()
                     db.session.delete(reported_ride)
@@ -771,6 +776,7 @@ def view_ride_report(report_id):
                         print("moreActionForm submitted")
                         if moreActionForm.action.data == "select":
                             flash('Please select an action.', 'danger')
+                            #return redirect(url_for('some_route'))
                         if moreActionForm.action.data == "ban":
                             reported_user.banned = True
                             db.session.commit()

@@ -1,17 +1,5 @@
 {% extends "base.html" %}
-
 {% block content %}
-{% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="flashes">
-      {% for message in messages %}
-        <div class="alert alert-warning">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
 <div class="ride-details">
   <h2>Request By: {{ ride.user.user_profile.first_name }} {{ ride.user.user_profile.last_name }}</h2>
   <p><strong>Request Time/Date:</strong> {{ ride.ride_timestamp.strftime('%I:%M %p') }}</p>

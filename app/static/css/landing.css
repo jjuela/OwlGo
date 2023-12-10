@@ -69,8 +69,8 @@ body {
     justify-content: center;
 }
 
-.landing-login-button, .landing-signup-button {
-	border: none;
+.landing-login-button, .landing-signup-button, .reset-password-button {
+    border: none;
     border-radius: 15px;
     width: 100px;
     padding: 5px 0px;

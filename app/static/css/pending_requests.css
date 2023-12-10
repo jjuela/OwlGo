@@ -1,49 +1,86 @@
 .container {
     display: flex;
+    flex-direction: row; /* Change this line */
     justify-content: space-between;
+    height: 65vh;
+    border: black;
+    border-radius: 50px;
+    background-color: #808080;
+}
+.scroll-container {
+    overflow-y: auto;
+    scrollbar-width: none;
+    width: 100%; 
+    height: 100%;
+    background-color: #808080; 
+}
+
+.scroll-container::-webkit-scrollbar {
+    display: none;
 }
 
 .ride-requests, .new-messages {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
+    border: 1px solid white; 
+    border-radius: 50px; 
 }
 
-.ride-requests {
-    flex: 2; /* This will take up 2/3 of the container's width */
-}
-
-.new-messages {
-    flex: 1; /* This will take up 1/3 of the container's width */
-}
-
-.request {
-    margin-bottom: 20px;
+.request, .message {
+    margin: auto; 
     padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%;
+    border: 1px solid black;
+    border-radius: 25px;
+    min-width: 50%; 
+    max-width: 90%; 
+    height: auto;
     box-sizing: border-box;
-    height: 300px;
-    overflow-y: auto;
-}
-
-.message {
-    margin-bottom: 20px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    width: 100%;
-    box-sizing: border-box;
-    height: 150px; /* Adjust this value as needed */
-    overflow-y: auto;
+    background-color: white;
+    color: black;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 .btn {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 5px 10px;
     color: #fff;
-    background-color: #007bff;
-    border-radius: 5px;
+    background-color: #808080;
+    border-radius: 20px;
     text-decoration: none;
+    margin: 1px;
+    font-size: 14px;
+}
+
+.request p {
+    margin-bottom: 10px;
+}
+
+.title {
+    font-weight: bold;
+    color: white; 
+    font-size: 20px;
+    padding-left: 50px; 
+}
+
+.subtitle {
+    font-weight: bold;
+    color: red; 
+    font-size: 16px;
+    padding-left: 20px; 
+}
+
+.label {
+    font-weight: bold;
+    color: black;
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .request, .message {
+        width: 100%;
+        height: auto;
+    }
 }
