@@ -614,6 +614,7 @@ def my_rides():
 def rate_ride(ride_id):
     rating_form = RatingForm()
     review_form = ReviewForm()
+    ride = Ride.query.get_or_404(ride_id)
     ride_passenger = RidePassenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
     
     if ride_passenger is None:
