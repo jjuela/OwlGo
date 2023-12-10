@@ -18,6 +18,8 @@ from datetime import datetime
 from smtplib import SMTPException
 from werkzeug.utils import secure_filename
 from pytz import timezone, utc
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from collections import defaultdict
 import calendar
@@ -881,25 +883,30 @@ def view_usage():
         averagePassengers = Ride.query.with_entities(func.avg(Ride.occupants)).first()
 
         rides_list = Ride.query.all() 
-        sorted_rides_list = rides_list.sort(key=lambda ride: ride.ride_timestamp)
+        sorted_rides_list = sorted(rides_list, key=lambda ride: ride.ride_timestamp or datetime.min)
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
 
         ridesPerDate = defaultdict(int)
         for ride in rides_list:
-            date = ride.ride_timestamp.data()
-            ridesPerDate[date] += 1
-        dates, counts = zip(*sorted(ridesPerDate.items))
+            if ride.ride_timestamp is not None:
+                date = ride.ride_timestamp
+                ridesPerDate[date] += 1
+        dates, counts = zip(*sorted(ridesPerDate.items()))
 
         plt.plot(dates, counts)
         plt.xlabel('Date')
         plt.ylabel('Number of Rides')
         plt.title('Total Rides Over Time')
-        plt.savefig('static/img/total_rides_over_time.png')
+        img_path = os.path.join(current_dir, 'static/img/total_rides_over_time.png')
+        plt.savefig(img_path)
         plt.close()
 
         ridesPerWeekday = defaultdict(int)
         for ride in sorted_rides_list:
-            weekday = calendar.day_name[ride.ride_timestamp.weekday()]
-            ridesPerWeekday[weekday] += 1
+            if ride.ride_timestamp is not None:
+                weekday = calendar.day_name[ride.ride_timestamp.weekday()]
+                ridesPerWeekday[weekday] += 1
 
         weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']   
         counts = [ridesPerWeekday[weekday] for weekday in weekdays]
@@ -907,35 +914,46 @@ def view_usage():
         plt.xlabel('Weekday')
         plt.ylabel('Number of Rides')
         plt.title('Total Rides Per Weekday')
-        plt.savefig('static/img/total_rides_per_weekday.png')
+        img_path = os.path.join(current_dir, 'static/img/total_rides_per_weekday.png')
+        plt.savefig(img_path)
         plt.close()
 
         ride_types = ['Commute', 'Errand', 'Leisure']
         counts = [totalCommuteRides, totalErrandRides, totalLeisureRides]
         plt.pie(counts, labels=ride_types, autopct='%1.1f%%')
         plt.title('Ride Types')
-        plt.savefig('static/img/ride_types.png')
+        img_path = os.path.join(current_dir, 'static/img/ride_types.png')
+        plt.savefig(img_path)
         plt.close()
 
-        ratingToReviewRatio = totalRatings / totalReviews
-        plt.bar(['Rating to Review Ratio'], [ratingToReviewRatio])
-        plt.ylabel('Ratio')
-        plt.title('Rating to Review Ratio')
-        plt.savefig('static/img/rating_to_review_ratio.png')
-        plt.close()
+        if totalReviews != 0:
+            ratingToReviewRatio = totalRatings / totalReviews
+        else:
+            ratingToReviewRatio = 0
+            plt.bar(['Rating to Review Ratio'], [ratingToReviewRatio])
+            plt.ylabel('Ratio')
+            plt.title('Rating to Review Ratio')
+            img_path = os.path.join(current_dir, 'static/img/rating_to_review_ratio.png')
+            plt.savefig(img_path)
+            plt.close()
 
-        rideToCompletedRatio = totalRides / totalCompletedRides
-        plt.bar(['Ride to Completed Ride Ratio'], [rideToCompletedRatio])
-        plt.ylabel('Ratio')
-        plt.title('Ride to Completed Ride Ratio')
-        plt.savefig('static/img/ride_to_completed_ratio.png')
-        plt.close()
+        if totalCompletedRides != 0:
+            rideToCompletedRatio = totalRides / totalCompletedRides
+        else:
+            rideToCompletedRatio = 0
+            plt.bar(['Ride to Completed Ride Ratio'], [rideToCompletedRatio])
+            plt.ylabel('Ratio')
+            plt.title('Ride to Completed Ride Ratio')
+            img_path = os.path.join(current_dir, 'static/img/ride_to_completed_ratio.png')
+            plt.savefig(img_path)
+            plt.close()
 
         offerToRequestedRatio = totalOfferedRides / totalRequestedRides
         plt.bar(['Offer to Requested Ride Ratio'], [offerToRequestedRatio])
         plt.ylabel('Ratio')
         plt.title('Offer to Requested Ride Ratio')
-        plt.savefig('static/img/offer_to_requested_ratio.png')
+        img_path = os.path.join(current_dir, 'static/img/offer_to_requested_ratio.png')
+        plt.savefig(img_path)
         plt.close()
 
 
