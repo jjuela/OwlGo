@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 # app imports
 from app import app, db, mail
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm, TakeActionForm
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm, TakeActionForm, ReviewForm
 from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email, send_new_message_email, send_ride_rejection_email
 
 # other imports
@@ -611,39 +611,35 @@ def my_rides():
     
 @app.route('/rate_ride/<int:ride_id>', methods=['GET', 'POST'])
 def rate_ride(ride_id):
+    rating_form = RatingForm()
     review_form = ReviewForm()
     ride_passenger = RidePassenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+    
     if ride_passenger is None:
         flash('You were not a passenger on this ride.')
         return redirect(url_for('home'))
 
-    if request.method == 'POST':
-        rating_value = request.form.get('rating')
-        review_text = request.form.get('review')
-
-        if rating_value is None:
-            flash('Please provide a rating.')
-            return render_template('rate_ride.html', review_form=review_form)
-
+    if rating_form.validate_on_submit():
         rating = Rating(
             ride_id=ride_id,
             user_id=current_user.user_id,
-            average=float(rating_value)
+            average=float(rating_form.rating.data)
         )
         db.session.add(rating)
+        db.session.commit()
 
-        if review_text:
+        if review_form.review.data:
             review = Review(
                 rating_id=rating.id,
                 user_id=current_user.id,
-                review_text=review_text
+                review_text=review_form.review.data
             )
             db.session.add(review)
+            db.session.commit()
 
-        db.session.commit()
         return redirect(url_for('view_profile', user_id=current_user.id))
 
-    return render_template('rate_ride.html', review_form=review_form)
+    return render_template('rate_ride.html', rating_form=rating_form, review_form=review_form)
 
 
 
