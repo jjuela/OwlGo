@@ -179,8 +179,8 @@ class SearchForm(FlaskForm):
     duration = StringField('Duration', validators=[Optional()])
     stops = StringField('Stop', validators=[Optional()]) # changed from fieldlist to stringfield, also put in searchform
     reccuring = BooleanField('Recurring')
-    is_offered = BooleanField('Offered only') # added is_offered
-    is_requested = BooleanField('Requested only') # added is_requested
+    is_offered = BooleanField('Is Offered', default=None)
+    is_requested = BooleanField('Requested only', default=None) # added is_requested
     recurring_days = SelectMultipleField('Recurring on days:', choices=[
         ('mon', 'Monday'),
         ('tue', 'Tuesday'),

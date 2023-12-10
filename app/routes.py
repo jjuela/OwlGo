@@ -587,7 +587,7 @@ def find_ride():
             rides = rides.filter(Ride.duration == form.duration.data)
         if form.is_offered.data:  # only apply filter if is_offered is not equal to its default value
             rides = rides.filter(Ride.is_offered == form.is_offered.data)
-        if form.is_requested.data is not None:
+        if form.is_requested.data:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
         if form.stops.data:
             rides = rides.filter(Ride.stops.in_(form.stops.data))
