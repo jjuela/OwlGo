@@ -2,7 +2,7 @@
 {% block css %}
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}">
 {% endblock %}
-{% block content1 %}
+{% block content %}
 <div class="content">
     <!-- Flash messages -->
     {% with messages = get_flashed_messages() %}
@@ -21,7 +21,7 @@
 </div>
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
 {% endblock %}
-{% block content2 %}
+{% block content %}
 <div class="content">
     <div class="announcements">
         <h2 class="announcement-h2">Announcements</h2>
