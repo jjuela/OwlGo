@@ -2,6 +2,7 @@
 from flask import render_template, redirect, url_for, flash, session, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message as MailMessage, Mail
+from flask_wtf import FlaskForm
 
 # sqlalchemy imports
 from sqlalchemy import func, and_
@@ -224,7 +225,6 @@ def home():
 
 @app.route('/view_more_requests')
 def view_more_requests():
-    # Your code here
     return render_template('view_more_requests.html')
 
 @app.route('/create_profile', methods=['GET','POST'])
@@ -324,6 +324,17 @@ def start_ride_offer():
         )
         db.session.add(ride)
         db.session.commit()
+
+        driver = RidePassenger(
+        ride_id=ride.ride_id,
+        passenger_id=current_user.user_id,
+        confirmed=True,
+        is_driver=True,
+        role='Driver'
+        )
+        db.session.add(driver)
+
+        db.session.commit()
         return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_offer.html', form=form)
 
@@ -358,6 +369,17 @@ def start_ride_request():
             ride_description=form.description.data
         )
         db.session.add(ride)
+        db.session.commit()
+
+        passenger = RidePassenger(
+        ride_id=ride.ride_id,
+        passenger_id=current_user.user_id,
+        confirmed=True,
+        is_driver=False,
+        role='passenger'
+        )
+        db.session.add(passenger)
+
         db.session.commit()
         return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_request.html', form=form)
@@ -569,6 +591,9 @@ def find_ride():
     rides = Ride.query
 
     if form.validate_on_submit():
+        print("Form data:")
+        for field in form:
+            print(f"{field.name}: {field.data}")
         if form.ridetype.data:
             rides = rides.filter(Ride.ridetype == form.ridetype.data)
         if form.departingFrom.data:
@@ -588,9 +613,9 @@ def find_ride():
             rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
-        if form.is_offered.data is not None and form.is_offered.data != False:  # only apply filter if is_offered is not equal to its default value
+        if form.is_offered.data:  # only apply filter if is_offered is not equal to its default value
             rides = rides.filter(Ride.is_offered == form.is_offered.data)
-        if form.is_requested.data is not None:
+        if form.is_requested.data:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
         if form.stops.data:
             rides = rides.filter(Ride.stops.in_(form.stops.data))
@@ -611,11 +636,57 @@ def find_ride():
 @app.route('/my_rides')
 @login_required
 def my_rides():
-    return render_template('my_rides.html')
-    # after someone signs up for a ride and is accepted, 
-    # they should be able to see it here
-    # this should have active rides and history of rides
-    # this should also have an option to cancel a ride
+    form = FlaskForm()
+    originalPosterRides = Ride.query.filter_by(user_id=current_user.user_id).all()
+    passengerRides = RidePassenger.query.filter_by(passenger_id=current_user.user_id).all()
+    allRides = originalPosterRides + [ridePassenger.ride for ridePassenger in passengerRides]
+    rideDriver = [ride for ride in allRides if any(rp.is_driver and rp.passenger_id == current_user.user_id for rp in ride.passengers)]
+    ridePassenger = [ride for ride in allRides if any(not rp.is_driver and rp.passenger_id == current_user.user_id for rp in ride.passengers)]
+    currentRides = [ride for ride in allRides if not ride.completed]
+    pastRides = [ride for ride in allRides if ride.completed]
+    return render_template('my_rides.html', currentRides=currentRides, pastRides=pastRides, ridePassenger=ridePassenger, originalPosterRides=originalPosterRides, rideDriver=rideDriver, form=form)
+
+
+@app.route('/complete_ride/<int:ride_id>', methods=['POST'])
+@login_required
+def complete_ride(ride_id):
+    print(f"Received request to complete ride {ride_id}")
+    ride = Ride.query.get(ride_id)
+    if ride is None:
+        print(f"No ride found with ID {ride_id}")
+        return "No ride found", 404
+    print(f"Retrieved ride from database: {ride}")
+    if ride.user_id != current_user.user_id:
+        print(f"User {current_user.user_id} is not authorized to complete ride {ride_id}")
+        return "Not authorized", 403
+    ride.completed = True
+    db.session.commit()
+    return redirect(url_for('my_rides'))
+
+@app.route('/delete_ride/<int:ride_id>', methods=['POST'])
+@login_required
+def delete_ride(ride_id):
+    ride = Ride.query.get(ride_id)
+    if ride and ride.user_id == current_user.user_id:
+        ratings = Rating.query.filter_by(ride_id=ride_id).all()
+        for rating in ratings:
+            Review.query.filter_by(rating_id=rating.rating_id).delete()
+        Rating.query.filter_by(ride_id=ride_id).delete()
+        RidePassenger.query.filter_by(ride_id=ride_id).delete()
+        RideRequest.query.filter_by(ride_id=ride_id).delete()
+        RideReport.query.filter_by(ride_id=ride_id).delete()
+        db.session.delete(ride)
+        db.session.commit()
+    return redirect(url_for('my_rides'))
+
+@app.route('/cancel_ride/<int:ride_id>', methods=['POST'])
+@login_required
+def cancel_ride(ride_id):
+    ride_passenger = RidePassenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+    if ride_passenger:
+        db.session.delete(ride_passenger)
+        db.session.commit()
+    return redirect(url_for('my_rides'))
 
 @app.route('/admin_hub', methods=['GET', 'POST'])
 @login_required
@@ -659,7 +730,7 @@ def view_user_report(report_id):
             if form.validate_on_submit():
                 if form.action.data == "select":
                     flash('Please select an action.', 'danger')
-                    #return redirect(url_for('some_route'))
+                    #return redirect url
                 if form.action.data == "ban":
                     reported_user.banned = True
                     db.session.delete(report)
@@ -737,7 +808,7 @@ def view_ride_report(report_id):
                 print("moreActionForm submitted")
                 if moreActionForm.action.data == "select":
                     flash('Please select an action.', 'danger')
-                    #return redirect(url_for('some_route'))
+                    #return redirect url
                 if moreActionForm.action.data == "ban":
                     reported_user.banned = True
                     db.session.commit()
@@ -770,7 +841,7 @@ def view_ride_report(report_id):
             if form.validate_on_submit():
                 if form.action.data == "select":
                     flash('Please select an action.', 'danger')
-                    #return redirect(url_for('some_route'))
+                    #return redirect url
                 if form.action.data == "delete":
                     RideReport.query.filter_by(ride_id=reported_ride.ride_id).delete()
                     db.session.delete(reported_ride)
@@ -784,7 +855,7 @@ def view_ride_report(report_id):
                         print("moreActionForm submitted")
                         if moreActionForm.action.data == "select":
                             flash('Please select an action.', 'danger')
-                            #return redirect(url_for('some_route'))
+                            #return redirect url
                         if moreActionForm.action.data == "ban":
                             reported_user.banned = True
                             db.session.commit()
@@ -830,33 +901,8 @@ def view_ride_report(report_id):
                 return render_template('action_taken_ride.html', report_id=report_id, moreActionForm=moreActionForm, reporter=reporter, reported_ride=reported_ride, action=form.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
             return render_template('view_ride_report.html', report=report, reporter=reporter, reported_ride=reported_ride, form=form, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
 
-@app.route('/admin_hub/ban_user/<int:user_id>', methods=['GET', 'POST'])
-@login_required
-def ban_user(user_id):
-    if current_user.admin == False:
-        return "You are not an admin!"
-    else:
-        user = User.query.get_or_404(user_id)
-        if user is None:
-            return "User not found", 404
-        user.banned = True
-        db.session.commit()
-        return "User has been banned"
 
-@app.route('/admin_hub/delete_post/<int:ride_id>', methods=['GET', 'POST'])
-@login_required
-def delete_post(ride_id):
-    if current_user.admin == False:
-        return "You are not an admin!"
-    else:
-        ride = Ride.query.get_or_404(ride_id)
-        if ride is None:
-            return "Ride not found", 404
-        db.session.delete(ride)
-        db.session.commit()
-        return "Ride has been deleted"
-
-@app.route('/admin_hub/view_usage', methods=['GET', 'POST']) # where usage statistics will go
+@app.route('/admin_hub/view_usage', methods=['GET', 'POST'])
 @login_required
 def view_usage():
     if current_user.admin == False:
@@ -899,27 +945,26 @@ def view_usage():
         graph_dir = os.path.join(current_dir, 'static/img/graphs')
         os.makedirs(graph_dir, exist_ok=True)
 
-        # Total Rides Over Time
+        # ride over time
         ridesPerDate = defaultdict(int)
         for ride in rides_list:
             if ride.ride_timestamp is not None:
-                date = ride.ride_timestamp.date()  # Extract the date part
+                date = ride.ride_timestamp.date()
                 ridesPerDate[date] += 1
         dates, counts = zip(*sorted(ridesPerDate.items()))
 
         plt.plot(dates, counts)
-        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))  # Format dates as 'mm-dd'
-        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))  # Set major ticks every day
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
         plt.xlabel('Date')
         plt.ylabel('Number of Rides')
-        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))  # Set major ticks every day
-        plt.xticks(rotation=45)  # Rotate x-axis labels
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))
+        plt.xticks(rotation=45)
         plt.title('Total Rides Over Time')
         img_path = os.path.join(graph_dir, f'total_rides_over_time_{timestamp}.png')
         plt.savefig(img_path)
         plt.clf()
 
-        # Total Rides Per Weekday
+        # tides per weekday
         ridesPerWeekday = defaultdict(int)
         for ride in sorted_rides_list:
             if ride.ride_timestamp is not None:
@@ -936,7 +981,7 @@ def view_usage():
         plt.savefig(img_path)
         plt.clf()
 
-        # Ride Types
+        # ride types
         ride_types = ['Commute', 'Errand', 'Leisure']
         counts = [totalCommuteRides, totalErrandRides, totalLeisureRides]
         plt.pie(counts, labels=ride_types, autopct='%1.1f%%')
@@ -945,7 +990,7 @@ def view_usage():
         plt.savefig(img_path)
         plt.clf()
 
-        # Ratings and Reviews
+        # ratings and reviews
         if totalReviews > 0 and totalRatings > 0:
             plt.bar(['Total Ratings', 'Total Reviews'], [totalRatings, totalReviews])
             plt.ylabel('Count')
@@ -954,7 +999,7 @@ def view_usage():
             plt.savefig(img_path)
             plt.clf()
 
-        # Offered and Requested Rides
+        # offered and requested
         if totalOfferedRides > 0 and totalRequestedRides > 0:
             plt.bar(['Total Offered Rides', 'Total Requested Rides'], [totalOfferedRides, totalRequestedRides])
             plt.ylabel('Count')
@@ -963,7 +1008,7 @@ def view_usage():
             plt.savefig(img_path)
             plt.clf()
 
-        # Rides and Completed Rides
+        # rides and completed Rides
         if totalRides > 0:
             plt.bar(['Total Rides', 'Total Completed Rides'], [totalRides, totalCompletedRides])
             plt.ylabel('Count')
@@ -972,19 +1017,19 @@ def view_usage():
             plt.savefig(img_path)
             plt.clf()
 
-        # Delete old images
+        # delete old images
         image_files = glob.glob(os.path.join(graph_dir, '*.png'))
 
-        # Group the files by type
+        # group the files by type
         image_files_by_type = defaultdict(list)
         for image_file in image_files:
-            # Extract the type from the file name
+            # get type from the file name
             match = re.match(r'.*/(.*?)_\d+\.\d+\.png$', image_file)
             if match:
                 image_type = match.group(1)
                 image_files_by_type[image_type].append(image_file)
 
-        # For each type, sort the files by creation time and delete all but the most recent one
+        # sort the files by creation time and delete all except most recent
         for image_type, image_files in image_files_by_type.items():
             image_files.sort(key=os.path.getctime)
             for image_file in image_files[:-1]:
@@ -1000,3 +1045,4 @@ def view_usage():
                                averageMessagesPerUser=averageMessagesPerUser, averageRideRequestsPerUser=averageRideRequestsPerUser, 
                                averagePassengers=averagePassengers, ratingToReviewRatio=ratingToReviewRatio, rideToCompletedRatio=rideToCompletedRatio, 
                                offerToRequestedRatio=offerToRequestedRatio, timestamp=timestamp)
+    
