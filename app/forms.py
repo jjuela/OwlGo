@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, SubmitField, StringField, PasswordField, BooleanField, TextAreaField, SelectField, DateField, TimeField, FieldList, SelectMultipleField
 from flask_wtf.file import FileField, FileAllowed
-from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError, Optional
+from wtforms.validators import DataRequired, Email , Length, EqualTo, ValidationError, Optional, NumberRange
 from app.models import User
 
 class RequiredIf(DataRequired):
@@ -204,6 +204,17 @@ class SearchForm(FlaskForm):
 class ReportForm(FlaskForm):
     report_text = TextAreaField('Write your report', validators=[DataRequired()])
     submit = SubmitField('Report')
+
+class RatingForm(FlaskForm):
+    cleanliness = IntegerField('Cleanliness', validators=[DataRequired(), NumberRange(min=1, max=5)])
+    punctuality = IntegerField('Punctuality', validators=[DataRequired(), NumberRange(min=1, max=5)])
+    safety = IntegerField('Safety', validators=[DataRequired(), NumberRange(min=1, max=5)])
+    communication = IntegerField('Communication', validators=[DataRequired(), NumberRange(min=1, max=5)])
+    submit = SubmitField('Submit')
+
+class ReviewForm(FlaskForm):
+    review_text = TextAreaField('Review', validators=[Optional()])
+    submit = SubmitField('Submit')
 
 class TakeActionForm(FlaskForm):
     action = SelectField('Take action', validators=[DataRequired()])

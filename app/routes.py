@@ -11,7 +11,7 @@ from sqlalchemy.exc import IntegrityError
 # app imports
 from app import app, db, mail
 from app.models import User, Profile, Ride, RidePassenger, Message, Rating, Review, Announcement, RideRequest, RideReport, UserReport
-from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm, TakeActionForm
+from app.forms import RegistrationForm, LoginForm, ProfileForm, AnnouncementForm, RideForm, SignUpForm, SearchForm, VerificationForm, PasswordResetRequestForm, PasswordResetForm, ReportForm, ConfirmRideForm, MessageForm, RejectRideForm, TakeActionForm, ReviewForm, RatingForm
 from app.utils import generate_verification_code, send_password_reset_email, send_ride_driver_email, send_ride_passenger_email, send_ride_confirmation_email, send_new_message_email, send_ride_rejection_email
 
 # other imports
@@ -396,24 +396,24 @@ def view_profile(user_id):
     about = profile.about
 
     completed_rides = len([ride for ride in user.rides if ride.completed])
-    review_count = len(user.received_reviews)
-    ratings = user.received_ratings
-
+    review_count = Review.query.filter_by(recipient_id=user_id).count()
+    reviews = Review.query.filter_by(recipient_id=user_id).all()
+    ratings = Rating.query.filter_by(recipient_id=user_id).all()
     categories = ['communication', 'safety', 'punctuality', 'cleanliness']
     average_ratings = {}
     for category in categories:
         category_ratings = [getattr(rating, category) for rating in ratings]
-        average_ratings[category] = sum(category_ratings) / len(category_ratings) if category_ratings else 0
+        average_ratings[category] = round(sum(category_ratings) / len(category_ratings), 1) if category_ratings else 0
 
-    total_ratings = 0
+    ratings_sum = 0
     total_count = 0
     for category in categories:
         category_ratings = [getattr(rating, category) for rating in ratings]
         if category_ratings:
-            total_ratings += sum(category_ratings)
+            ratings_sum += sum(category_ratings)
             total_count += len(category_ratings)
 
-    average_rating = total_ratings / total_count if total_count else 0
+    overall_average = round(ratings_sum / total_count, 1) if total_count else 0
 
     message_form = MessageForm()
     if message_form.validate_on_submit():
@@ -433,8 +433,9 @@ def view_profile(user_id):
         return redirect(url_for('view_profile', user_id=user.user_id))
 
     return render_template('view_profile.html', user=user, completed_rides=completed_rides, 
-                           review_count=review_count, reviews=user.received_reviews, 
-                           ratings=average_ratings, home_town=home_town, about=about, average_rating=average_rating, form=form, message_form=message_form)
+                       review_count=review_count, 
+                       ratings=average_ratings, home_town=home_town, about=about, overall_average=overall_average, 
+                       form=form, message_form=message_form, reviews = reviews)
 
 @app.route('/view_post/<int:ride_id>', methods=['GET','POST'])
 @login_required 
@@ -590,9 +591,6 @@ def find_ride():
     rides = Ride.query
 
     if form.validate_on_submit():
-        print("Form data:")
-        for field in form:
-            print(f"{field.name}: {field.data}")
         if form.ridetype.data:
             rides = rides.filter(Ride.ridetype == form.ridetype.data)
         if form.departingFrom.data:
@@ -612,7 +610,7 @@ def find_ride():
             rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
-        if form.is_offered.data:  # only apply filter if is_offered is not equal to its default value
+        if form.is_offered.data:
             rides = rides.filter(Ride.is_offered == form.is_offered.data)
         if form.is_requested.data:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
@@ -626,12 +624,16 @@ def find_ride():
             rides = rides.filter(Ride.accessibility.in_(form.accessibility.data))
 
         rides = rides.all()
+        print(rides)
 
     else:
         rides = rides.all()
 
     return render_template('find_ride.html', form=form, rides=rides)
 
+@app.route('/my_rides')
+@login_required
+def my_rides():
 @app.route('/my_rides')
 @login_required
 def my_rides():
@@ -644,7 +646,44 @@ def my_rides():
     currentRides = [ride for ride in allRides if not ride.completed]
     pastRides = [ride for ride in allRides if ride.completed]
     return render_template('my_rides.html', currentRides=currentRides, pastRides=pastRides, ridePassenger=ridePassenger, originalPosterRides=originalPosterRides, rideDriver=rideDriver, form=form)
+    
+@app.route('/rate_ride/<int:ride_id>', methods=['GET', 'POST'])
+def rate_ride(ride_id):
+    rating_form = RatingForm()
+    review_form = ReviewForm()
+    ride = Ride.query.get_or_404(ride_id)
+    ride_passenger = RidePassenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+    
+    if ride_passenger is None:
+        flash('You were not a passenger on this ride.')
+        return redirect(url_for('home'))
 
+    if rating_form.validate_on_submit():
+        rating = Rating(
+            ride_id=ride_id,
+            user_id=current_user.user_id,
+            recipient_id=ride.user_id,
+            cleanliness=rating_form.cleanliness.data,
+            punctuality=rating_form.punctuality.data,
+            safety=rating_form.safety.data,
+            communication=rating_form.communication.data
+            )
+        db.session.add(rating)
+        db.session.commit()
+
+        if review_form.review_text.data:
+            review = Review(
+                rating_id=rating.rating_id,
+                user_id=current_user.user_id,
+                recipient_id=ride.user_id,
+                review_text=review_form.review_text.data
+            )
+            db.session.add(review)
+            db.session.commit()
+
+        return redirect(url_for('view_profile', user_id=ride.user_id))
+
+    return render_template('rate_ride.html', rating_form=rating_form, review_form=review_form)
 @app.route('/complete_ride/<int:ride_id>', methods=['POST'])
 @login_required
 def complete_ride(ride_id):

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate Ride</title>
+    <style>
+        .rating {
+            display: inline-block;
+            unicode-bidi: bidi-override;
+            direction: rtl;
+        }
+        .rating > input {
+            display: none;
+        }
+        .rating > label:before {
+            content: "\2605";
+            display: inline-block;
+            font-size: 1.25em;
+            color: #888;
+        }
+        .rating > input:checked ~ label:before,
+        .rating > input:hover ~ label:before,
+        .rating > input:hover ~ label:before {
+            color: #fde16d;
+        }
+        .rating > input:checked + label:before {
+            color: #f4b400;
+        }
+    </style>
+</head>
+<body>
+    <form method="POST">
+        {{ rating_form.hidden_tag() }}
+        {{ review_form.hidden_tag() }}
+        <div>
+            <label for="cleanliness">Cleanliness:</label><br>
+            <input type="radio" name="cleanliness" value="1">1
+            <input type="radio" name="cleanliness" value="2">2
+            <input type="radio" name="cleanliness" value="3">3
+            <input type="radio" name="cleanliness" value="4">4
+            <input type="radio" name="cleanliness" value="5">5
+        </div>
+        <div>
+            <label for="punctuality">Punctuality:</label><br>
+            <input type="radio" name="punctuality" value="1">1
+            <input type="radio" name="punctuality" value="2">2
+            <input type="radio" name="punctuality" value="3">3
+            <input type="radio" name="punctuality" value="4">4
+            <input type="radio" name="punctuality" value="5">5
+        </div>
+        <div>
+            <label for="safety">Safety:</label><br>
+            <input type="radio" name="safety" value="1">1
+            <input type="radio" name="safety" value="2">2
+            <input type="radio" name="safety" value="3">3
+            <input type="radio" name="safety" value="4">4
+            <input type="radio" name="safety" value="5">5
+        </div>
+        <div>
+            <label for="communication">Communication:</label><br>
+            <input type="radio" name="communication" value="1">1
+            <input type="radio" name="communication" value="2">2
+            <input type="radio" name="communication" value="3">3
+            <input type="radio" name="communication" value="4">4
+            <input type="radio" name="communication" value="5">5
+        </div>
+        <div>
+            <label for="review_text">Review:</label>
+            <textarea id="review_text" name="review_text"></textarea>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
