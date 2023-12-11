@@ -14,8 +14,7 @@
 {% endwith %}
 <div class="ride-details">
   <h2>Request By: {{ ride.user.user_profile.first_name }} {{ ride.user.user_profile.last_name }}</h2>
-  <p><strong>Request Time/Date:</strong> {{ ride.ride_timestamp.strftime('%I:%M %p') }}</p>
-  <img src="{{ ride.user.user_profile.user_img }}" alt="Driver's profile picture">
+  <p>{{ ride.ride_timestamp|datetimefilter}}</p>
   {% if ride.user.user_profile.home_town %}
     <p><strong>Home Town:</strong> {{ ride.user.user_profile.home_town }}</p>
   {% endif %}
