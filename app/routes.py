@@ -520,6 +520,11 @@ def confirm_ride(ride_id, passenger_id):
 
     if form.validate_on_submit():
         if ride_request:
+            existing_ride_passenger = RidePassenger.query.filter_by(ride_id=ride_id, passenger_id=passenger_id).first()
+            if existing_ride_passenger:
+                flash('A ride passenger with this ride ID and passenger ID already exists.')
+            return redirect(url_for('pending_requests_page'))
+        else:
             ride_passenger = RidePassenger(
                 ride_id=ride_id,
                 passenger_id=passenger_id,
