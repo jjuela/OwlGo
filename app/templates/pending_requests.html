@@ -12,7 +12,7 @@
             <div class="rides">
                 {% for request in ride_requests %}
                 <div class="request">
-                        <p><span class="label">From: </span>{{ request.passenger.user_profile.first_name }} @ {{ request.timestamp.strftime('%I:%M %p on %m/%d/%y') }}</p>
+                    <p><span class="label">From: </span>{{ request.passenger.user_profile.first_name }} on {{ request.timestamp|datetimefilter }}</p>
                         <p>
                             {% if request.ride.departingAt %}
                                 <span class="label">Departing At:</span> {{ request.ride.departingAt.strftime('%I:%M %p') }}
@@ -47,7 +47,6 @@
             <h2>New messages</h2>
             <div class="messages">
                 {% if unread_messages %}
-                    <a href="{{ url_for('view_messages') }}" class="btn">View all your messages</a>
                     {% for message in unread_messages[:10] %}
                     <div class="message"> 
                         <p>From:{{ message.sender.user_profile.first_name }}</p>
@@ -64,72 +63,16 @@
         </div>
     </div>
 </div>
-    <!-- <div class="container">
-        <div class="ride-requests"> 
-            <h1 class="title">Pending Ride Requests</h1>
-            <a href="{{ url_for('my_rides') }}" class="btn" id="viewMoreButton">View All Rides</a> 
-            <p class="subtitle">You will continue to get notified until you confirm or reject these requests</p>
-            <div class="scroll-container"> 
-                {% for request in ride_requests %}
-                <div class="request">
-                        <p><span class="label">From: </span>{{ request.passenger.user_profile.first_name }} @ {{ request.timestamp.strftime('%I:%M %p on %m/%d/%y') }}</p>
-                        <p>
-                            {% if request.ride.departingAt %}
-                                <span class="label">Departing At:</span> {{ request.ride.departingAt.strftime('%I:%M %p') }}
-                            {% endif %}
-                        
-                            {% if request.ride.arrival %}
-                                <span class="label">Arrival Time:</span> {{ request.ride.arrival.strftime('%I:%M %p') }}
-                            {% endif %}
-                        
-                            {% if request.ride.ridetype %}
-                                <span class="label">Ride Type:</span> {{ request.ride.ridetype|capitalize }}
-                            {% endif %}
-                        
-                            {% if request.ride.departingFrom %}
-                                <span class="label">Departing From:</span> {{ request.ride.departingFrom }}
-                            {% endif %}
-                        
-                            {% if request.ride.destination %}
-                                <span class="label">Destination:</span> {{ request.ride.destination }}
-                            {% endif %}
-                        </p>
-                <a href="{{ url_for('confirm_ride', ride_id=request.ride_id, passenger_id=request.passenger_id) }}" class="btn" id="confirmButton">View More Details & Confirm</a>
-                <a href="{{ url_for('reject_ride', ride_id=request.ride_id, passenger_id=request.passenger_id) }}" class="btn" id="rejectButton">View More Details & Reject</a>
-                </div>
-            {% endfor %}
-            </div>
-        </div>
-        <div class="new-messages">
-            <h1 class="title">New Messages</h1>
-            <div class="scroll-container">
-            {% if unread_messages %}
-                <a href="{{ url_for('view_messages') }}" class="btn">View all your messages</a>
-                {% for message in unread_messages[:10] %}
-                <div class="message"> 
-                    <p>From:{{ message.sender.user_profile.first_name }}</p>
-                    <p>{{ message.timestamp.strftime('%I:%M %p on %m/%d/%y') }}</p>
-                    <p>{{ message.content }}</p>
-                    <a href="{{ url_for('view_profile', user_id=message.sender.user_id) }}" class="btn">Reply</a>
-                </div>
-            {% endfor %}
-            {% else %}
-                <div>No new messages</div>
-                <div><a href="{{ url_for('view_messages') }}" class="btn">View all your messages</a></div>
+<script>
+    window.onload = function() {
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    alert("{{ message }}");
+                {% endfor %}
             {% endif %}
-            </div>
-        </div>
-    </div> -->
-    <script>
-        window.onload = function() {
-            {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        alert("{{ message }}");
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        }
-    </script>
-    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+        {% endwith %}
+    }
+</script>
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
 {% endblock %}

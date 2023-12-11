@@ -550,7 +550,7 @@ def confirm_ride(ride_id, passenger_id):
             return redirect(url_for('view_post', ride_id=ride_id))
 
     # Pass the ride to the template
-    return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, ride_request=ride_request)
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, request=ride_request)
 
 @app.route('/reject_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
 @login_required
@@ -574,7 +574,7 @@ def reject_ride(ride_id, passenger_id):
         send_ride_rejection_email(passenger, ride, rejection_reason)  # send email to the passenger
         flash('The ride request has been rejected and the passenger has been notified.', 'success')
         return redirect(url_for('pending_requests_page'))
-    return render_template('reject_ride.html', title='Reject Ride', form=form, passenger=passenger, ride=ride)
+    return render_template('reject_ride.html', title='Reject Ride', form=form, passenger=passenger, ride=ride, request=ride_request)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 @login_required

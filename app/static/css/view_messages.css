@@ -1,37 +1,36 @@
-.container {
-    overflow-y: auto;
-    scrollbar-width: none;
-    width: 80%; 
-    height: auto; 
-    padding: 30px; 
-    background-color: #808080; 
-    border-radius: 50px;
-    margin: auto; /* Add this line */
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.container::-webkit-scrollbar {
-    display: none;
+h1 {
+    font-size: 40px;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+    width: 80%;
+    border-radius: 10px;
+    background-color: #808080;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 .message {
     margin: auto;
-    margin-bottom: 25px;
+    width: 60%;
+    margin-top: 20px;
     padding: 10px;
-    border: 1px solid black;
-    border-radius: 25px;
-    min-width: 50%;
-    max-width: 90%;
+    border-radius: 10px;
     height: auto;
     box-sizing: border-box;
-    background-color: white;
+    background-color: #d9d9d9;
     color: black;
     font-size: 12px;
     line-height: .5;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
-@media (max-width: 768px) {
-    .message {
-        width: 100%;
-        height: auto;
-    }
-}

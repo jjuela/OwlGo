@@ -5,18 +5,17 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            {% for message in messages %}
-                <div class="col-md-4">
-                    <div class="message">
-                        <h2>From: <a href="{{ url_for('view_profile', user_id=message.sender.user_id) }}">{{ message.sender.user_profile.first_name }}</a></h2>
-                        <p>{{ message.timestamp.strftime('%Y-%m-%d %I:%M:%S %p') }}</p>
-                        <p>{{ message.content }}</p>
-                        <p>Want to reply? <a href="{{ url_for('view_profile', user_id=message.sender.user_id) }}">Click here</a> to go to {{ message.sender.user_profile.first_name }}'s profile.</p>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+<div class="content">
+    <h1>Messages</h1>
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message">
+                <h2>From: {{ message.sender.user_profile.first_name }}</h2>
+                <p>{{ message.timestamp|datetimefilter }}</p>
+                <p>{{ message.content }}</p>
+                <p>Want to reply? <a href="{{ url_for('view_profile', user_id=message.sender.user_id) }}">Click here</a> to go to {{ message.sender.user_profile.first_name }}'s profile.</p>
+            </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}
