@@ -889,6 +889,8 @@ def view_ride_report(report_id):
                     except SMTPException:
                         return "Failed to send delete email. Please try again."
                     
+                    redirect(url_for('view_reports'))
+                    
                 if form.action.data == "ignore":
                     db.session.delete(report)
                     db.session.commit()
@@ -902,6 +904,8 @@ def view_ride_report(report_id):
                         mail.send(msg)
                     except SMTPException:
                         return "Failed to send ignore email. Please try again."
+                    
+                    redirect(url_for('view_reports'))
                 return render_template('view_reports.html', report_id=report_id, moreActionForm=moreActionForm, reporter=reporter, reported_ride=reported_ride, action=form.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
             return render_template('view_ride_report.html', report=report, reporter=reporter, reported_ride=reported_ride, form=form, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
 
