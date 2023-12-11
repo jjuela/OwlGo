@@ -25,22 +25,17 @@
                     </button>
                 </div>
             </div>
-            <div class="home-about">
-                <p>{{ home_town }}</p>
-                <p>{{ about }}</p>
-            </div>
         </div>
     </div>
+    <div class="home-about">
+        <p>From: <br> {{ home_town }}</p>
+        <p>About me: <br> {{ about }}</p>
+    </div>
+</div>
     <div class="profile-statistics">
-        <div class="star"></div>
         <div class="average">
+            <div class="star"></div>
             <p>{{ overall_average }}</p>
-            <div class="stars">
-                {% set rounded_overall_average = overall_average|round(0) %}
-                {% for i in range(5) %}
-                    <div class="star-empty {% if i < rounded_overall_average %}filled{% endif %}"></div>
-                {% endfor %}
-            </div>
         </div>
         <div class="vertical-line-s"></div>
         <div class="completed-rides">
@@ -52,6 +47,7 @@
         </div>
     </div>
     <div class="ratings">
+        <h2>Ratings</h2>
         {% for category, average in ratings.items() %}
             <div class="rating">
                 <p class="category">{{ category.capitalize() }}</p>
@@ -67,16 +63,21 @@
     </div>
     <div class="horizontal-line"></div>
     <div class="reviews-box">
+        <h2>Reviews</h2>
         <div class="reviews">
-            {% for review in reviews %}
-            <div class="review">
-                <img src="{{ url_for('static', filename='uploads/' + review.user.profile_backref[0].user_img) }}" alt="{{ review.user.profile_backref[0].first_name }}'s profile picture" class="pfp">
-                <h3>{{ review.user.profile_backref[0].first_name }} {{ review.user.profile_backref[0].last_name }}</h3>
-                <div class="review-text-box">
-                    <p>{{ review.review_text }}</p>
+            <div class="review-grid">
+                {% for review in reviews %}
+                <div class="review">
+                    <div class="review-header">
+                        <img src="{{ url_for('static', filename='uploads/' + review.user.profile_backref[0].user_img) }}" alt="{{ review.user.profile_backref[0].first_name }}'s profile picture" class="pfp">
+                        <h3>{{ review.user.profile_backref[0].first_name }} {{ review.user.profile_backref[0].last_name }}</h3>
+                    </div>
+                    <div class="review-text-box">
+                        <p>{{ review.review_text }}</p>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
 </div>

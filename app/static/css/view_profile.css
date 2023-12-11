@@ -9,9 +9,15 @@
     color: white;
 }
 
-.profile-header {
+.profile-about {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: row;
     align-items: flex-start;
 }
 
@@ -97,34 +103,53 @@
 
 .home-about {
     width: 200px;
-    text-align: center;
+    text-align: flex-start;
 }
 
 .profile-statistics {
+    margin-top: 20px;
     display: flex;
+    flex-direction: row;
     align-items: center;
     gap: 3px;
-    width: 200px;
+    justify-content: center;
+    
 }
 
 .profile-statistics > div {
     flex-grow: 1;
-    text-align: center;
+}
+
+.average {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.average p {
+    margin: 0;
+}
+
+.profile-statistics p {
+    margin: 0;
+}
+
+.average .star {
+    width: 1em;
+    height: 1em;
+    background-image: url('/static/img/star.png');
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 .vertical-line-s {
     height: 30px;
     margin: 0 5px;
     border-radius: 10px;
+    width: 3px;
     background-color: white;
-}
-
-.star {
-    width: 1em;
-    height: 1.2em;
-    background-image: url('/static/img/star.png');
-    background-size: cover;
-    margin-bottom: 3px;
 }
 
 .star-empty {
@@ -148,6 +173,8 @@
 .ratings {
     display: flex;
     flex-direction: column;
+    margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 .rating {
@@ -326,4 +353,42 @@
 .flash.success {
     border-color: #28a745;
     color: #28a745;
+}
+
+.reviews-box {
+    margin-top: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 100px;
+}
+
+.review-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.review-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.review {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background-color: #d9d9d9;
+    border-radius: 10px;
+    padding: 20px;
+    color: black;
+    width: 400px;
+    height: 300px;
 }

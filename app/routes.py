@@ -634,9 +634,6 @@ def find_ride():
 @app.route('/my_rides')
 @login_required
 def my_rides():
-@app.route('/my_rides')
-@login_required
-def my_rides():
     form = FlaskForm()
     originalPosterRides = Ride.query.filter_by(user_id=current_user.user_id).all()
     passengerRides = RidePassenger.query.filter_by(passenger_id=current_user.user_id).all()
@@ -684,6 +681,7 @@ def rate_ride(ride_id):
         return redirect(url_for('view_profile', user_id=ride.user_id))
 
     return render_template('rate_ride.html', rating_form=rating_form, review_form=review_form)
+
 @app.route('/complete_ride/<int:ride_id>', methods=['POST'])
 @login_required
 def complete_ride(ride_id):

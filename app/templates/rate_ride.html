@@ -1,73 +1,89 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Rate Ride</title>
-    <style>
-        .rating {
-            display: inline-block;
-            unicode-bidi: bidi-override;
-            direction: rtl;
-        }
-        .rating > input {
-            display: none;
-        }
-        .rating > label:before {
-            content: "\2605";
-            display: inline-block;
-            font-size: 1.25em;
-            color: #888;
-        }
-        .rating > input:checked ~ label:before,
-        .rating > input:hover ~ label:before,
-        .rating > input:hover ~ label:before {
-            color: #fde16d;
-        }
-        .rating > input:checked + label:before {
-            color: #f4b400;
-        }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/rate_ride.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>Rate</h1>
     <form method="POST">
         {{ rating_form.hidden_tag() }}
         {{ review_form.hidden_tag() }}
-        <div>
-            <label for="cleanliness">Cleanliness:</label><br>
-            <input type="radio" name="cleanliness" value="1">1
-            <input type="radio" name="cleanliness" value="2">2
-            <input type="radio" name="cleanliness" value="3">3
-            <input type="radio" name="cleanliness" value="4">4
-            <input type="radio" name="cleanliness" value="5">5
+        <div class="rating">
+            <div>
+                <div><label for="cleanliness">Cleanliness:</label></div>
+                <div class="fields">
+                    <div class="star"><input type="radio" name="cleanliness" id="clean-star1" value="1">1</div>
+                    <span></span>
+                    <div class="star"><input type="radio" name="cleanliness" id= "clean-star2" value="2">2</div> 
+                    <span></span>          
+                    <div class="star"><input type="radio" name="cleanliness" id="clean-star3" value="3">3</div>
+                    <span></span>         
+                    <div class="star"><input type="radio" name="cleanliness" id="clean-star4" value="4">4</div>
+                    <span></span>          
+                    <div class="star"><input type="radio" name="cleanliness" id="clean-star5" value="5">5</div>
+                    <span></span>
+                </div>
+            </div>     
         </div>
-        <div>
-            <label for="punctuality">Punctuality:</label><br>
-            <input type="radio" name="punctuality" value="1">1
-            <input type="radio" name="punctuality" value="2">2
-            <input type="radio" name="punctuality" value="3">3
-            <input type="radio" name="punctuality" value="4">4
-            <input type="radio" name="punctuality" value="5">5
+        <div class="rating">
+            <div>
+                <div><label for="punctuality">Punctuality:</label></div>
+                <div class="fields">
+                    <div class="star"><input type="radio" name="punctuality" id="star1" value="1">1</div>
+                    <span></span>  
+                    <div class="star"><input type="radio" name="punctuality" id= "star2" value="2">2</div>
+                    <span></span>           
+                    <div class="star"><input type="radio" name="punctuality" id="star3" value="3">3</div> 
+                    <span></span>        
+                    <div class="star"><input type="radio" name="punctuality" id="star4" value="4">4</div>
+                    <span></span>          
+                    <div class="star"><input type="radio" name="punctuality" id="star5" value="5">5</div>
+                    <span></span> 
+                </div>     
+            </div>
         </div>
-        <div>
-            <label for="safety">Safety:</label><br>
-            <input type="radio" name="safety" value="1">1
-            <input type="radio" name="safety" value="2">2
-            <input type="radio" name="safety" value="3">3
-            <input type="radio" name="safety" value="4">4
-            <input type="radio" name="safety" value="5">5
+        <div class="rating">
+            <div>
+                <div><label for="safety">Safety:</label></div>
+                <div class="fields">
+                    <div class="star"><input type="radio" name="safety" id="star1" value="1">1</div>
+                    <span></span>     
+                    <div class="star"><input type="radio" name="safety" id= "star2" value="2">2</div>
+                    <span></span>
+                    <div class="star"><input type="radio" name="safety" id="star3" value="3">3</div>
+                    <span></span>     
+                    <div class="star"><input type="radio" name="safety" id="star4" value="4">4</div>
+                    <span></span>     
+                    <div class="star"><input type="radio" name="safety" id="star5" value="5">5</div>
+                    <span></span>
+                </div> 
+            </div>
         </div>
-        <div>
-            <label for="communication">Communication:</label><br>
-            <input type="radio" name="communication" value="1">1
-            <input type="radio" name="communication" value="2">2
-            <input type="radio" name="communication" value="3">3
-            <input type="radio" name="communication" value="4">4
-            <input type="radio" name="communication" value="5">5
+        <div class="rating">
+            <div>
+                <div><label for="comfort">Communication:</label></div>
+                <div class="fields">
+                    <div class="star"><input type="radio" name="communication" id="star1" value="1">1</div>
+                    <span></span>
+                    <div class="star"><input type="radio" name="communication" id= "star2" value="2">2</div>
+                    <span></span>
+                    <div class="star"><input type="radio" name="communication" id="star3" value="3">3</div>
+                    <span></span>
+                    <div class="star"><input type="radio" name="communication" id="star4" value="4">4</div>
+                    <span></span>
+                    <div class="star"><input type="radio" name="communication" id="star5" value="5">5</div>
+                    <span></span>
+                </div>
+            </div>
         </div>
-        <div>
+        <div class="review">
             <label for="review_text">Review:</label>
             <textarea id="review_text" name="review_text"></textarea>
         </div>
         <input type="submit" value="Submit">
     </form>
-</body>
-</html>
+</div>
+    
+{% endblock %}

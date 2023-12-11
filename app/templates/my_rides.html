@@ -104,7 +104,13 @@
                                 <p>Destination: {{ ride.destination }}</p>
                                 <p>Duration: {{ ride.duration }}</p>
                         {% endif %}
-                    </div>
+                        <div class="past-actions">
+                            <form action="{{ url_for('rate_ride', ride_id=ride.ride_id) }}" method="post">
+                                {{ form.csrf_token }}
+                                <button type="submit" class="rate-ride">Rate</button>
+                            </form>
+                        </div>
+                    </div> 
                 </a>
             {% endfor %}
         </div>

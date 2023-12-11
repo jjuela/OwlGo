@@ -25,6 +25,7 @@
 .rides-graphs img {
     width: 30%;
     height: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 .ratio-graphs {
@@ -38,11 +39,11 @@
 .ratio-graphs img {
     width: 30%;
     height: auto;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 img {
     margin-top: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 #raw-data {
