@@ -1,75 +1,66 @@
-.container {
+.content {
     display: flex;
-    flex-direction: row; /* Change this line */
-    justify-content: space-between;
-    height: 65vh;
-    border: black;
-    border-radius: 50px;
-    background-color: #808080;
-}
-.scroll-container {
-    overflow-y: auto;
-    scrollbar-width: none;
-    width: 100%; 
-    height: 100%;
-    background-color: #808080; 
+    flex-direction: column;
+    align-items: center;
 }
 
-.scroll-container::-webkit-scrollbar {
-    display: none;
+h1 {
+    font-size: 40px;
+}
+
+.requests-messages {
+    display: flex;
+    flex-direction: row;
+    gap: 10%;
 }
 
 .ride-requests, .new-messages {
-    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    border: 1px solid white; 
-    border-radius: 50px; 
+    align-items: center;
+    width: 100%;
+    background-color: #808080;
+    padding: 30px;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
 }
 
 .request, .message {
-    margin: auto; 
     padding: 10px;
-    border: 1px solid black;
-    border-radius: 25px;
-    min-width: 50%; 
-    max-width: 90%; 
-    height: auto;
+    border-radius: 10px;
     box-sizing: border-box;
-    background-color: white;
+    background-color: #d9d9d9;
     color: black;
     font-size: 12px;
     line-height: 1.5;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+    margin-bottom: 20px;
+}
+
+.request-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 .btn {
-    display: inline-block;
-    padding: 5px 10px;
+    padding: 10px;
     color: #fff;
-    background-color: #808080;
-    border-radius: 20px;
+    background-color: #626161;
+    border-radius: 10px;
     text-decoration: none;
-    margin: 1px;
-    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #404040;
 }
 
 .request p {
     margin-bottom: 10px;
-}
-
-.title {
-    font-weight: bold;
-    color: white; 
-    font-size: 20px;
-    padding-left: 50px; 
-}
-
-.subtitle {
-    font-weight: bold;
-    color: red; 
-    font-size: 16px;
-    padding-left: 20px; 
 }
 
 .label {
@@ -78,9 +69,21 @@
     font-size: 12px;
 }
 
-@media (max-width: 768px) {
-    .request, .message {
-        width: 100%;
-        height: auto;
-    }
+.more-requests, .view-messages {
+    padding: 10px;
+    color: #fff;
+    background-color: #626161;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+.more-requests:hover, .view-messages:hover {
+    background-color: #404040;
+}
+
+.none {
+    margin: 0;
+    text-align: center;
 }

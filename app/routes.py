@@ -2,6 +2,7 @@
 from flask import render_template, redirect, url_for, flash, session, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message as MailMessage, Mail
+from flask_wtf import FlaskForm
 
 # sqlalchemy imports
 from sqlalchemy import func, and_
@@ -18,8 +19,16 @@ from datetime import datetime
 from smtplib import SMTPException
 from werkzeug.utils import secure_filename
 from pytz import timezone, utc
-
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+from collections import defaultdict
+import calendar
+import time
+import re
 import os
+import glob
 
 @app.context_processor
 def context_processor():
@@ -216,7 +225,6 @@ def home():
 
 @app.route('/view_more_requests')
 def view_more_requests():
-    # Your code here
     return render_template('view_more_requests.html')
 
 @app.route('/create_profile', methods=['GET','POST'])
@@ -316,6 +324,17 @@ def start_ride_offer():
         )
         db.session.add(ride)
         db.session.commit()
+
+        driver = RidePassenger(
+        ride_id=ride.ride_id,
+        passenger_id=current_user.user_id,
+        confirmed=True,
+        is_driver=True,
+        role='Driver'
+        )
+        db.session.add(driver)
+
+        db.session.commit()
         return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_offer.html', form=form)
 
@@ -350,6 +369,17 @@ def start_ride_request():
             ride_description=form.description.data
         )
         db.session.add(ride)
+        db.session.commit()
+
+        passenger = RidePassenger(
+        ride_id=ride.ride_id,
+        passenger_id=current_user.user_id,
+        confirmed=True,
+        is_driver=False,
+        role='passenger'
+        )
+        db.session.add(passenger)
+
         db.session.commit()
         return redirect(url_for('view_post', ride_id=ride.ride_id))
     return render_template('start_ride_request.html', form=form)
@@ -521,7 +551,7 @@ def confirm_ride(ride_id, passenger_id):
             return redirect(url_for('view_post', ride_id=ride_id))
 
     # Pass the ride to the template
-    return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, ride_request=ride_request)
+    return render_template('confirm_ride.html', ride=ride, passenger=passenger, ride_passenger=ride_passenger, form=form, request=ride_request)
 
 @app.route('/reject_ride/<int:ride_id>/<int:passenger_id>', methods=['GET', 'POST'])
 @login_required
@@ -541,11 +571,10 @@ def reject_ride(ride_id, passenger_id):
         db.session.add(message)
         db.session.delete(ride_request)  
         db.session.commit()
-        send_ride_rejection_email(ride.user, ride, rejection_reason)  # send email to the driver
         send_ride_rejection_email(passenger, ride, rejection_reason)  # send email to the passenger
         flash('The ride request has been rejected and the passenger has been notified.', 'success')
         return redirect(url_for('pending_requests_page'))
-    return render_template('reject_ride.html', title='Reject Ride', form=form, passenger=passenger, ride=ride)
+    return render_template('reject_ride.html', title='Reject Ride', form=form, passenger=passenger, ride=ride, request=ride_request)
 
 @app.route('/view_announcement/<int:announcement_id>', methods=['GET'])
 @login_required
@@ -562,10 +591,6 @@ def find_ride():
     rides = Ride.query
 
     if form.validate_on_submit():
-        print(rides)
-        print(form.data)
-        print(form.ridetype.data, type(form.ridetype.data))
-        print(Ride.ridetype, type(Ride.ridetype))
         if form.ridetype.data:
             rides = rides.filter(Ride.ridetype == form.ridetype.data)
         if form.departingFrom.data:
@@ -585,7 +610,7 @@ def find_ride():
             rides = rides.filter(Ride.vehicle_type == form.vehicle_type.data)
         if form.duration.data:
             rides = rides.filter(Ride.duration == form.duration.data)
-        if form.is_offered.data:  # only apply filter if is_offered is not equal to its default value
+        if form.is_offered.data:
             rides = rides.filter(Ride.is_offered == form.is_offered.data)
         if form.is_requested.data:
             rides = rides.filter(Ride.is_offered != form.is_requested.data)
@@ -609,11 +634,18 @@ def find_ride():
 @app.route('/my_rides')
 @login_required
 def my_rides():
-    return render_template('my_rides.html')
-    # after someone signs up for a ride and is accepted, 
-    # they should be able to see it here
-    # this should have active rides and history of rides
-    # this should also have an option to cancel a ride
+@app.route('/my_rides')
+@login_required
+def my_rides():
+    form = FlaskForm()
+    originalPosterRides = Ride.query.filter_by(user_id=current_user.user_id).all()
+    passengerRides = RidePassenger.query.filter_by(passenger_id=current_user.user_id).all()
+    allRides = originalPosterRides + [ridePassenger.ride for ridePassenger in passengerRides]
+    rideDriver = [ride for ride in allRides if any(rp.is_driver and rp.passenger_id == current_user.user_id for rp in ride.passengers)]
+    ridePassenger = [ride for ride in allRides if any(not rp.is_driver and rp.passenger_id == current_user.user_id for rp in ride.passengers)]
+    currentRides = [ride for ride in allRides if not ride.completed]
+    pastRides = [ride for ride in allRides if ride.completed]
+    return render_template('my_rides.html', currentRides=currentRides, pastRides=pastRides, ridePassenger=ridePassenger, originalPosterRides=originalPosterRides, rideDriver=rideDriver, form=form)
     
 @app.route('/rate_ride/<int:ride_id>', methods=['GET', 'POST'])
 def rate_ride(ride_id):
@@ -652,8 +684,46 @@ def rate_ride(ride_id):
         return redirect(url_for('view_profile', user_id=ride.user_id))
 
     return render_template('rate_ride.html', rating_form=rating_form, review_form=review_form)
+@app.route('/complete_ride/<int:ride_id>', methods=['POST'])
+@login_required
+def complete_ride(ride_id):
+    print(f"Received request to complete ride {ride_id}")
+    ride = Ride.query.get(ride_id)
+    if ride is None:
+        print(f"No ride found with ID {ride_id}")
+        return "No ride found", 404
+    print(f"Retrieved ride from database: {ride}")
+    if ride.user_id != current_user.user_id:
+        print(f"User {current_user.user_id} is not authorized to complete ride {ride_id}")
+        return "Not authorized", 403
+    ride.completed = True
+    db.session.commit()
+    return redirect(url_for('my_rides'))
 
+@app.route('/delete_ride/<int:ride_id>', methods=['POST'])
+@login_required
+def delete_ride(ride_id):
+    ride = Ride.query.get(ride_id)
+    if ride and ride.user_id == current_user.user_id:
+        ratings = Rating.query.filter_by(ride_id=ride_id).all()
+        for rating in ratings:
+            Review.query.filter_by(rating_id=rating.rating_id).delete()
+        Rating.query.filter_by(ride_id=ride_id).delete()
+        RidePassenger.query.filter_by(ride_id=ride_id).delete()
+        RideRequest.query.filter_by(ride_id=ride_id).delete()
+        RideReport.query.filter_by(ride_id=ride_id).delete()
+        db.session.delete(ride)
+        db.session.commit()
+    return redirect(url_for('my_rides'))
 
+@app.route('/cancel_ride/<int:ride_id>', methods=['POST'])
+@login_required
+def cancel_ride(ride_id):
+    ride_passenger = RidePassenger.query.filter_by(ride_id=ride_id, passenger_id=current_user.user_id).first()
+    if ride_passenger:
+        db.session.delete(ride_passenger)
+        db.session.commit()
+    return redirect(url_for('my_rides'))
 
 @app.route('/admin_hub', methods=['GET', 'POST'])
 @login_required
@@ -695,9 +765,6 @@ def view_user_report(report_id):
                 ('ignore', 'Ignore report')
             ]
             if form.validate_on_submit():
-                if form.action.data == "select":
-                    flash('Please select an action.', 'danger')
-                    #return redirect(url_for('some_route'))
                 if form.action.data == "ban":
                     reported_user.banned = True
                     db.session.delete(report)
@@ -706,7 +773,7 @@ def view_user_report(report_id):
                     subject = "OwlGo Ban"
                     recipient = reported_user.email
                     body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -719,7 +786,7 @@ def view_user_report(report_id):
                     subject = "OwlGo Warning"
                     recipient = reported_user.email
                     body = f"You have been warned for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -733,7 +800,7 @@ def view_user_report(report_id):
                     subject = "OwlGo Report"
                     recipient = reporter.email
                     body = f"We've decided your report doesn't violate OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -773,9 +840,7 @@ def view_ride_report(report_id):
 
             if moreActionForm.validate_on_submit():
                 print("moreActionForm submitted")
-                if moreActionForm.action.data == "select":
-                    flash('Please select an action.', 'danger')
-                    #return redirect(url_for('some_route'))
+
                 if moreActionForm.action.data == "ban":
                     reported_user.banned = True
                     db.session.commit()
@@ -783,7 +848,7 @@ def view_ride_report(report_id):
                     subject = "OwlGo Ban"
                     recipient = reported_user.email
                     body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -796,7 +861,7 @@ def view_ride_report(report_id):
                     subject = "OwlGo Warning"
                     recipient = reported_user.email
                     body = f"You have been warned for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -806,51 +871,20 @@ def view_ride_report(report_id):
                 return render_template('action_taken.html', report_id=report_id, reporter=reporter, action=moreActionForm.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
 
             if form.validate_on_submit():
-                if form.action.data == "select":
-                    flash('Please select an action.', 'danger')
-                    #return redirect(url_for('some_route'))
                 if form.action.data == "delete":
                     RideReport.query.filter_by(ride_id=reported_ride.ride_id).delete()
                     db.session.delete(reported_ride)
+                    db.session.commit() 
 
                     subject = "OwlGo Report"
                     recipient = reported_user.email
                     body = f"Your ride has been deleted for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
-                    if moreActionForm.validate_on_submit():
-                        print("moreActionForm submitted")
-                        if moreActionForm.action.data == "select":
-                            flash('Please select an action.', 'danger')
-                            #return redirect(url_for('some_route'))
-                        if moreActionForm.action.data == "ban":
-                            reported_user.banned = True
-                            db.session.commit()
-
-                            subject = "OwlGo Ban"
-                            recipient = reported_user.email
-                            body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
-                            msg = Message(subject=subject, recipients=[recipient], body=body)
-
-                            try:
-                                mail.send(msg)
-                            except SMTPException:
-                                return "Failed to send ban email. Please try again."
-                        if moreActionForm.action.data == "warn":
-                            db.session.delete(report)
-                            db.session.commit()
-
-                            subject = "OwlGo Warning"
-                            recipient = reported_user.email
-                            body = f"You have been warned for violating OwlGo's terms of service."
-                            msg = Message(subject=subject, recipients=[recipient], body=body)
-
-                            try:
-                                mail.send(msg)
-                            except SMTPException:
-                                return "Failed to send warning email. Please try again."
-                        print("Returning action_taken.html")
-                        return render_template('action_taken.html', report_id=report_id, reporter=reporter, action=moreActionForm.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send delete email. Please try again."
                     
                 if form.action.data == "ignore":
                     db.session.delete(report)
@@ -859,46 +893,156 @@ def view_ride_report(report_id):
                     subject = "OwlGo Report"
                     recipient = reporter.email
                     body = f"We've decided your report doesn't violate OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
                     except SMTPException:
                         return "Failed to send ignore email. Please try again."
-                return render_template('action_taken_ride.html', report_id=report_id, moreActionForm=moreActionForm, reporter=reporter, reported_ride=reported_ride, action=form.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
+                return render_template('view_reports.html', report_id=report_id, moreActionForm=moreActionForm, reporter=reporter, reported_ride=reported_ride, action=form.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
             return render_template('view_ride_report.html', report=report, reporter=reporter, reported_ride=reported_ride, form=form, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
 
-@app.route('/admin_hub/ban_user/<int:user_id>', methods=['GET', 'POST'])
-@login_required
-def ban_user(user_id):
-    if current_user.admin == False:
-        return "You are not an admin!"
-    else:
-        user = User.query.get_or_404(user_id)
-        if user is None:
-            return "User not found", 404
-        user.banned = True
-        db.session.commit()
-        return "User has been banned"
-
-@app.route('/admin_hub/delete_post/<int:ride_id>', methods=['GET', 'POST'])
-@login_required
-def delete_post(ride_id):
-    if current_user.admin == False:
-        return "You are not an admin!"
-    else:
-        ride = Ride.query.get_or_404(ride_id)
-        if ride is None:
-            return "Ride not found", 404
-        db.session.delete(ride)
-        db.session.commit()
-        return "Ride has been deleted"
-
-@app.route('/admin_hub/view_usage', methods=['GET', 'POST']) # where usage statistics will go
+@app.route('/admin_hub/view_usage', methods=['GET', 'POST'])
 @login_required
 def view_usage():
     if current_user.admin == False:
         return "You are not an admin!"
     else:
-        return render_template('view_usage.html')
+        totalUsers = User.query.count()
+        totalRides = Ride.query.count()
+        totalCompletedRides = Ride.query.filter_by(completed=True).count()
+        totalAnnouncements = Announcement.query.count()
+        totalReviews = Review.query.count()
+        totalRatings = Rating.query.count()
+        totalMessages = Message.query.count()
+        totalRideRequests = RideRequest.query.count()
+        totalCommuteRides = Ride.query.filter_by(ridetype='commute').count()
+        totalErrandRides = Ride.query.filter_by(ridetype='errand').count()
+        totalLeisureRides = Ride.query.filter_by(ridetype='leisure').count()
+        totalOfferedRides = Ride.query.filter_by(is_offered=True).count()
+        totalRequestedRides = Ride.query.filter_by(is_offered=False).count()
+        
+        averageRidesPerUser = totalRides / totalUsers
+        averageCompletedRidesPerUser = totalCompletedRides / totalUsers
+        averageReviewsPerUser = totalReviews / totalUsers
+        averageRatingsPerUser = totalRatings / totalUsers
+        averageRidesPerDay = totalRides / 365
+        averageMessagesPerUser = totalMessages / totalUsers
+        averageRideRequestsPerUser = totalRideRequests / totalUsers
+        averagePassengers = Ride.query.with_entities(func.avg(Ride.occupants)).first()[0]
+
+        ratingToReviewRatio = totalRatings / totalReviews if totalReviews != 0 else 0
+        rideToCompletedRatio = totalRides / totalCompletedRides if totalCompletedRides != 0 else 0
+        offerToRequestedRatio = totalOfferedRides / totalRequestedRides if totalRequestedRides != 0 else 0
+
+        rides_list = Ride.query.all() 
+        sorted_rides_list = sorted(rides_list, key=lambda ride: ride.ride_timestamp or datetime.min)
+
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        timestamp = str(time.time())
+
+        # creating a new directory for graphs
+        graph_dir = os.path.join(current_dir, 'static/img/graphs')
+        os.makedirs(graph_dir, exist_ok=True)
+
+        # ride over time
+        ridesPerDate = defaultdict(int)
+        for ride in rides_list:
+            if ride.ride_timestamp is not None:
+                date = ride.ride_timestamp.date()
+                ridesPerDate[date] += 1
+        dates, counts = zip(*sorted(ridesPerDate.items()))
+
+        plt.plot(dates, counts)
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
+        plt.xlabel('Date')
+        plt.ylabel('Number of Rides')
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))
+        plt.xticks(rotation=45)
+        plt.title('Total Rides Over Time')
+        img_path = os.path.join(graph_dir, f'total_rides_over_time_{timestamp}.png')
+        plt.savefig(img_path)
+        plt.clf()
+
+        # tides per weekday
+        ridesPerWeekday = defaultdict(int)
+        for ride in sorted_rides_list:
+            if ride.ride_timestamp is not None:
+                weekday = ride.ride_timestamp.weekday()  # This will be an integer
+                ridesPerWeekday[weekday] += 1
+
+        weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        counts = [ridesPerWeekday[weekday] for weekday in range(7)]  # Use integers as indices
+        plt.bar(weekdays, counts)
+        plt.xlabel('Weekday')
+        plt.ylabel('Number of Rides')
+        plt.title('Total Rides Per Weekday')
+        img_path = os.path.join(graph_dir, f'total_rides_per_weekday_{timestamp}.png')
+        plt.savefig(img_path)
+        plt.clf()
+
+        # ride types
+        ride_types = ['Commute', 'Errand', 'Leisure']
+        counts = [totalCommuteRides, totalErrandRides, totalLeisureRides]
+        plt.pie(counts, labels=ride_types, autopct='%1.1f%%')
+        plt.title('Ride Types')
+        img_path = os.path.join(graph_dir, f'ride_types_{timestamp}.png')
+        plt.savefig(img_path)
+        plt.clf()
+
+        # ratings and reviews
+        if totalReviews > 0 and totalRatings > 0:
+            plt.bar(['Total Ratings', 'Total Reviews'], [totalRatings, totalReviews])
+            plt.ylabel('Count')
+            plt.title('Ratings and Reviews')
+            img_path = os.path.join(graph_dir, f'rating_to_review_{timestamp}.png')
+            plt.savefig(img_path)
+            plt.clf()
+
+        # offered and requested
+        if totalOfferedRides > 0 and totalRequestedRides > 0:
+            plt.bar(['Total Offered Rides', 'Total Requested Rides'], [totalOfferedRides, totalRequestedRides])
+            plt.ylabel('Count')
+            plt.title('Offered and Requested Rides')
+            img_path = os.path.join(graph_dir, f'offer_to_requested_{timestamp}.png')
+            plt.savefig(img_path)
+            plt.clf()
+
+        # rides and completed Rides
+        if totalRides > 0:
+            plt.bar(['Total Rides', 'Total Completed Rides'], [totalRides, totalCompletedRides])
+            plt.ylabel('Count')
+            plt.title('Rides and Completed Rides')
+            img_path = os.path.join(graph_dir, f'ride_to_completed_{timestamp}.png')
+            plt.savefig(img_path)
+            plt.clf()
+
+        # delete old images
+        image_files = glob.glob(os.path.join(graph_dir, '*.png'))
+
+        # group the files by type
+        image_files_by_type = defaultdict(list)
+        for image_file in image_files:
+            # get type from the file name
+            match = re.match(r'.*/(.*?)_\d+\.\d+\.png$', image_file)
+            if match:
+                image_type = match.group(1)
+                image_files_by_type[image_type].append(image_file)
+
+        # sort the files by creation time and delete all except most recent
+        for image_type, image_files in image_files_by_type.items():
+            image_files.sort(key=os.path.getctime)
+            for image_file in image_files[:-1]:
+                os.remove(image_file)
+
+        return render_template('view_usage.html', totalUsers=totalUsers, totalRides=totalRides, totalCompletedRides=totalCompletedRides, 
+                               totalAnnouncements=totalAnnouncements, totalReviews=totalReviews, totalRatings=totalRatings, 
+                               totalMessages=totalMessages, totalRideRequests=totalRideRequests, totalCommuteRides=totalCommuteRides, 
+                               totalErrandRides=totalErrandRides, totalLeisureRides=totalLeisureRides, totalOfferedRides=totalOfferedRides, 
+                               totalRequestedRides=totalRequestedRides, averageRidesPerUser=averageRidesPerUser, 
+                               averageCompletedRidesPerUser=averageCompletedRidesPerUser, averageReviewsPerUser=averageReviewsPerUser, 
+                               averageRatingsPerUser=averageRatingsPerUser, averageRidesPerDay=averageRidesPerDay, 
+                               averageMessagesPerUser=averageMessagesPerUser, averageRideRequestsPerUser=averageRideRequestsPerUser, 
+                               averagePassengers=averagePassengers, ratingToReviewRatio=ratingToReviewRatio, rideToCompletedRatio=rideToCompletedRatio, 
+                               offerToRequestedRatio=offerToRequestedRatio, timestamp=timestamp)
     

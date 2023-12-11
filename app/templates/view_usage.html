@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/view_usage.css') }}">
+{% endblock %}
+{% block content %}
+<div class="content">
+    <h1>Usage Statistics</h1>
+    <div id="graphs">
+        <h2>Graphs</h2>
+        <div class="rides-graphs">
+            <img src="{{ url_for('static', filename='img/graphs/total_rides_over_time_' + timestamp + '.png') }}" alt="Total Rides Over Time">
+            <img src="{{ url_for('static', filename='img/graphs/total_rides_per_weekday_' + timestamp + '.png') }}" alt="Total Rides Per Weekday">
+            <img src="{{ url_for('static', filename='img/graphs/ride_types_' + timestamp + '.png') }}" alt="Ride Types">
+        </div>
+        <div class="ratio-graphs">
+            <img src="{{ url_for('static', filename='img/graphs/rating_to_review_' + timestamp + '.png') }}" alt="Rating to Review Ratio">
+            <img src="{{ url_for('static', filename='img/graphs/ride_to_completed_' + timestamp + '.png') }}" alt="Rides and Completed Rides">
+            <img src="{{ url_for('static', filename='img/graphs/offer_to_requested_' + timestamp + '.png') }}" alt="Offered and Requested Rides">
+        </div>
+    </div>
+    <div id="raw-data">
+        <h2>Raw Data</h2>
+        <div class="totals">
+                <div class="general-stats">
+                    <div class="user-statistics">
+                        <h3>User Statistics</h3>
+                        <p>Total Users: {{ totalUsers }}</p>
+                        <p>Total Messages: {{ totalMessages }}</p>
+                        <p>Total Reviews: {{ totalReviews }}</p>
+                        <p>Total Ratings: {{ totalRatings }}</p>
+                        <p>Total Announcements: {{ totalAnnouncements }}</p>
+                        <p>Total Ride Requests: {{ totalRideRequests }}</p>
+                    </div>  
+                    <div class="ride-statistics">
+                        <h3>Ride Statistics</h3>
+                        <p>Total Rides: {{ totalRides }}</p>
+                        <p>Total Completed Rides: {{ totalCompletedRides }}</p>
+                        <p>Total Offered Rides: {{ totalOfferedRides }}</p>
+                        <p>Total Requested Rides: {{ totalRequestedRides }}</p>
+                        <p>Total Offered Rides: {{ totalOfferedRides }}</p>
+                        <p>Total Commutes: {{ totalCommuteRides }}</p>
+                        <p>Total Errands: {{ totalErrandRides }}</p>
+                        <p>Total Leisure Trips: {{ totalLeisureRides }}</p>
+                    </div> 
+                </div>
+        </div>
+        <div class="averages-ratios">
+            <div class="averages">
+                <h3>Averages</h3>
+                <p>Average Rides Per User: {{ averageRidesPerUser|round(2) }}</p>
+                <p>Average Completed Rides Per User: {{ averageCompletedRidesPerUser|round(2) }}</p>
+                <p>Average Reviews Per User: {{ averageReviewsPerUser|round(2) }}</p>    
+                <p>Average Ratings Per User: {{ averageRatingsPerUser|round(2) }}</p>
+                <p>Average Rides Per Day: {{ averageRidesPerDay|round(2) }}</p>  
+                <p>Average Messages Per User: {{ averageMessagesPerUser|round(2) }}</p>
+                <p>Average Ride Requests Per User: {{ averageRideRequestsPerUser|round(2) }}</p>
+                <p>Average Passengers: {{ averagePassengers|round(2) }}</p>
+            </div>
+            <div class="ratios">
+                <h3>Ratios</h3>
+                <p>Rating to Review Ratio: {{ ratingToReviewRatio|round(2) }}</p>
+                <p>Ride to Completed Ride Ratio: {{ rideToCompletedRatio|round(2) }}</p>
+                <p>Offer to Requested Ride Ratio: {{ offerToRequestedRatio|round(2) }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/view_usage.js') }}"></script>
+{% endblock %}

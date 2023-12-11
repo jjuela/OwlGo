@@ -153,7 +153,7 @@ class SignUpForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
 class SearchForm(FlaskForm):
-    # Fields from the original SearchForm
+    # search
     ridetype = SelectField('Ride Type', choices=[
         ('', 'Select one'),
         ('commute', 'Commute'),
@@ -167,7 +167,7 @@ class SearchForm(FlaskForm):
     time_start = SelectField('from', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
     time_end = SelectField('to', choices=[("12:00AM", "12:00AM")] + [(f"{i}:00AM", f"{i}:00AM") if i != 12 else ("12:00PM", "12:00PM") for i in range(1, 13)] + [(f"{i}:00PM", f"{i}:00PM") if i != 12 else ("12:00AM", "12:00AM") for i in range(1, 12)])
 
-    # Fields from the FilterForm
+    # filters
     vehicle_type = SelectField('Vehicle Type', choices=[
         ('', 'Select one'),
         ('sedan', 'Sedan'),
@@ -176,11 +176,11 @@ class SearchForm(FlaskForm):
         ('pickup', 'Pickup Truck'),
         ('minivan', 'Minivan')
     ], validators=[Optional()])
-    duration = StringField('Duration', validators=[Optional()])
-    stops = StringField('Stop', validators=[Optional()]) # changed from fieldlist to stringfield, also put in searchform
-    reccuring = BooleanField('Recurring')
+    duration = StringField('Duration', validators=[Optional()], default=None)
+    stops = StringField('Stop', validators=[Optional()], default=None) # changed from fieldlist to stringfield, also put in searchform
+    reccuring = BooleanField('Recurring', default=None)
     is_offered = BooleanField('Is Offered', default=None)
-    is_requested = BooleanField('Requested only', default=None) # added is_requested
+    is_requested = BooleanField('Requested only', default=None)
     recurring_days = SelectMultipleField('Recurring on days:', choices=[
         ('mon', 'Monday'),
         ('tue', 'Tuesday'),

@@ -1,0 +1,89 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#graphs {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.rides-graphs {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.rides-graphs img {
+    width: 30%;
+    height: auto;
+}
+
+.ratio-graphs {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.ratio-graphs img {
+    width: 30%;
+    height: auto;
+}
+
+img {
+    margin-top: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+#raw-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.totals {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    margin-top: 20px;
+}
+
+.general-stats, .averages-ratios {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10%;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.user-statistics, .ride-statistics, .averages, .ratios {
+    width: 400px;
+    height: 350px;
+    background-color: #808080;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.user-statistics h3, .ride-statistics h3, .averages h3, .ratios h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: white;
+}
