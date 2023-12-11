@@ -1,0 +1,72 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    font-size: 40px;
+}
+
+.user-request {
+    background-color: #818181;
+    padding: 20px;
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease-in-out;
+    width: 50%;
+}
+
+.passenger-pfp {
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.request-title {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 10px;
+}
+
+.request_header {
+    display: flex;
+    align-items: flex-start;
+}
+
+form input[type="submit"] {
+    background-color: #626161;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+    border-radius: 15px;
+    display: block;
+    margin: auto;
+    padding: 10px 32px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.3s ease-in-out;
+    margin-top: 20px;
+}
+
+form input[type="submit"]:hover {
+    background-color: #404040;
+}
+
+.request_details p {
+    font-size: 18px;
+}
+
+form :not(input[type="submit"]) {
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+}
+
+form textarea[name="rejection_reason"] {
+    width: 30%;
+    margin-top: 10px;
+}

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-
+{% block css %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/confirm_ride.css') }}">
+{% endblock %}
 {% block content %}
 {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -12,57 +14,39 @@
     </div>
   {% endif %}
 {% endwith %}
-<div class="ride-details">
-  <h2>Request By: {{ ride.user.user_profile.first_name }} {{ ride.user.user_profile.last_name }}</h2>
-  <p>{{ ride.ride_timestamp|datetimefilter}}</p>
-  {% if ride.user.user_profile.home_town %}
-    <p><strong>Home Town:</strong> {{ ride.user.user_profile.home_town }}</p>
-  {% endif %}
-  {% if ride.user.user_profile.about %}
-    <p><strong>About:</strong> {{ ride.user.user_profile.about }}</p>
-  {% endif %}
-  {% if ride.ridetype %}
-    <p><strong>Ride Type:</strong> {{ ride.ridetype }}</p>
-  {% endif %}
-  {% if ride.vehicle_type %}
-    <p><strong>Vehicle Type:</strong> {{ ride.vehicle_type }}</p>
-  {% endif %}
-  {% if ride.departingFrom %}
-    <p><strong>Departing From:</strong> {{ ride.departingFrom }}</p>
-  {% endif %}
-  {% if ride.destination %}
-    <p><strong>Destination:</strong> {{ ride.destination }}</p>
-  {% endif %}
-  {% if ride.recurring_days %}
-    <p><strong>Recurring Days:</strong> {{ ride.recurring_days }}</p>
-  {% endif %}
-  {% if ride.accessibility %}
-    <p><strong>Accessibility:</strong> {{ ride.accessibility }}</p>
-  {% endif %}
-  {% if ride.completed %}
-    <p><strong>Completed:</strong> {{ ride.completed }}</p>
-  {% endif %}
-  {% if ride.ride_description %}
-    <p><strong>Ride Description:</strong> {{ ride.ride_description }}</p>
-  {% endif %}
-  {% if ride.departingAt %}
-    <p><strong>Departing Time:</strong> {{ ride.departingAt.strftime('%I:%M %p') }}</p>
-  {% endif %}
-  {% if ride.arrival %}
-    <p><strong>Arrival Time:</strong> {{ ride.arrival.strftime('%I:%M %p') }}</p>
-  {% endif %}
-  {% if ride.stops %}
-    <p><strong>Stops:</strong> {{ ride.stops }}</p>
-  {% endif %}
-  {% if ride.duration %}
-    <p><strong>Duration:</strong> {{ ride.duration }}</p>
-  {% endif %}
-</div>
-
-<div>
-  <form method="post">
-    {{ form.hidden_tag() }}
-    <input type="submit" value="Confirm Ride">
-  </form>
-</div>
+<div class="content">
+  <h1>Confirm Ride</h1>
+    <div class="user-request">
+      <div class="request_header">
+        <img class="passenger-pfp" src="{{ url_for('static', filename='uploads/' + passenger.user_profile.user_img) }}">
+        <h2 class="request-title">Request from {{ request.passenger.user_profile.first_name }} on {{ request.timestamp|datetimefilter }}</h2>
+      </div>
+      <div class="request_details">
+            {% if request.ride.departingAt %}
+              <p>Departing At: {{ request.ride.departingAt.strftime('%I:%M %p') }}</p>
+            {% endif %}
+        
+            {% if request.ride.arrival %}
+                <p>Arrival Time: {{ request.ride.arrival.strftime('%I:%M %p') }}</p>
+            {% endif %}
+        
+            {% if request.ride.ridetype %}
+                <p>Ride Type: {{ request.ride.ridetype|capitalize }}</p>
+            {% endif %}
+        
+            {% if request.ride.departingFrom %}
+                <p>Departing From: {{ request.ride.departingFrom }}</p>
+            {% endif %}
+        
+            {% if request.ride.destination %}
+                <p>Destination: {{ request.ride.destination }}</p>
+            {% endif %}
+      </div>
+      <div class="confirm">
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <input type="submit" value="Confirm Ride">
+        </form>
+      </div>
+    </div>
 {% endblock %}

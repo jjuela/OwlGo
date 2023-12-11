@@ -96,8 +96,3 @@ document.getElementById('add-stop').addEventListener('click', function() {
     var button = document.getElementById('add-stop');
     stopsField.appendChild(button);
 });
-
-document.querySelector('form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    console.log('Form submission prevented');
-});
