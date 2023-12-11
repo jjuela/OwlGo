@@ -4,7 +4,11 @@
 {% endblock %}
 {% block content %}
     <div class="content">
-        <h1>Offer a ride</h1>
+        {% if edit_mode %}
+            <h1>Edit Ride</h1>
+        {% else %}
+            <h1>Offer a Ride</h1>
+        {% endif %}
         <form method="POST" action="{{ url_for('start_ride_offer') }}">
             {{ form.hidden_tag() }}
             <div class="rideType">

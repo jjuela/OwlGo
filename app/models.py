@@ -89,7 +89,7 @@ class RidePassenger(db.Model):
     commute_days = db.Column(db.String(255))
     accessibility = db.Column(db.String(255))
     custom_message = db.Column(db.String(255))
-    requested_stops = db.Column(db.String(255))  # Add this line
+    requested_stops = db.Column(db.String(255))
     
     ride = db.relationship('Ride', backref='passengers')
     passenger = db.relationship('User', backref='ridden_rides')
