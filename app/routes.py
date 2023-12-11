@@ -570,7 +570,6 @@ def reject_ride(ride_id, passenger_id):
         db.session.add(message)
         db.session.delete(ride_request)  
         db.session.commit()
-        send_ride_rejection_email(ride.user, ride, rejection_reason)  # send email to the driver
         send_ride_rejection_email(passenger, ride, rejection_reason)  # send email to the passenger
         flash('The ride request has been rejected and the passenger has been notified.', 'success')
         return redirect(url_for('pending_requests_page'))
@@ -645,7 +644,6 @@ def my_rides():
     currentRides = [ride for ride in allRides if not ride.completed]
     pastRides = [ride for ride in allRides if ride.completed]
     return render_template('my_rides.html', currentRides=currentRides, pastRides=pastRides, ridePassenger=ridePassenger, originalPosterRides=originalPosterRides, rideDriver=rideDriver, form=form)
-
 
 @app.route('/complete_ride/<int:ride_id>', methods=['POST'])
 @login_required
@@ -728,9 +726,6 @@ def view_user_report(report_id):
                 ('ignore', 'Ignore report')
             ]
             if form.validate_on_submit():
-                if form.action.data == "select":
-                    flash('Please select an action.', 'danger')
-                    #return redirect url
                 if form.action.data == "ban":
                     reported_user.banned = True
                     db.session.delete(report)
@@ -739,7 +734,7 @@ def view_user_report(report_id):
                     subject = "OwlGo Ban"
                     recipient = reported_user.email
                     body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -752,7 +747,7 @@ def view_user_report(report_id):
                     subject = "OwlGo Warning"
                     recipient = reported_user.email
                     body = f"You have been warned for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -766,7 +761,7 @@ def view_user_report(report_id):
                     subject = "OwlGo Report"
                     recipient = reporter.email
                     body = f"We've decided your report doesn't violate OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -806,9 +801,7 @@ def view_ride_report(report_id):
 
             if moreActionForm.validate_on_submit():
                 print("moreActionForm submitted")
-                if moreActionForm.action.data == "select":
-                    flash('Please select an action.', 'danger')
-                    #return redirect url
+
                 if moreActionForm.action.data == "ban":
                     reported_user.banned = True
                     db.session.commit()
@@ -816,7 +809,7 @@ def view_ride_report(report_id):
                     subject = "OwlGo Ban"
                     recipient = reported_user.email
                     body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -829,7 +822,7 @@ def view_ride_report(report_id):
                     subject = "OwlGo Warning"
                     recipient = reported_user.email
                     body = f"You have been warned for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
@@ -839,51 +832,20 @@ def view_ride_report(report_id):
                 return render_template('action_taken.html', report_id=report_id, reporter=reporter, action=moreActionForm.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
 
             if form.validate_on_submit():
-                if form.action.data == "select":
-                    flash('Please select an action.', 'danger')
-                    #return redirect url
                 if form.action.data == "delete":
                     RideReport.query.filter_by(ride_id=reported_ride.ride_id).delete()
                     db.session.delete(reported_ride)
+                    db.session.commit() 
 
                     subject = "OwlGo Report"
                     recipient = reported_user.email
                     body = f"Your ride has been deleted for violating OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
-                    if moreActionForm.validate_on_submit():
-                        print("moreActionForm submitted")
-                        if moreActionForm.action.data == "select":
-                            flash('Please select an action.', 'danger')
-                            #return redirect url
-                        if moreActionForm.action.data == "ban":
-                            reported_user.banned = True
-                            db.session.commit()
-
-                            subject = "OwlGo Ban"
-                            recipient = reported_user.email
-                            body = f"You have been banned from OwlGo for violating OwlGo's terms of service."
-                            msg = Message(subject=subject, recipients=[recipient], body=body)
-
-                            try:
-                                mail.send(msg)
-                            except SMTPException:
-                                return "Failed to send ban email. Please try again."
-                        if moreActionForm.action.data == "warn":
-                            db.session.delete(report)
-                            db.session.commit()
-
-                            subject = "OwlGo Warning"
-                            recipient = reported_user.email
-                            body = f"You have been warned for violating OwlGo's terms of service."
-                            msg = Message(subject=subject, recipients=[recipient], body=body)
-
-                            try:
-                                mail.send(msg)
-                            except SMTPException:
-                                return "Failed to send warning email. Please try again."
-                        print("Returning action_taken.html")
-                        return render_template('action_taken.html', report_id=report_id, reporter=reporter, action=moreActionForm.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
+                    try:
+                        mail.send(msg)
+                    except SMTPException:
+                        return "Failed to send delete email. Please try again."
                     
                 if form.action.data == "ignore":
                     db.session.delete(report)
@@ -892,15 +854,14 @@ def view_ride_report(report_id):
                     subject = "OwlGo Report"
                     recipient = reporter.email
                     body = f"We've decided your report doesn't violate OwlGo's terms of service."
-                    msg = Message(subject=subject, recipients=[recipient], body=body)
+                    msg = MailMessage(subject=subject, recipients=[recipient], body=body)
 
                     try:
                         mail.send(msg)
                     except SMTPException:
                         return "Failed to send ignore email. Please try again."
-                return render_template('action_taken_ride.html', report_id=report_id, moreActionForm=moreActionForm, reporter=reporter, reported_ride=reported_ride, action=form.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
+                return render_template('view_reports.html', report_id=report_id, moreActionForm=moreActionForm, reporter=reporter, reported_ride=reported_ride, action=form.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
             return render_template('view_ride_report.html', report=report, reporter=reporter, reported_ride=reported_ride, form=form, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
-
 
 @app.route('/admin_hub/view_usage', methods=['GET', 'POST'])
 @login_required
