@@ -201,3 +201,7 @@ form input[type="submit"] {
     font-size: 16px;
     cursor: pointer;
 }
+
+.modal-content p {
+    font-size: 15px;
+}
