@@ -629,8 +629,6 @@ def find_ride():
             rides = rides.filter(Ride.accessibility.in_(form.accessibility.data))
 
         rides = rides.all()
-        print(rides)
-
     else:
         rides = rides.all()
 
@@ -690,14 +688,10 @@ def rate_ride(ride_id):
 @app.route('/complete_ride/<int:ride_id>', methods=['POST'])
 @login_required
 def complete_ride(ride_id):
-    print(f"Received request to complete ride {ride_id}")
     ride = Ride.query.get(ride_id)
     if ride is None:
-        print(f"No ride found with ID {ride_id}")
         return "No ride found", 404
-    print(f"Retrieved ride from database: {ride}")
     if ride.user_id != current_user.user_id:
-        print(f"User {current_user.user_id} is not authorized to complete ride {ride_id}")
         return "Not authorized", 403
     ride.completed = True
     db.session.commit()
@@ -842,8 +836,6 @@ def view_ride_report(report_id):
             ]
 
             if moreActionForm.validate_on_submit():
-                print("moreActionForm submitted")
-
                 if moreActionForm.action.data == "ban":
                     reported_user.banned = True
                     db.session.commit()
@@ -870,7 +862,6 @@ def view_ride_report(report_id):
                         mail.send(msg)
                     except SMTPException:
                         return "Failed to send warning email. Please try again."
-                print("Returning action_taken.html")
                 return render_template('action_taken.html', report_id=report_id, reporter=reporter, action=moreActionForm.action.data, reported_user_profile=reported_user_profile, reported_user=reported_user, reporter_user_profile=reporter_user_profile)
 
             if form.validate_on_submit():

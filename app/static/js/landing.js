@@ -1,12 +1,9 @@
-// modal elements
 var loginModal = document.getElementById('loginModal');
 var registerModal = document.getElementById('registerModal');
 
-// button elements
 var loginButton = document.querySelector('.landing-login-button');
 var registerButton = document.querySelector('.landing-signup-button');
 
-// close elements
 var loginClose = document.querySelector('#loginModal .close');
 var registerClose = document.querySelector('#registerModal .close');
 
