@@ -15,19 +15,6 @@ Install the required dependancies by:
 
 pip install -r requirements.txt
 
-The database connection is set up in init.py
-
-However, if needed you can connect through:
-
-storied-landing-398221:us-east1:csc330-db
-35.185.60.149
-
-user: root
-
-password: beholders_db08
-
-Network must be manually added to Theo's GCP instance, however, SCSU wifi is added already.
-
 Application settings:
 
 App runs on port 8080.
